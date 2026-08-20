@@ -38,7 +38,7 @@ function ReportIncident() {
                   <option>Road accident</option>
                   <option>Waterlogging</option>
                   <option>Traffic disruption</option>
-                  <option>Suspicious activity</option>
+                  <option>Theft</option>
                   <option>Other</option>
                 </select>
                 <ChevronDown size={17} />
