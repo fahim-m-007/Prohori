@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import ReportIncident from "./pages/ReportIncident";
+import LiveMap from "./pages/LiveMap";
 import DashboardLayout from "./layouts/DashboardLayout";
 
 import "./App.css";
@@ -29,10 +30,7 @@ function App() {
           <Route path="/report-incident" element={<ReportIncident />} />
 
           {/* Live Map */}
-          <Route
-            path="/map"
-            element={<div className="temporary-page">Live Map</div>}
-          />
+          <Route path="/map" element={<LiveMap />} />
 
           {/* Reports */}
           <Route

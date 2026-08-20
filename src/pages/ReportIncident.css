@@ -106,6 +106,15 @@
 .location-input { display: flex; align-items: center; gap: 9px; margin-top: 8px; padding: 0 10px; border: 1px solid var(--border); border-radius: 9px; color: var(--blue); }
 .location-input input { margin: 0; border: 0; box-shadow: none !important; }
 .location-input button { padding: 6px 0 6px 10px; border: 0; border-left: 1px solid var(--border); color: var(--blue); background: transparent; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.location-autocomplete { position: relative; }
+.location-suggestions { position: absolute; top: calc(100% + 5px); right: 0; left: 0; z-index: 20; overflow: hidden; padding: 5px; list-style: none; border: 1px solid var(--border); border-radius: 10px; background: white; box-shadow: var(--shadow-md); }
+.location-suggestions button { width: 100%; display: flex; align-items: center; gap: 9px; padding: 9px; border: 0; border-radius: 7px; color: var(--blue); background: white; text-align: left; }
+.location-suggestions button:hover, .location-suggestions button.active { background: #eef4ff; }
+.location-suggestions span { display: flex; flex-direction: column; gap: 2px; }
+.location-suggestions strong { color: var(--navy); font-size: 11px; }
+.location-suggestions small { color: var(--text-secondary); font-size: 10px; }
+.location-search-message { padding: 12px 9px; color: var(--text-secondary); font-size: 10px; line-height: 1.4; }
+.location-search-attribution { padding: 7px 9px 3px; color: var(--text-light); font-size: 9px; }
 
 .photo-upload { width: 100%; min-height: 106px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 1px dashed #bbcae3; border-radius: 10px; color: var(--blue); background: #f9fbff; }
 .photo-upload strong { color: var(--navy); font-size: 12px; }
