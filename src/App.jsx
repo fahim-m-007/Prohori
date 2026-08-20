@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
+import ReportIncident from "./pages/ReportIncident";
 import DashboardLayout from "./layouts/DashboardLayout";
 
 import "./App.css";
@@ -23,6 +24,9 @@ function App() {
         <Route element={<DashboardLayout />}>
           {/* Dashboard */}
           <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* Report an incident */}
+          <Route path="/report-incident" element={<ReportIncident />} />
 
           {/* Live Map */}
           <Route

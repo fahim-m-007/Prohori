@@ -10,6 +10,7 @@ import {
   LogOut,
   Plus,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 function Sidebar() {
   return (
@@ -24,10 +25,10 @@ function Sidebar() {
 
       {/* REPORT BUTTON */}
 
-      <button className="sidebar-report-btn">
+      <Link to="/report-incident" className="sidebar-report-btn">
         <Plus size={17} />
         Report Incident
-      </button>
+      </Link>
 
       {/* MAIN NAVIGATION */}
 

@@ -1,0 +1,133 @@
+.report-incident-page {
+  min-height: 100vh;
+}
+
+.report-incident-header {
+  min-height: 190px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32px 38px;
+  background: white;
+  border-bottom: 1px solid var(--border);
+}
+
+.back-link {
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.back-link:hover { color: var(--blue); }
+
+.report-eyebrow {
+  display: block;
+  color: var(--blue);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+
+.report-incident-header h1,
+.form-section-heading h2,
+.report-help-card h2 {
+  color: var(--navy);
+  font-family: var(--font-heading);
+}
+
+.report-incident-header h1 {
+  margin-top: 5px;
+  font-size: 26px;
+  letter-spacing: -0.8px;
+}
+
+.report-incident-header p {
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.report-header-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  color: var(--danger);
+  background: #fef2f2;
+}
+
+.report-incident-content {
+  display: grid;
+  grid-template-columns: minmax(0, 720px) minmax(230px, 300px);
+  gap: 18px;
+  align-items: start;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 38px 42px;
+}
+
+.incident-form,
+.report-help-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.incident-form-section { padding: 25px; border-bottom: 1px solid var(--border); }
+
+.form-section-heading { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
+.form-section-heading > span { width: 27px; height: 27px; display: grid; place-items: center; flex-shrink: 0; border-radius: 8px; color: var(--blue); background: #eef4ff; font-size: 10px; font-weight: 800; }
+.form-section-heading h2 { font-size: 15px; }
+.form-section-heading p { margin-top: 4px; color: var(--text-secondary); font-size: 11px; }
+
+.incident-form label { display: block; margin-top: 16px; color: var(--navy); font-size: 12px; font-weight: 700; }
+.incident-form label:first-of-type { margin-top: 0; }
+.optional { color: var(--text-light); font-weight: 400; }
+.incident-form select,
+.incident-form textarea,
+.incident-form input { width: 100%; margin-top: 8px; outline: none; border: 1px solid var(--border); border-radius: 9px; color: var(--navy); background: white; font-size: 12px; }
+.incident-form select,
+.incident-form input { height: 43px; padding: 0 12px; }
+.incident-form textarea { min-height: 106px; padding: 12px; resize: vertical; }
+.incident-form select:focus,
+.incident-form textarea:focus,
+.incident-form input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37, 99, 235, .1); }
+.select-wrap { position: relative; }
+.select-wrap select { appearance: none; }
+.select-wrap svg { position: absolute; right: 12px; bottom: 13px; pointer-events: none; color: var(--text-secondary); }
+
+.location-input { display: flex; align-items: center; gap: 9px; margin-top: 8px; padding: 0 10px; border: 1px solid var(--border); border-radius: 9px; color: var(--blue); }
+.location-input input { margin: 0; border: 0; box-shadow: none !important; }
+.location-input button { padding: 6px 0 6px 10px; border: 0; border-left: 1px solid var(--border); color: var(--blue); background: transparent; font-size: 10px; font-weight: 700; white-space: nowrap; }
+
+.photo-upload { width: 100%; min-height: 106px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 1px dashed #bbcae3; border-radius: 10px; color: var(--blue); background: #f9fbff; }
+.photo-upload strong { color: var(--navy); font-size: 12px; }
+.photo-upload span { color: var(--text-secondary); font-size: 10px; }
+
+.incident-form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 20px; padding: 18px 25px; }
+.cancel-report { color: var(--text-secondary); font-size: 12px; font-weight: 600; }
+.submit-report { padding: 11px 17px; border: 0; border-radius: 9px; color: white; background: linear-gradient(135deg, var(--blue), var(--purple)); font-size: 12px; font-weight: 700; box-shadow: 0 8px 18px rgba(37, 99, 235, .18); }
+
+.report-help-card { padding: 22px; color: var(--text-secondary); }
+.report-help-card > svg { color: var(--blue); }
+.report-help-card h2 { margin-top: 13px; font-size: 15px; }
+.report-help-card p { margin-top: 8px; font-size: 12px; line-height: 1.6; }
+.report-help-card a { display: inline-block; margin-top: 16px; color: var(--blue); font-size: 11px; font-weight: 700; }
+
+@media (max-width: 850px) {
+  .report-incident-content { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 700px) {
+  .report-incident-header { padding: 28px 20px; }
+  .report-incident-content { padding: 20px; }
+  .report-header-icon { display: none; }
+  .location-input button { display: none; }
+}
