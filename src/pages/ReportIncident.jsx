@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Camera, ChevronDown, MapPin, ShieldAlert } from "lucide-react";
+import { CircleMarker, MapContainer, TileLayer, useMapEvents } from "react-leaflet";
+import { ArrowLeft, Camera, ChevronDown, Map as MapIcon, MapPin, ShieldAlert, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import "leaflet/dist/leaflet.css";
 import "./ReportIncident.css";
 
 const dhakaLocations = [
@@ -19,6 +21,8 @@ const dhakaLocations = [
 ];
 
 const geoapifyKey = import.meta.env.VITE_GEOAPIFY_KEY;
+const DHAKA_CENTER = [23.8103, 90.4125];
+const DHAKA_BOUNDS = [[23.65, 90.28], [23.92, 90.55]];
 
 function findLocalLocations(query) {
   const normalizedQuery = query.trim().toLocaleLowerCase();
@@ -27,12 +31,46 @@ function findLocalLocations(query) {
     .slice(0, 5);
 }
 
+function MapClickHandler({ onPick }) {
+  useMapEvents({
+    click(event) {
+      onPick([event.latlng.lat, event.latlng.lng]);
+    },
+  });
+
+  return null;
+}
+
+function LocationMapPicker({ position, onPick }) {
+  return (
+    <MapContainer
+      className="location-picker-map"
+      center={position || DHAKA_CENTER}
+      zoom={13}
+      minZoom={11}
+      maxZoom={18}
+      maxBounds={DHAKA_BOUNDS}
+      maxBoundsViscosity={1}
+    >
+      <TileLayer
+        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution={'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}
+      />
+      <MapClickHandler onPick={onPick} />
+      {position && <CircleMarker center={position} radius={9} pathOptions={{ color: "white", fillColor: "#2563eb", fillOpacity: 1, weight: 4 }} />}
+    </MapContainer>
+  );
+}
+
 function ReportIncident() {
   const [locationQuery, setLocationQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
   const [suggestions, setSuggestions] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [locationCoordinates, setLocationCoordinates] = useState(null);
+  const [isMapPickerOpen, setIsMapPickerOpen] = useState(false);
+  const [locationMessage, setLocationMessage] = useState("");
   const displayedSuggestions = useMemo(
     () => (geoapifyKey ? suggestions : findLocalLocations(locationQuery)),
     [locationQuery, suggestions],
@@ -45,26 +83,44 @@ function ReportIncident() {
     const controller = new AbortController();
     const timeout = window.setTimeout(async () => {
       setIsSearching(true);
-      const parameters = new URLSearchParams({
-        text: query,
-        apiKey: geoapifyKey,
-        filter: "rect:90.28,23.65,90.55,23.92|countrycode:bd",
-        bias: "proximity:90.4125,23.8103",
-        format: "json",
-        limit: "5",
-      });
-
-      try {
+      const searchLocations = async (text, filter, bias) => {
+        const parameters = new URLSearchParams({
+          text,
+          apiKey: geoapifyKey,
+          filter,
+          bias,
+          format: "json",
+          limit: "5",
+        });
         const response = await fetch(`https://api.geoapify.com/v1/geocode/autocomplete?${parameters}`, { signal: controller.signal });
         if (!response.ok) throw new Error("Location search failed");
 
         const { results = [] } = await response.json();
-        setSuggestions(results.map((result) => ({
+        return results.map((result) => ({
           id: result.place_id,
           name: result.address_line1 || result.name || result.formatted,
           detail: result.address_line2 || result.formatted || "Dhaka, Bangladesh",
           coordinates: [result.lon, result.lat],
-        })).filter(({ name }) => name));
+        })).filter(({ name }) => name);
+      };
+
+      try {
+        const strictDhakaResults = await searchLocations(
+          query,
+          "rect:90.28,23.65,90.55,23.92|countrycode:bd",
+          "proximity:90.4125,23.8103",
+        );
+
+        if (strictDhakaResults.length > 0) {
+          setSuggestions(strictDhakaResults);
+        } else {
+          const broaderDhakaResults = await searchLocations(
+            `${query}, Dhaka, Bangladesh`,
+            "countrycode:bd",
+            "circle:90.4125,23.8103,30000",
+          );
+          setSuggestions(broaderDhakaResults);
+        }
       } catch (error) {
         if (error.name !== "AbortError") setSuggestions(findLocalLocations(query));
       } finally {
@@ -80,8 +136,33 @@ function ReportIncident() {
 
   const selectLocation = (location) => {
     setLocationQuery(`${location.name}, ${location.detail}`);
+    setLocationCoordinates(location.coordinates || null);
     setShowSuggestions(false);
     setActiveSuggestion(-1);
+  };
+
+  const selectMapLocation = (coordinates) => {
+    setLocationCoordinates(coordinates);
+    setLocationQuery(`Pinned location · ${coordinates[0].toFixed(5)}, ${coordinates[1].toFixed(5)}`);
+    setShowSuggestions(false);
+    setLocationMessage("Location pinned on the map.");
+  };
+
+  const useCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationMessage("Your browser does not support location access. Pick a spot on the map instead.");
+      return;
+    }
+
+    setLocationMessage("Finding your location...");
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        selectMapLocation([coords.latitude, coords.longitude]);
+        setIsMapPickerOpen(true);
+      },
+      () => setLocationMessage("We could not access your location. Please allow permission or pin a spot on the map."),
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
   };
 
   const handleLocationKeyDown = (event) => {
@@ -184,7 +265,7 @@ function ReportIncident() {
                     onFocus={() => setShowSuggestions(true)}
                     onKeyDown={handleLocationKeyDown}
                   />
-                  <button type="button">Use my location</button>
+                  <button type="button" onClick={useCurrentLocation}>Use my location</button>
                 </div>
                 {showSuggestions && locationQuery.trim() && (
                   <ul className="location-suggestions" id="location-suggestions" role="listbox">
@@ -212,6 +293,29 @@ function ReportIncident() {
                 )}
               </div>
             </label>
+
+            <div className="location-map-actions">
+              <button type="button" onClick={() => setIsMapPickerOpen((open) => !open)}>
+                <MapIcon size={15} />
+                {isMapPickerOpen ? "Hide map" : "Pick a location on the map"}
+              </button>
+              <span>Can&apos;t find the exact place?</span>
+            </div>
+
+            {locationMessage && <p className="location-message">{locationMessage}</p>}
+
+            {isMapPickerOpen && (
+              <div className="location-picker">
+                <div className="location-picker-heading">
+                  <div>
+                    <strong>Pin the incident location</strong>
+                    <span>Click anywhere on the Dhaka map to set the pin.</span>
+                  </div>
+                  <button type="button" aria-label="Close location map" onClick={() => setIsMapPickerOpen(false)}><X size={16} /></button>
+                </div>
+                <LocationMapPicker position={locationCoordinates} onPick={selectMapLocation} />
+              </div>
+            )}
           </section>
 
           <section className="incident-form-section">

@@ -115,6 +115,17 @@
 .location-suggestions small { color: var(--text-secondary); font-size: 10px; }
 .location-search-message { padding: 12px 9px; color: var(--text-secondary); font-size: 10px; line-height: 1.4; }
 .location-search-attribution { padding: 7px 9px 3px; color: var(--text-light); font-size: 9px; }
+.location-map-actions { display: flex; align-items: center; gap: 9px; margin-top: 11px; }
+.location-map-actions button { display: flex; align-items: center; gap: 5px; border: 0; color: var(--blue); background: transparent; font-size: 10px; font-weight: 700; }
+.location-map-actions span, .location-message { color: var(--text-secondary); font-size: 10px; }
+.location-message { margin-top: 8px; }
+.location-picker { overflow: hidden; margin-top: 13px; border: 1px solid var(--border); border-radius: 10px; }
+.location-picker-heading { display: flex; align-items: flex-start; justify-content: space-between; padding: 11px 12px; background: #f9fbff; border-bottom: 1px solid var(--border); }
+.location-picker-heading strong { display: block; color: var(--navy); font-size: 11px; }
+.location-picker-heading span { display: block; margin-top: 3px; color: var(--text-secondary); font-size: 10px; }
+.location-picker-heading button { border: 0; color: var(--text-secondary); background: transparent; }
+.location-picker-map { height: 245px; width: 100%; }
+.location-picker .leaflet-control-attribution { font-size: 8px !important; }
 
 .photo-upload { width: 100%; min-height: 106px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 1px dashed #bbcae3; border-radius: 10px; color: var(--blue); background: #f9fbff; }
 .photo-upload strong { color: var(--navy); font-size: 12px; }
