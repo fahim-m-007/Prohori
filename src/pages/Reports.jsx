@@ -20,7 +20,7 @@ const initialReportsList = [
   {
     id: "rep-1",
     title: "Major road accident involving two buses",
-    category: "Transportation",
+    category: "Road accident",
     severity: "high",
     thana: "Dhanmondi",
     location: "Satmasjid Road, near Dhanmondi 27 intersection",
@@ -40,7 +40,7 @@ const initialReportsList = [
   {
     id: "rep-2",
     title: "Heavy knee-level waterlogging & sewer backup",
-    category: "Civic Issue",
+    category: "Waterlogging",
     severity: "caution",
     thana: "Mirpur",
     location: "Mirpur 10 roundabout to Kazipara",
@@ -58,15 +58,32 @@ const initialReportsList = [
   },
   {
     id: "rep-3",
-    title: "Attempted snatching near dark pedestrian bridge",
-    category: "Crime & Safety",
+    title: "Severe traffic disruption & standstill gridlock",
+    category: "Traffic disruption",
+    severity: "caution",
+    thana: "Shahbagh",
+    location: "Shahbagh Intersection towards TSC",
+    time: "41 min ago",
+    timestamp: "2:15 PM",
+    description:
+      "Heavy congestion causing vehicular gridlock towards TSC and Bangla Motor. Diversions active via High Court road.",
+    upvotes: 38,
+    userVoted: null,
+    flagged: false,
+    status: "verified",
+    comments: [],
+  },
+  {
+    id: "rep-4",
+    title: "Theft & attempted motorbike bag snatching",
+    category: "Theft",
     severity: "high",
     thana: "Mohammadpur",
     location: "Beribadh Embankment Footbridge",
     time: "48 min ago",
-    timestamp: "2:19 PM",
+    timestamp: "2:08 PM",
     description:
-      "Two men on a dark red pulsar bike attempted to snatch a purse from a rickshaw commuter. Neighborhood volunteers chased them away.",
+      "Two men on a dark red pulsar bike attempted to snatch a bag from a rickshaw commuter. Neighborhood volunteers chased them away.",
     upvotes: 52,
     userVoted: null,
     flagged: false,
@@ -76,14 +93,14 @@ const initialReportsList = [
     ],
   },
   {
-    id: "rep-4",
-    title: "Faulty transformer sparking with loud noises",
-    category: "Fire Hazard",
+    id: "rep-5",
+    title: "Faulty electrical transformer sparking hazard",
+    category: "Other",
     severity: "caution",
     thana: "Gulshan",
     location: "Road 103, Gulshan 2",
     time: "1 hr ago",
-    timestamp: "2:00 PM",
+    timestamp: "1:45 PM",
     description:
       "Sparks dropping over parked cars. DESCO helpline contacted and team dispatched. Area temporarily cordoned off with yellow tape.",
     upvotes: 19,
@@ -92,51 +109,15 @@ const initialReportsList = [
     status: "verified",
     comments: [],
   },
-  {
-    id: "rep-5",
-    title: "Broken streetlight row (10+ poles dark)",
-    category: "Public Safety",
-    severity: "info",
-    thana: "Uttara",
-    location: "Sector 7, Lake Drive Road",
-    time: "2 hrs ago",
-    timestamp: "1:00 PM",
-    description:
-      "Entire lake promenade has zero functioning lighting. Pedestrians feeling unsafe during night strolls.",
-    upvotes: 14,
-    userVoted: null,
-    flagged: false,
-    status: "resolved",
-    comments: [
-      { author: "DNCC Team", time: "20m ago", text: "DNCC electrician team replaced blown fuses." },
-    ],
-  },
-  {
-    id: "rep-6",
-    title: "Sudden protest blockade on main intersection",
-    category: "Transportation",
-    severity: "caution",
-    thana: "Shahbagh",
-    location: "Shahbagh Intersection",
-    time: "3 hrs ago",
-    timestamp: "12:00 PM",
-    description:
-      "Demonstration causing vehicular gridlock towards TSC and Bangla Motor. Diversions active via High Court road.",
-    upvotes: 38,
-    userVoted: null,
-    flagged: false,
-    status: "resolved",
-    comments: [],
-  },
 ];
 
 const categories = [
   "All Categories",
-  "Transportation",
-  "Civic Issue",
-  "Crime & Safety",
-  "Fire Hazard",
-  "Public Safety",
+  "Road accident",
+  "Waterlogging",
+  "Traffic disruption",
+  "Theft",
+  "Other",
 ];
 
 const thanas = [
@@ -349,7 +330,7 @@ function Reports() {
               onChange={(e) => setSelectedStatus(e.target.value)}
             >
               <option value="all">All Statuses</option>
-              <option value="verified">Verified Active</option>
+              <option value="verified">Verified</option>
               <option value="resolved">Resolved</option>
             </select>
           </div>
@@ -369,7 +350,7 @@ function Reports() {
 
       {/* FEED METRICS */}
       <div className="reports-feed-count">
-        <span>Showing {filteredReports.length} reports</span>
+        <span>Showing {filteredReports.length} results</span>
       </div>
 
       {/* REPORTS LIST */}
@@ -397,9 +378,6 @@ function Reports() {
               <div className="report-card-top">
                 <div className="report-cat-wrap">
                   <span className="cat-tag">{report.category}</span>
-                  <span className={`status-tag ${report.status}`}>
-                    {report.status === "verified" ? "Verified Active" : "Resolved"}
-                  </span>
                 </div>
 
                 <div className="time-tag">

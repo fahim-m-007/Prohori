@@ -16,10 +16,6 @@ import {
   ShieldCheck,
   Sparkles,
   ThumbsUp,
-  Trash2,
-  User,
-  UserCheck,
-  Users,
   Zap,
 } from "lucide-react";
 import "./Profile.css";
@@ -33,7 +29,6 @@ const initialUser = {
   joinedDate: "January 2025",
   role: "Verified Citizen Sentinel",
   reputationLevel: "Level 4 Sentinel",
-  trustScore: 98,
   bio: "Active commuter in Dhanmondi & Gulshan. Committed to making Dhaka streets safer and well-monitored for everyone.",
 };
 
@@ -76,23 +71,6 @@ const initialBadges = [
   },
 ];
 
-const initialIceContacts = [
-  {
-    id: "ice-1",
-    name: "Rafid Hasan",
-    relation: "Brother",
-    phone: "+880 1812-987654",
-    notifyOnSOS: true,
-  },
-  {
-    id: "ice-2",
-    name: "Dr. Farhana Yasmin",
-    relation: "Mother",
-    phone: "+880 1913-456789",
-    notifyOnSOS: true,
-  },
-];
-
 const initialMyReports = [
   {
     id: "rep-101",
@@ -128,7 +106,6 @@ const initialMyReports = [
 
 function Profile() {
   const [user, setUser] = useState(initialUser);
-  const [iceContacts, setIceContacts] = useState(initialIceContacts);
   const [myReports] = useState(initialMyReports);
   const [toastMessage, setToastMessage] = useState("");
 
@@ -139,12 +116,6 @@ function Profile() {
   const [editPhone, setEditPhone] = useState(user.phone);
   const [editBio, setEditBio] = useState(user.bio);
   const [editThana, setEditThana] = useState(user.primaryThana);
-
-  // Add ICE Modal
-  const [isAddIceOpen, setIsAddIceOpen] = useState(false);
-  const [iceName, setIceName] = useState("");
-  const [iceRelation, setIceRelation] = useState("Family");
-  const [icePhone, setIcePhone] = useState("");
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -163,41 +134,6 @@ function Profile() {
     });
     setIsEditProfileOpen(false);
     showToast("Profile details updated successfully!");
-  };
-
-  const handleAddIce = (e) => {
-    e.preventDefault();
-    if (!iceName.trim() || !icePhone.trim()) {
-      showToast("Please provide a contact name and phone number.");
-      return;
-    }
-
-    const newContact = {
-      id: `ice-${Date.now()}`,
-      name: iceName,
-      relation: iceRelation,
-      phone: icePhone,
-      notifyOnSOS: true,
-    };
-
-    setIceContacts([...iceContacts, newContact]);
-    setIsAddIceOpen(false);
-    setIceName("");
-    setIcePhone("");
-    showToast(`Added ${iceName} to your Emergency ICE Network!`);
-  };
-
-  const handleDeleteIce = (id, name) => {
-    setIceContacts(iceContacts.filter((c) => c.id !== id));
-    showToast(`Removed ${name} from emergency contacts.`);
-  };
-
-  const handleToggleIceSos = (id) => {
-    setIceContacts(
-      iceContacts.map((c) =>
-        c.id === id ? { ...c, notifyOnSOS: !c.notifyOnSOS } : c
-      )
-    );
   };
 
   return (
@@ -259,23 +195,6 @@ function Profile() {
             <span>Edit Profile</span>
           </button>
         </div>
-
-        {/* TRUST SCORE BAR */}
-        <div className="reputation-bar">
-          <div className="reputation-label">
-            <div className="reputation-title">
-              <UserCheck size={16} className="rep-icon" />
-              <span>Community Trust Rating</span>
-            </div>
-            <strong>{user.trustScore}% Verified Accuracy</strong>
-          </div>
-          <div className="trust-track">
-            <div
-              className="trust-fill"
-              style={{ width: `${user.trustScore}%` }}
-            ></div>
-          </div>
-        </div>
       </section>
 
       {/* STATS ROW */}
@@ -312,116 +231,40 @@ function Profile() {
             <small>Sentinel achievements</small>
           </div>
         </div>
+      </div>
 
-        <div className="stat-card">
-          <div className="stat-icon-wrap orange">
-            <Users size={22} />
-          </div>
-          <div className="stat-info">
-            <span className="stat-label">ICE Contacts</span>
-            <strong className="stat-val">{iceContacts.length}</strong>
-            <small>Emergency network linked</small>
+      {/* BADGES SECTION */}
+      <section className="profile-section-card full-width">
+        <div className="section-header">
+          <div>
+            <h2>Prohori Sentinel Badges</h2>
+            <p>Achievements earned for accurate incident reporting in Dhaka.</p>
           </div>
         </div>
-      </div>
 
-      {/* TWO COLUMNS: BADGES & ICE CONTACTS */}
-      <div className="profile-two-cols">
-        {/* BADGES */}
-        <section className="profile-section-card">
-          <div className="section-header">
-            <div>
-              <h2>Prohori Sentinel Badges</h2>
-              <p>Achievements earned for accurate incident reporting.</p>
-            </div>
-          </div>
-
-          <div className="badges-list">
-            {initialBadges.map((badge) => (
-              <div className="badge-item" key={badge.id}>
-                <div
-                  className="badge-icon-box"
-                  style={{
-                    background: badge.bgColor,
-                    color: badge.color,
-                  }}
-                >
-                  {badge.icon}
-                </div>
-                <div className="badge-details">
-                  <div className="badge-title-line">
-                    <strong>{badge.name}</strong>
-                    <small>Earned {badge.earnedDate}</small>
-                  </div>
-                  <p>{badge.description}</p>
-                </div>
+        <div className="badges-grid">
+          {initialBadges.map((badge) => (
+            <div className="badge-item" key={badge.id}>
+              <div
+                className="badge-icon-box"
+                style={{
+                  background: badge.bgColor,
+                  color: badge.color,
+                }}
+              >
+                {badge.icon}
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ICE EMERGENCY CONTACTS */}
-        <section className="profile-section-card">
-          <div className="section-header">
-            <div>
-              <h2>In Case of Emergency (ICE)</h2>
-              <p>Trusted contacts notified automatically during SOS alerts.</p>
-            </div>
-            <button
-              className="btn-add-ice"
-              onClick={() => setIsAddIceOpen(true)}
-            >
-              <Plus size={14} />
-              <span>Add Contact</span>
-            </button>
-          </div>
-
-          <div className="ice-contacts-list">
-            {iceContacts.length === 0 ? (
-              <p className="no-ice-text">
-                No emergency contacts added yet. Add at least one family member
-                or friend for your safety.
-              </p>
-            ) : (
-              iceContacts.map((contact) => (
-                <div className="ice-contact-card" key={contact.id}>
-                  <div className="ice-avatar">
-                    <User size={18} />
-                  </div>
-
-                  <div className="ice-info">
-                    <div className="ice-name-line">
-                      <strong>{contact.name}</strong>
-                      <span className="relation-tag">{contact.relation}</span>
-                    </div>
-                    <span className="ice-phone">{contact.phone}</span>
-                  </div>
-
-                  <div className="ice-actions">
-                    <button
-                      className={`btn-sos-toggle ${
-                        contact.notifyOnSOS ? "active" : ""
-                      }`}
-                      onClick={() => handleToggleIceSos(contact.id)}
-                      title="SOS Dispatch Status"
-                    >
-                      {contact.notifyOnSOS ? "SOS Linked" : "SOS Disabled"}
-                    </button>
-
-                    <button
-                      className="btn-delete-ice"
-                      onClick={() => handleDeleteIce(contact.id, contact.name)}
-                      title="Remove contact"
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
+              <div className="badge-details">
+                <div className="badge-title-line">
+                  <strong>{badge.name}</strong>
+                  <small>Earned {badge.earnedDate}</small>
                 </div>
-              ))
-            )}
-          </div>
-        </section>
-      </div>
+                <p>{badge.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* MY SUBMITTED REPORTS TIMELINE */}
       <section className="profile-section-card full-width">
@@ -551,70 +394,6 @@ function Profile() {
                 </button>
                 <button type="submit" className="btn-modal-submit">
                   Save Changes
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ADD ICE MODAL */}
-      {isAddIceOpen && (
-        <div className="modal-overlay">
-          <div className="modal-dialog">
-            <div className="modal-header">
-              <h3>Add Emergency ICE Contact</h3>
-              <button
-                className="modal-close-btn"
-                onClick={() => setIsAddIceOpen(false)}
-              >
-                ✕
-              </button>
-            </div>
-            <form onSubmit={handleAddIce} className="modal-form">
-              <div className="form-group">
-                <label>Contact Full Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Rafid Hasan"
-                  value={iceName}
-                  onChange={(e) => setIceName(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Relationship</label>
-                <select
-                  value={iceRelation}
-                  onChange={(e) => setIceRelation(e.target.value)}
-                >
-                  <option value="Parent">Parent</option>
-                  <option value="Spouse">Spouse</option>
-                  <option value="Sibling">Sibling</option>
-                  <option value="Friend">Friend</option>
-                  <option value="Colleague">Colleague</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Phone Number (Bangladesh)</label>
-                <input
-                  type="tel"
-                  placeholder="+880 1..."
-                  value={icePhone}
-                  onChange={(e) => setIcePhone(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="modal-actions">
-                <button
-                  type="button"
-                  className="btn-modal-cancel"
-                  onClick={() => setIsAddIceOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="btn-modal-submit">
-                  Add to ICE Network
                 </button>
               </div>
             </form>

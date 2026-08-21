@@ -42,7 +42,6 @@
   display: flex;
   align-items: flex-start;
   gap: 24px;
-  margin-bottom: 26px;
 }
 
 .profile-avatar-large {
@@ -161,57 +160,10 @@
   color: var(--blue);
 }
 
-/* REPUTATION BAR */
-.reputation-bar {
-  background: #f8fafc;
-  border-radius: var(--radius-md);
-  padding: 16px 20px;
-  border: 1px solid var(--border);
-}
-
-.reputation-label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  font-size: 13px;
-}
-
-.reputation-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 700;
-  color: var(--navy);
-}
-
-.rep-icon {
-  color: var(--success);
-}
-
-.reputation-label strong {
-  color: var(--success);
-  font-weight: 700;
-}
-
-.trust-track {
-  width: 100%;
-  height: 8px;
-  background: #e2e8f0;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.trust-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--blue), var(--success));
-  border-radius: 10px;
-}
-
 /* STATS ROW */
 .profile-stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin-bottom: 28px;
 }
@@ -252,11 +204,6 @@
   color: var(--success);
 }
 
-.stat-icon-wrap.orange {
-  background: #fff7ed;
-  color: #ea580c;
-}
-
 .stat-info {
   display: flex;
   flex-direction: column;
@@ -282,23 +229,13 @@
   color: var(--text-light);
 }
 
-/* TWO COLS */
-.profile-two-cols {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-bottom: 28px;
-}
-
+/* SECTION CARDS */
 .profile-section-card {
   background: white;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 26px;
   box-shadow: var(--shadow-sm);
-}
-
-.profile-section-card.full-width {
   margin-bottom: 28px;
 }
 
@@ -324,7 +261,6 @@
   margin-top: 2px;
 }
 
-.btn-add-ice,
 .btn-new-report-link {
   display: inline-flex;
   align-items: center;
@@ -340,23 +276,22 @@
   white-space: nowrap;
 }
 
-.btn-add-ice:hover,
 .btn-new-report-link:hover {
   background: var(--blue);
 }
 
-/* BADGES */
-.badges-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+/* BADGES GRID */
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
 }
 
 .badge-item {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 12px;
+  padding: 14px;
   border-radius: var(--radius-md);
   background: #f8fafc;
   border: 1px solid var(--border);
@@ -396,101 +331,6 @@
 .badge-details p {
   font-size: 12px;
   color: var(--text-secondary);
-}
-
-/* ICE CONTACTS */
-.ice-contacts-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.ice-contact-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px;
-  background: #f8fafc;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-}
-
-.ice-avatar {
-  width: 38px;
-  height: 38px;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--navy);
-  flex-shrink: 0;
-}
-
-.ice-info {
-  flex: 1;
-}
-
-.ice-name-line {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 2px;
-}
-
-.ice-name-line strong {
-  font-size: 14px;
-  color: var(--navy);
-}
-
-.relation-tag {
-  font-size: 10px;
-  font-weight: 700;
-  background: #e2e8f0;
-  color: var(--navy);
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
-.ice-phone {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.ice-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-sos-toggle {
-  background: white;
-  border: 1px solid var(--border);
-  font-size: 11px;
-  font-weight: 700;
-  padding: 5px 10px;
-  border-radius: 6px;
-  color: var(--text-light);
-  transition: 0.2s ease;
-}
-
-.btn-sos-toggle.active {
-  background: #f0fdf4;
-  border-color: var(--success);
-  color: var(--success);
-}
-
-.btn-delete-ice {
-  background: transparent;
-  border: none;
-  color: var(--text-light);
-  padding: 4px;
-  border-radius: 4px;
-}
-
-.btn-delete-ice:hover {
-  color: var(--danger);
 }
 
 /* MY REPORTS */
@@ -586,9 +426,9 @@
     padding: 24px 20px;
   }
   .profile-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
-  .profile-two-cols {
+  .badges-grid {
     grid-template-columns: 1fr;
   }
   .hero-top-row {
@@ -598,9 +438,6 @@
 }
 
 @media (max-width: 600px) {
-  .profile-stats-grid {
-    grid-template-columns: 1fr;
-  }
   .my-report-row {
     flex-direction: column;
     align-items: flex-start;

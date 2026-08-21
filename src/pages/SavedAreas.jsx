@@ -12,7 +12,6 @@ import {
   Navigation,
   Plus,
   Radio,
-  Route,
   ShieldCheck,
   Sparkles,
   Trash2,
@@ -75,29 +74,6 @@ const defaultSavedAreas = [
   },
 ];
 
-const defaultCommuteRoutes = [
-  {
-    id: "route-1",
-    name: "Daily Work Commute",
-    origin: "Dhanmondi 9/A",
-    destination: "Gulshan 2",
-    preferredVia: "Hatirjheel Expressway Link",
-    status: "safe",
-    incidentCount: 1,
-    statusNote: "Hatirjheel route clear. Slight slowdown approaching Police Plaza.",
-  },
-  {
-    id: "route-2",
-    name: "Evening University Route",
-    origin: "TSC, Dhaka University",
-    destination: "Dhanmondi 27",
-    preferredVia: "Science Lab -> Mirpur Road",
-    status: "caution",
-    incidentCount: 2,
-    statusNote: "Waterlogging reported near Kalabagan bus stand. Proceed with caution.",
-  },
-];
-
 const thanaList = [
   "Dhanmondi",
   "Gulshan",
@@ -113,7 +89,6 @@ const thanaList = [
 
 function SavedAreas() {
   const [savedAreas, setSavedAreas] = useState(defaultSavedAreas);
-  const [commuteRoutes] = useState(defaultCommuteRoutes);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
@@ -224,8 +199,8 @@ function SavedAreas() {
           </div>
           <h1>Saved Areas & Watchzones</h1>
           <p>
-            Monitor high-priority locations in Dhaka for instant alerts, live
-            safety scores, and commute safety forecasts.
+            Monitor high-priority locations in Dhaka for instant alerts and live
+            safety scores.
           </p>
         </div>
 
@@ -371,51 +346,6 @@ function SavedAreas() {
               </div>
             );
           })}
-        </div>
-      </section>
-
-      {/* COMMUTE CORRIDORS SECTION */}
-      <section className="commute-section">
-        <div className="section-title-row">
-          <div>
-            <h2>Daily Commute Corridors</h2>
-            <p>
-              Pre-monitored routes across Dhaka. Check road hazards before
-              stepping out.
-            </p>
-          </div>
-        </div>
-
-        <div className="commute-cards-list">
-          {commuteRoutes.map((route) => (
-            <div className="commute-card" key={route.id}>
-              <div className="commute-icon-wrap">
-                <Route size={22} />
-              </div>
-
-              <div className="commute-details">
-                <div className="commute-header-line">
-                  <h3>{route.name}</h3>
-                  <span className={`commute-status-pill ${route.status}`}>
-                    {route.status === "safe" ? "Route Clear" : "Caution on Path"}
-                  </span>
-                </div>
-
-                <div className="commute-path">
-                  <strong>{route.origin}</strong>
-                  <span className="arrow-sep">→</span>
-                  <strong>{route.destination}</strong>
-                  <span className="via-label">(via {route.preferredVia})</span>
-                </div>
-
-                <p className="commute-note">{route.statusNote}</p>
-              </div>
-
-              <Link to="/map" className="btn-commute-inspect">
-                Inspect Route
-              </Link>
-            </div>
-          ))}
         </div>
       </section>
 

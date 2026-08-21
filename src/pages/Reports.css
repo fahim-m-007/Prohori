@@ -224,24 +224,6 @@
   text-transform: uppercase;
 }
 
-.status-tag {
-  font-size: 10px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 4px;
-  text-transform: uppercase;
-}
-
-.status-tag.verified {
-  background: #f0fdf4;
-  color: var(--success);
-}
-
-.status-tag.resolved {
-  background: #f1f5f9;
-  color: var(--text-secondary);
-}
-
 .time-tag {
   display: inline-flex;
   align-items: center;
