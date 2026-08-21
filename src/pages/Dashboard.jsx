@@ -5,7 +5,7 @@ import {
   FileText,
   Flag,
   MapPin,
-  Plus,
+  ShieldPlus,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -357,21 +357,28 @@ function Dashboard() {
 
 
         {/* REPORT CTA */}
-        <section className="report-card">
+        <section className="dashboard-report-card">
 
-          <div className="report-plus">
-            <Plus size={19} />
-          </div>
+          <Link
+            to="/report-incident"
+            className="dashboard-report-icon"
+            aria-label="Report an incident"
+          >
+            <ShieldPlus size={24} strokeWidth={1.9} />
+          </Link>
 
-          <div className="report-card-text">
+          <div className="dashboard-report-content">
             <span className="card-label">HELP YOUR COMMUNITY</span>
             <h2>See something that matters?</h2>
             <p>Report a safety or civic issue in your area.</p>
           </div>
 
-          <Link to="/report-incident">
+          <Link
+            to="/report-incident"
+            className="dashboard-report-button"
+          >
             Report an incident
-            <ArrowRight size={13} />
+            <ArrowRight size={14} />
           </Link>
 
         </section>
