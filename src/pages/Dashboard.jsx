@@ -1,7 +1,6 @@
 import {
   AlertTriangle,
   ArrowRight,
-  Bell,
   FileText,
   Flag,
   MapPin,
@@ -26,12 +25,13 @@ function Dashboard() {
         </div>
 
         <div className="dashboard-actions">
-          <button className="header-button" aria-label="Alerts">
-            <Bell size={18} />
-            <span className="notification-dot"></span>
-          </button>
-
-          <div className="header-avatar">F</div>
+          <Link
+            to="/profile"
+            className="header-avatar"
+            aria-label="Open profile"
+          >
+            F
+          </Link>
         </div>
       </header>
 
@@ -58,10 +58,7 @@ function Dashboard() {
             <span>reports<br />nearby</span>
           </div>
 
-          <button className="thana-select">
-            {selectedThana}
-            <span>⌄</span>
-          </button>
+
         </section>
 
 

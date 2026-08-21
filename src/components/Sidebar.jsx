@@ -12,9 +12,9 @@ import {
 } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
 
-function Sidebar() {
+function Sidebar({ collapsed = false }) {
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
       {/* LOGO */}
       <Link to="/dashboard" className="sidebar-logo">
         <div className="sidebar-logo-mark">P</div>

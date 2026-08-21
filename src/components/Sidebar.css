@@ -287,3 +287,87 @@
   background: var(--danger);
 }
 
+
+
+/* COLLAPSED SIDEBAR */
+
+.sidebar {
+  transition: width 0.25s ease, padding 0.25s ease;
+  overflow: hidden;
+}
+
+.sidebar.collapsed {
+  width: 72px;
+  padding: 20px 10px;
+}
+
+/* Keep the logo mark visible, hide only the wordmark. */
+.sidebar.collapsed .sidebar-logo {
+  justify-content: center;
+  padding: 0;
+  margin-bottom: 24px;
+}
+
+.sidebar.collapsed .sidebar-logo span,
+.sidebar.collapsed .sidebar-report-btn span,
+.sidebar.collapsed .sidebar-section-title,
+.sidebar.collapsed .sidebar-link > span:not(.notification-count),
+.sidebar.collapsed .user-info,
+.sidebar.collapsed .user-status {
+  display: none;
+}
+
+/* Report button becomes an icon button. */
+.sidebar.collapsed .sidebar-report-btn {
+  width: 45px;
+  margin: 0 auto 28px;
+  padding: 0;
+}
+
+/* Navigation icons stay visible and centered. */
+.sidebar.collapsed .sidebar-section {
+  margin-bottom: 22px;
+}
+
+.sidebar.collapsed .sidebar-nav {
+  gap: 6px;
+}
+
+.sidebar.collapsed .sidebar-link {
+  width: 48px;
+  min-height: 44px;
+  justify-content: center;
+  gap: 0;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.sidebar.collapsed .sidebar-link.active::before {
+  left: -1px;
+}
+
+.sidebar.collapsed .notification-count {
+  display: flex;
+  position: absolute;
+  top: 3px;
+  right: 1px;
+  width: 18px;
+  height: 18px;
+  font-size: 8px;
+}
+
+/* Keep the profile avatar at the bottom. */
+.sidebar.collapsed .sidebar-user {
+  justify-content: center;
+  padding: 14px 0 4px;
+}
+
+.sidebar.collapsed .sidebar-bottom .sidebar-link {
+  margin-bottom: 4px;
+}
+
+@media (max-width: 700px) {
+  .sidebar.collapsed {
+    width: 72px;
+  }
+}
