@@ -1,406 +1,383 @@
 import {
-  MapPin,
   AlertTriangle,
-  ShieldCheck,
-  Users,
-  ArrowUpRight,
-  MoreHorizontal,
+  ArrowRight,
+  Bell,
+  FileText,
+  Flag,
+  MapPin,
+  Plus,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import "./Dashboard.css";
 
 function Dashboard() {
-  return (
-    <>
-      {/* =========================================
-          TOP BAR
-      ========================================= */}
+  const selectedThana = "Dhanmondi Thana";
 
+  return (
+    <div className="dashboard-page">
+
+      {/* HEADER */}
       <header className="dashboard-header">
         <div>
-          <span className="dashboard-date">THURSDAY, AUGUST 21</span>
-
+          <span className="dashboard-label">COMMUNITY SAFETY</span>
           <h1>Good morning, Fahim 👋</h1>
-
-          <p>Here's what's happening around Dhaka.</p>
+          <p>See what&apos;s happening in your selected area.</p>
         </div>
 
-        <div className="dashboard-header-actions">
-          <button className="header-icon-btn">
-            <MapPin size={18} />
-          </button>
-
-          <button className="header-icon-btn">
-            <AlertTriangle size={18} />
-
-            <span className="header-notification-dot"></span>
+        <div className="dashboard-actions">
+          <button className="header-button" aria-label="Alerts">
+            <Bell size={18} />
+            <span className="notification-dot"></span>
           </button>
 
           <div className="header-avatar">F</div>
         </div>
       </header>
 
-      {/* =========================================
-          STATS
-      ========================================= */}
 
-      <section className="dashboard-stats">
-        {/* TOTAL REPORTS */}
+      <main className="dashboard-content">
 
-        <div className="dashboard-stat-card">
-          <div className="stat-card-top">
-            <div className="dashboard-stat-icon blue">
-              <MapPin size={19} />
-            </div>
-
-            <span className="stat-change positive">
-              +12.5%
-              <ArrowUpRight size={12} />
-            </span>
-          </div>
-
-          <strong>1,284</strong>
-
-          <span>Total reports</span>
-        </div>
-
-        {/* ACTIVE INCIDENTS */}
-
-        <div className="dashboard-stat-card">
-          <div className="stat-card-top">
-            <div className="dashboard-stat-icon red">
-              <AlertTriangle size={19} />
-            </div>
-
-            <span className="stat-change negative">
-              +4.2%
-              <ArrowUpRight size={12} />
-            </span>
-          </div>
-
-          <strong>86</strong>
-
-          <span>Active incidents</span>
-        </div>
-
-        {/* SAFETY SCORE */}
-
-        <div className="dashboard-stat-card">
-          <div className="stat-card-top">
-            <div className="dashboard-stat-icon green">
-              <ShieldCheck size={19} />
-            </div>
-
-            <span className="stat-change positive">
-              +8.1%
-              <ArrowUpRight size={12} />
-            </span>
-          </div>
-
-          <strong>82%</strong>
-
-          <span>Safety score</span>
-        </div>
-
-        {/* COMMUNITY */}
-
-        <div className="dashboard-stat-card">
-          <div className="stat-card-top">
-            <div className="dashboard-stat-icon purple">
-              <Users size={19} />
-            </div>
-
-            <span className="stat-change positive">
-              +18.4%
-              <ArrowUpRight size={12} />
-            </span>
-          </div>
-
-          <strong>2.4K</strong>
-
-          <span>Community members</span>
-        </div>
-      </section>
-
-      {/* =========================================
-          MAIN GRID
-      ========================================= */}
-
-      <section className="dashboard-grid">
-        {/* =====================================
-            MAP CARD
-        ===================================== */}
-
-        <div className="dashboard-map-card">
-          <div className="card-header">
-            <div>
-              <span className="card-label">LIVE OVERVIEW</span>
-
-              <h2>Dhaka Safety Map</h2>
-            </div>
-
-            <button className="more-btn">
-              <MoreHorizontal size={19} />
-            </button>
-          </div>
-
-          {/* MAP */}
-
-          <div className="dashboard-map">
-            <div className="map-grid"></div>
-
-            <div className="dash-road dash-road-1"></div>
-
-            <div className="dash-road dash-road-2"></div>
-
-            <div className="dash-road dash-road-3"></div>
-
-            {/* HIGH RISK */}
-
-            <div className="dash-marker high">
-              <span></span>
-            </div>
-
-            {/* WARNING */}
-
-            <div className="dash-marker warning">
-              <span></span>
-            </div>
-
-            {/* SAFE */}
-
-            <div className="dash-marker safe">
-              <span></span>
-            </div>
-
-            {/* ANOTHER HIGH RISK */}
-
-            <div className="dash-marker high marker-four">
-              <span></span>
-            </div>
-
-            {/* LOCATION */}
-
-            <div className="map-center-label">
-              <MapPin size={14} />
-              Dhaka
-            </div>
-
-            {/* EXPLORE */}
-
-            <button className="expand-map-btn">
-              Explore Live Map
-              <ArrowUpRight size={14} />
-            </button>
-          </div>
-
-          {/* MAP LEGEND */}
-
-          <div className="map-legend">
-            <span>
-              <i className="legend-red"></i>
-              High risk
-            </span>
-
-            <span>
-              <i className="legend-orange"></i>
-              Caution
-            </span>
-
-            <span>
-              <i className="legend-green"></i>
-              Safer
-            </span>
-          </div>
-        </div>
-
-        {/* =====================================
-            ACTIVE ALERTS
-        ===================================== */}
-
-        <div className="dashboard-alerts">
-          <div className="card-header">
-            <div>
-              <span className="card-label">IMPORTANT</span>
-
-              <h2>Active Alerts</h2>
-            </div>
-
-            <button className="view-all-btn">View all</button>
-          </div>
-
-          <div className="alert-list">
-            {/* ALERT 1 */}
-
-            <div className="dashboard-alert">
-              <div className="alert-icon danger">
-                <AlertTriangle size={17} />
-              </div>
-
-              <div className="alert-content">
-                <strong>Road accident</strong>
-
-                <span>Airport Road</span>
-
-                <small>8 min ago</small>
-              </div>
-
-              <span className="alert-arrow">→</span>
-            </div>
-
-            {/* ALERT 2 */}
-
-            <div className="dashboard-alert">
-              <div className="alert-icon warning">
-                <MapPin size={17} />
-              </div>
-
-              <div className="alert-content">
-                <strong>Heavy waterlogging</strong>
-
-                <span>Mirpur 10</span>
-
-                <small>23 min ago</small>
-              </div>
-
-              <span className="alert-arrow">→</span>
-            </div>
-
-            {/* ALERT 3 */}
-
-            <div className="dashboard-alert">
-              <div className="alert-icon info">
-                <MapPin size={17} />
-              </div>
-
-              <div className="alert-content">
-                <strong>Traffic disruption</strong>
-
-                <span>Farmgate</span>
-
-                <small>41 min ago</small>
-              </div>
-
-              <span className="alert-arrow">→</span>
-            </div>
-
-            {/* ALERT 4 */}
-
-            <div className="dashboard-alert">
-              <div className="alert-icon success">
-                <ShieldCheck size={17} />
-              </div>
-
-              <div className="alert-content">
-                <strong>Area cleared</strong>
-
-                <span>Dhanmondi 27</span>
-
-                <small>1 hr ago</small>
-              </div>
-
-              <span className="alert-arrow">→</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================
-          RECENT REPORTS
-      ========================================= */}
-
-      <section className="recent-reports">
-        <div className="card-header">
+        {/* SELECTED THANA */}
+        <section className="thana-card">
           <div>
-            <span className="card-label">COMMUNITY</span>
+            <span className="section-label">
+              <MapPin size={13} />
+              SELECTED AREA
+            </span>
 
-            <h2>Recent Reports</h2>
+            <h2>{selectedThana}</h2>
+
+            <p>
+              Reports and safety alerts from your selected thana.
+            </p>
           </div>
 
-          <button className="view-all-btn">View all reports</button>
-        </div>
-
-        <div className="reports-table">
-          {/* TABLE HEADER */}
-
-          <div className="report-row report-heading">
-            <span>INCIDENT</span>
-
-            <span>LOCATION</span>
-
-            <span>STATUS</span>
-
-            <span>REPORTED</span>
+          <div className="thana-count">
+            <strong>6</strong>
+            <span>reports<br />nearby</span>
           </div>
 
-          {/* REPORT 1 */}
+          <button className="thana-select">
+            {selectedThana}
+            <span>⌄</span>
+          </button>
+        </section>
 
-          <div className="report-row">
-            <div className="report-name">
-              <div className="report-type red-bg">
-                <AlertTriangle size={15} />
+
+        {/* MAIN CONTENT */}
+        <section className="dashboard-grid">
+
+          {/* RECENT REPORTS */}
+          <div className="dashboard-card reports-card">
+
+            <div className="card-header">
+              <div>
+                <span className="card-label">FROM YOUR AREA</span>
+                <h2>Recent Reports</h2>
               </div>
 
-              <div>
-                <strong>Road accident</strong>
+              <Link to="/reports" className="view-link">
+                View all
+                <ArrowRight size={12} />
+              </Link>
+            </div>
 
-                <span>Transportation</span>
+
+            <div className="report-item">
+              <div className="report-icon red">
+                <AlertTriangle size={18} />
+              </div>
+
+              <div className="report-content">
+                <div className="report-top">
+                  <strong>Road accident</strong>
+                  <small>12 min ago</small>
+                </div>
+
+                <span className="report-location">
+                  <MapPin size={11} />
+                  Satmasjid Road
+                </span>
+
+                <span className="report-category">
+                  Transportation
+                </span>
+
+                <p>
+                  Traffic is moving slowly near the intersection.
+                </p>
+
+                <div className="report-actions">
+                  <button>View report</button>
+
+                  <button className="flag-button">
+                    <Flag size={12} />
+                    Flag
+                  </button>
+                </div>
               </div>
             </div>
 
-            <span>Gulshan 1</span>
 
-            <span className="status verified">Verified</span>
-
-            <span>12 min ago</span>
-          </div>
-
-          {/* REPORT 2 */}
-
-          <div className="report-row">
-            <div className="report-name">
-              <div className="report-type orange-bg">
-                <MapPin size={15} />
+            <div className="report-item">
+              <div className="report-icon orange">
+                <MapPin size={18} />
               </div>
 
-              <div>
-                <strong>Waterlogging</strong>
+              <div className="report-content">
+                <div className="report-top">
+                  <strong>Heavy waterlogging</strong>
+                  <small>31 min ago</small>
+                </div>
 
-                <span>Civic issue</span>
-              </div>
-            </div>
+                <span className="report-location">
+                  <MapPin size={11} />
+                  Dhanmondi 27
+                </span>
 
-            <span>Mirpur 10</span>
+                <span className="report-category">
+                  Civic issue
+                </span>
 
-            <span className="status pending">Pending</span>
+                <p>
+                  Water accumulation reported around the road.
+                </p>
 
-            <span>28 min ago</span>
-          </div>
+                <div className="report-actions">
+                  <button>View report</button>
 
-          {/* REPORT 3 */}
-
-          <div className="report-row">
-            <div className="report-name">
-              <div className="report-type purple-bg">
-                <AlertTriangle size={15} />
-              </div>
-
-              <div>
-                <strong>Suspicious activity</strong>
-
-                <span>Public safety</span>
+                  <button className="flag-button">
+                    <Flag size={12} />
+                    Flag
+                  </button>
+                </div>
               </div>
             </div>
 
-            <span>Dhanmondi</span>
 
-            <span className="status verified">Verified</span>
+            <div className="report-item">
+              <div className="report-icon blue">
+                <AlertTriangle size={18} />
+              </div>
 
-            <span>42 min ago</span>
+              <div className="report-content">
+                <div className="report-top">
+                  <strong>Traffic disruption</strong>
+                  <small>48 min ago</small>
+                </div>
+
+                <span className="report-location">
+                  <MapPin size={11} />
+                  Dhanmondi Lake
+                </span>
+
+                <span className="report-category">
+                  Transportation
+                </span>
+
+                <p>
+                  Traffic disruption reported near the main entrance.
+                </p>
+
+                <div className="report-actions">
+                  <button>View report</button>
+
+                  <button className="flag-button">
+                    <Flag size={12} />
+                    Flag
+                  </button>
+                </div>
+              </div>
+            </div>
+
+
+            <div className="report-item">
+              <div className="report-icon purple">
+                <AlertTriangle size={18} />
+              </div>
+
+              <div className="report-content">
+                <div className="report-top">
+                  <strong>Damaged road</strong>
+                  <small>1 hr ago</small>
+                </div>
+
+                <span className="report-location">
+                  <MapPin size={11} />
+                  Dhanmondi 8A
+                </span>
+
+                <span className="report-category">
+                  Civic issue
+                </span>
+
+                <p>
+                  Road surface is damaged and difficult to use.
+                </p>
+
+                <div className="report-actions">
+                  <button>View report</button>
+
+                  <button className="flag-button">
+                    <Flag size={12} />
+                    Flag
+                  </button>
+                </div>
+              </div>
+            </div>
+
           </div>
-        </div>
-      </section>
-    </>
+
+
+          {/* RIGHT SIDE */}
+          <div className="dashboard-side">
+
+            {/* AREA ALERTS */}
+            <div className="dashboard-card">
+
+              <div className="card-header">
+                <div>
+                  <span className="card-label">IMPORTANT</span>
+                  <h2>Area Alerts</h2>
+                </div>
+
+                <span className="alert-count">3</span>
+              </div>
+
+
+              <div className="alert-item">
+                <div className="small-icon red">
+                  <AlertTriangle size={14} />
+                </div>
+
+                <div>
+                  <strong>Heavy traffic</strong>
+                  <span>Satmasjid Road</span>
+                  <small>High traffic disruption reported</small>
+                </div>
+              </div>
+
+
+              <div className="alert-item">
+                <div className="small-icon orange">
+                  <MapPin size={14} />
+                </div>
+
+                <div>
+                  <strong>Waterlogging</strong>
+                  <span>Dhanmondi 27</span>
+                  <small>Avoid the area if possible</small>
+                </div>
+              </div>
+
+
+              <div className="alert-item">
+                <div className="small-icon purple">
+                  <AlertTriangle size={14} />
+                </div>
+
+                <div>
+                  <strong>Public safety</strong>
+                  <span>Dhanmondi Lake</span>
+                  <small>Multiple reports received</small>
+                </div>
+              </div>
+
+
+              <Link to="/alerts" className="side-link">
+                View all alerts
+                <ArrowRight size={12} />
+              </Link>
+
+            </div>
+
+
+            {/* MY REPORTS */}
+            <div className="dashboard-card">
+
+              <div className="card-header">
+                <div>
+                  <span className="card-label">YOUR ACTIVITY</span>
+                  <h2>My Reports</h2>
+                </div>
+
+                <Link to="/reports" className="view-link">
+                  View all
+                </Link>
+              </div>
+
+
+              <div className="my-report">
+                <div className="small-icon red">
+                  <FileText size={14} />
+                </div>
+
+                <div>
+                  <strong>Road accident</strong>
+                  <span>Dhanmondi</span>
+                </div>
+
+                <small>Submitted</small>
+              </div>
+
+
+              <div className="my-report">
+                <div className="small-icon orange">
+                  <FileText size={14} />
+                </div>
+
+                <div>
+                  <strong>Waterlogging</strong>
+                  <span>Mirpur</span>
+                </div>
+
+                <small>Submitted</small>
+              </div>
+
+
+              <div className="my-report">
+                <div className="small-icon purple">
+                  <FileText size={14} />
+                </div>
+
+                <div>
+                  <strong>Damaged road</strong>
+                  <span>Gulshan</span>
+                </div>
+
+                <small>Submitted</small>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        {/* REPORT CTA */}
+        <section className="report-card">
+
+          <div className="report-plus">
+            <Plus size={19} />
+          </div>
+
+          <div className="report-card-text">
+            <span className="card-label">HELP YOUR COMMUNITY</span>
+            <h2>See something that matters?</h2>
+            <p>Report a safety or civic issue in your area.</p>
+          </div>
+
+          <Link to="/report-incident">
+            Report an incident
+            <ArrowRight size={13} />
+          </Link>
+
+        </section>
+
+      </main>
+    </div>
   );
 }
 
