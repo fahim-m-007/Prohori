@@ -1,0 +1,9 @@
+/* SIGNUP */
+
+.signup-card {
+  max-width: 430px;
+}
+
+.signup-card .auth-heading {
+  margin-bottom: 21px;
+}

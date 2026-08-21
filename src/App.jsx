@@ -1,9 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Landing from "./pages/Landing";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+
 import Dashboard from "./pages/Dashboard";
 import ReportIncident from "./pages/ReportIncident";
 import LiveMap from "./pages/LiveMap";
+
 import DashboardLayout from "./layouts/DashboardLayout";
 
 import "./App.css";
@@ -12,56 +16,93 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+
         {/* ================================
             PUBLIC WEBSITE
         ================================= */}
 
         <Route path="/" element={<Landing />} />
 
+        {/* Login */}
+        <Route path="/login" element={<Login />} />
+
+        {/* Sign Up */}
+        <Route path="/signup" element={<Signup />} />
+
+
         {/* ================================
             APPLICATION
         ================================= */}
 
         <Route element={<DashboardLayout />}>
+
           {/* Dashboard */}
           <Route path="/dashboard" element={<Dashboard />} />
 
           {/* Report an incident */}
-          <Route path="/report-incident" element={<ReportIncident />} />
+          <Route
+            path="/report-incident"
+            element={<ReportIncident />}
+          />
 
           {/* Live Map */}
-          <Route path="/map" element={<LiveMap />} />
+          <Route
+            path="/map"
+            element={<LiveMap />}
+          />
 
           {/* Reports */}
           <Route
             path="/reports"
-            element={<div className="temporary-page">Reports</div>}
+            element={
+              <div className="temporary-page">
+                Reports
+              </div>
+            }
           />
 
           {/* Alerts */}
           <Route
             path="/alerts"
-            element={<div className="temporary-page">Alerts</div>}
+            element={
+              <div className="temporary-page">
+                Alerts
+              </div>
+            }
           />
 
           {/* Saved Areas */}
           <Route
             path="/saved"
-            element={<div className="temporary-page">Saved Areas</div>}
+            element={
+              <div className="temporary-page">
+                Saved Areas
+              </div>
+            }
           />
 
           {/* Profile */}
           <Route
             path="/profile"
-            element={<div className="temporary-page">Profile</div>}
+            element={
+              <div className="temporary-page">
+                Profile
+              </div>
+            }
           />
 
           {/* Settings */}
           <Route
             path="/settings"
-            element={<div className="temporary-page">Settings</div>}
+            element={
+              <div className="temporary-page">
+                Settings
+              </div>
+            }
           />
+
         </Route>
+
       </Routes>
     </BrowserRouter>
   );
