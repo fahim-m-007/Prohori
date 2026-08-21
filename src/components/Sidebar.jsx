@@ -10,99 +10,126 @@ import {
   LogOut,
   Plus,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 function Sidebar() {
   return (
     <aside className="sidebar">
       {/* LOGO */}
-
-      <div className="sidebar-logo">
+      <Link to="/dashboard" className="sidebar-logo">
         <div className="sidebar-logo-mark">P</div>
-
         <span>PROHORI</span>
-      </div>
+      </Link>
 
       {/* REPORT BUTTON */}
-
       <Link to="/report-incident" className="sidebar-report-btn">
         <Plus size={17} />
-        Report Incident
+        <span>Report Incident</span>
       </Link>
 
       {/* MAIN NAVIGATION */}
-
       <div className="sidebar-section">
         <span className="sidebar-section-title">MAIN</span>
 
         <nav className="sidebar-nav">
-          <a href="/dashboard" className="sidebar-link active">
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
             <LayoutDashboard size={19} />
             <span>Dashboard</span>
-          </a>
+          </NavLink>
 
-          <a href="/map" className="sidebar-link">
+          <NavLink
+            to="/map"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
             <Map size={19} />
             <span>Live Map</span>
-          </a>
+          </NavLink>
 
-          <a href="/reports" className="sidebar-link">
+          <NavLink
+            to="/reports"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
             <FileText size={19} />
             <span>Reports</span>
-          </a>
+          </NavLink>
 
-          <a href="/alerts" className="sidebar-link">
+          <NavLink
+            to="/alerts"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
             <Bell size={19} />
             <span>Alerts</span>
-
             <span className="notification-count">3</span>
-          </a>
+          </NavLink>
         </nav>
       </div>
 
       {/* PERSONAL */}
-
       <div className="sidebar-section">
         <span className="sidebar-section-title">PERSONAL</span>
 
         <nav className="sidebar-nav">
-          <a href="/saved" className="sidebar-link">
+          <NavLink
+            to="/saved"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
             <Bookmark size={19} />
             <span>Saved Areas</span>
-          </a>
+          </NavLink>
 
-          <a href="/profile" className="sidebar-link">
+          <NavLink
+            to="/profile"
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
             <UserRound size={19} />
             <span>Profile</span>
-          </a>
+          </NavLink>
         </nav>
       </div>
 
       {/* BOTTOM */}
-
       <div className="sidebar-bottom">
-        <a href="/settings" className="sidebar-link">
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            `sidebar-link ${isActive ? "active" : ""}`
+          }
+        >
           <Settings size={19} />
           <span>Settings</span>
-        </a>
+        </NavLink>
 
-        <button className="sidebar-link logout-btn">
+        <Link to="/login" className="sidebar-link logout-btn">
           <LogOut size={19} />
           <span>Log out</span>
-        </button>
+        </Link>
 
         {/* USER */}
-
-        <div className="sidebar-user">
+        <Link to="/profile" className="sidebar-user">
           <div className="user-avatar">F</div>
 
           <div className="user-info">
             <strong>Fahim</strong>
-            <span>Member</span>
+            <span>Verified Member</span>
           </div>
 
-          <div className="user-status"></div>
-        </div>
+          <div className="user-status" title="Online"></div>
+        </Link>
       </div>
     </aside>
   );

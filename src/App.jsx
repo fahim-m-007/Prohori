@@ -7,6 +7,11 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import ReportIncident from "./pages/ReportIncident";
 import LiveMap from "./pages/LiveMap";
+import Reports from "./pages/Reports";
+import Alerts from "./pages/Alerts";
+import SavedAreas from "./pages/SavedAreas";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 
 import DashboardLayout from "./layouts/DashboardLayout";
 
@@ -54,51 +59,31 @@ function App() {
           {/* Reports */}
           <Route
             path="/reports"
-            element={
-              <div className="temporary-page">
-                Reports
-              </div>
-            }
+            element={<Reports />}
           />
 
           {/* Alerts */}
           <Route
             path="/alerts"
-            element={
-              <div className="temporary-page">
-                Alerts
-              </div>
-            }
+            element={<Alerts />}
           />
 
           {/* Saved Areas */}
           <Route
             path="/saved"
-            element={
-              <div className="temporary-page">
-                Saved Areas
-              </div>
-            }
+            element={<SavedAreas />}
           />
 
           {/* Profile */}
           <Route
             path="/profile"
-            element={
-              <div className="temporary-page">
-                Profile
-              </div>
-            }
+            element={<Profile />}
           />
 
           {/* Settings */}
           <Route
             path="/settings"
-            element={
-              <div className="temporary-page">
-                Settings
-              </div>
-            }
+            element={<Settings />}
           />
 
         </Route>
