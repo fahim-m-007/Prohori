@@ -1,9 +1,13 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 
 import "./Login.css";
 
 function Login() {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
 
   return (
     <div className="auth-page">
@@ -48,11 +52,24 @@ function Login() {
               </a>
             </div>
 
-            <input
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-            />
+            <div className="password-wrapper">
+              <input
+                id="password"
+                className="password-input"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                onChange={(e) => setPassword(e.target.value || "")}
+              />
+              {password && password.length > 0 && (
+                <button 
+                  type="button" 
+                  className="password-toggle" 
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              )}
+            </div>
           </div>
 
           <button type="submit" className="auth-button">
