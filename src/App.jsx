@@ -12,11 +12,15 @@ import SavedAreas from "./pages/SavedAreas";
 import Profile from "./pages/Profile";
 
 import DashboardLayout from "./layouts/DashboardLayout";
+import { ReportsProvider } from "./context/ReportsContext";
+import { SavedAreasProvider } from "./context/SavedAreasContext";
 
 import "./App.css";
 
 function App() {
   return (
+    <ReportsProvider>
+    <SavedAreasProvider>
     <BrowserRouter>
       <Routes>
 
@@ -76,6 +80,8 @@ function App() {
 
       </Routes>
     </BrowserRouter>
+    </SavedAreasProvider>
+    </ReportsProvider>
   );
 }
 

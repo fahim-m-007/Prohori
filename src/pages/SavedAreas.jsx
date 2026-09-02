@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   AlertTriangle,
@@ -18,85 +18,8 @@ import {
   X,
 } from "lucide-react";
 import "./SavedAreas.css";
-
-const defaultSavedAreas = [
-  {
-    id: "area-1",
-    name: "Home",
-    category: "residential",
-    thana: "Dhanmondi",
-    address: "Road 9/A, Dhanmondi R/A",
-    safetyScore: 92,
-    recentStatus: "Road 27 transformer repaired. All streets well lit.",
-    notificationsEnabled: true,
-  },
-  {
-    id: "area-2",
-    name: "Tech Office",
-    category: "work",
-    thana: "Gulshan",
-    address: "Gulshan Avenue, Gulshan 2 Circle",
-    safetyScore: 84,
-    recentStatus: "VIP motorcade traffic slowdown near DCC market.",
-    notificationsEnabled: true,
-  },
-  {
-    id: "area-3",
-    name: "Dhaka University Campus",
-    category: "campus",
-    thana: "Shahbagh",
-    address: "Curzon Hall & TSC Area",
-    safetyScore: 78,
-    recentStatus: "Gathering near Shahbagh intersection; detour recommended.",
-    notificationsEnabled: true,
-  },
-  {
-    id: "area-4",
-    name: "Parents' Residence",
-    category: "family",
-    thana: "Uttara",
-    address: "Sector 4, Road 11, Uttara",
-    safetyScore: 88,
-    recentStatus: "No active incidents in the last 24 hours.",
-    notificationsEnabled: true,
-  },
-];
-
-const initialRecentAlerts = [
-  {
-    id: "alert-1",
-    areaName: "Tech Office",
-    thana: "Gulshan",
-    category: "Traffic disruption",
-    severity: "caution",
-    timeTag: "Today, 1:15 PM",
-    title: "VIP Motorcade & Severe Gridlock",
-    description:
-      "Heavy congestion around Gulshan 2 circle and DCC market. Commuters advised to use Road 71 detour.",
-  },
-  {
-    id: "alert-2",
-    areaName: "Dhaka University Campus",
-    thana: "Shahbagh",
-    category: "Traffic disruption",
-    severity: "warning",
-    timeTag: "Yesterday, 4:45 PM",
-    title: "Student Gathering & Traffic Diversion",
-    description:
-      "Gathering near Shahbagh intersection. Traffic moving very slowly; vehicles diverted toward Katabon.",
-  },
-  {
-    id: "alert-3",
-    areaName: "Home",
-    thana: "Dhanmondi",
-    category: "Other",
-    severity: "resolved",
-    timeTag: "2 days ago",
-    title: "Transformer Repair & Power Restored",
-    description:
-      "Electrical fault on Road 27 fixed by DPDC maintenance crew. Street lights and normal road conditions restored.",
-  },
-];
+import { useReports } from "../context/ReportsContext";
+import { useSavedAreas } from "../context/SavedAreasContext";
 
 const thanaList = [
   "Dhanmondi",
@@ -112,8 +35,8 @@ const thanaList = [
 ];
 
 function SavedAreas() {
-  const [savedAreas, setSavedAreas] = useState(defaultSavedAreas);
-  const [recentAlerts, setRecentAlerts] = useState(initialRecentAlerts);
+  const { reports } = useReports();
+  const { savedAreas, setSavedAreas } = useSavedAreas();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
@@ -122,6 +45,16 @@ function SavedAreas() {
   const [formCategory, setFormCategory] = useState("residential");
   const [formThana, setFormThana] = useState("Dhanmondi");
   const [formAddress, setFormAddress] = useState("");
+
+  const recentAlerts = useMemo(
+    () => reports
+      .map((report) => {
+        const area = savedAreas.find(({ thana }) => thana === report.thana);
+        return area && { ...report, areaName: area.name, timeTag: report.time };
+      })
+      .filter(Boolean),
+    [reports, savedAreas],
+  );
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -147,7 +80,6 @@ function SavedAreas() {
 
   const handleDeleteArea = (id, name) => {
     setSavedAreas((prev) => prev.filter((area) => area.id !== id));
-    setRecentAlerts((prev) => prev.filter((a) => a.areaName !== name));
     showToast(`Removed "${name}" from saved areas`);
   };
 
@@ -167,6 +99,7 @@ function SavedAreas() {
       safetyScore: Math.floor(Math.random() * 15) + 82,
       recentStatus: "Area added. No new safety alerts in the last 24 hours.",
       notificationsEnabled: true,
+      position: [23.8103, 90.4125],
     };
 
     setSavedAreas([newArea, ...savedAreas]);
@@ -321,7 +254,18 @@ function SavedAreas() {
                     )}
                   </div>
 
-                  <Link to="/map" className="btn-alert-map">
+                  <Link
+                    to="/map"
+                    className="btn-alert-map"
+                    state={{
+                      from: "alert",
+                      thana: alert.thana,
+                      title: alert.title,
+                      category: alert.category,
+                      areaName: alert.areaName,
+                      severity: alert.severity,
+                    }}
+                  >
                     <Navigation size={13} />
                     <span>View on Live Map</span>
                   </Link>
@@ -409,7 +353,18 @@ function SavedAreas() {
                 </div>
 
                 <div className="location-card-actions">
-                  <Link to="/map" className="btn-location-map">
+                  <Link
+                    to="/map"
+                    className="btn-location-map"
+                    state={{
+                      from: "location",
+                      thana: area.thana,
+                      name: area.name,
+                      address: area.address,
+                      category: area.category,
+                      safetyScore: area.safetyScore,
+                    }}
+                  >
                     <Navigation size={13} />
                     <span>View on Map</span>
                   </Link>
