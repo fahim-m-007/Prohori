@@ -8,10 +8,8 @@ import Dashboard from "./pages/Dashboard";
 import ReportIncident from "./pages/ReportIncident";
 import LiveMap from "./pages/LiveMap";
 import Reports from "./pages/Reports";
-import Alerts from "./pages/Alerts";
 import SavedAreas from "./pages/SavedAreas";
 import Profile from "./pages/Profile";
-import Settings from "./pages/Settings";
 
 import DashboardLayout from "./layouts/DashboardLayout";
 
@@ -62,12 +60,6 @@ function App() {
             element={<Reports />}
           />
 
-          {/* Alerts */}
-          <Route
-            path="/alerts"
-            element={<Alerts />}
-          />
-
           {/* Saved Areas */}
           <Route
             path="/saved"
@@ -78,12 +70,6 @@ function App() {
           <Route
             path="/profile"
             element={<Profile />}
-          />
-
-          {/* Settings */}
-          <Route
-            path="/settings"
-            element={<Settings />}
           />
 
         </Route>

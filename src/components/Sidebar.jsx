@@ -3,10 +3,8 @@ import {
   LayoutDashboard,
   Map,
   FileText,
-  Bell,
   Bookmark,
   UserRound,
-  Settings,
   LogOut,
   Plus,
 } from "lucide-react";
@@ -61,17 +59,6 @@ function Sidebar({ collapsed = false }) {
             <FileText size={19} />
             <span>Reports</span>
           </NavLink>
-
-          <NavLink
-            to="/alerts"
-            className={({ isActive }) =>
-              `sidebar-link ${isActive ? "active" : ""}`
-            }
-          >
-            <Bell size={19} />
-            <span>Alerts</span>
-            <span className="notification-count">3</span>
-          </NavLink>
         </nav>
       </div>
 
@@ -104,16 +91,6 @@ function Sidebar({ collapsed = false }) {
 
       {/* BOTTOM */}
       <div className="sidebar-bottom">
-        <NavLink
-          to="/settings"
-          className={({ isActive }) =>
-            `sidebar-link ${isActive ? "active" : ""}`
-          }
-        >
-          <Settings size={19} />
-          <span>Settings</span>
-        </NavLink>
-
         <Link to="/login" className="sidebar-link logout-btn">
           <LogOut size={19} />
           <span>Log out</span>

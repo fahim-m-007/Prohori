@@ -287,12 +287,12 @@
   background: var(--danger);
 }
 
-
-
 /* COLLAPSED SIDEBAR */
 
 .sidebar {
-  transition: width 0.25s ease, padding 0.25s ease;
+  transition:
+    width 0.25s ease,
+    padding 0.25s ease;
   overflow: hidden;
 }
 

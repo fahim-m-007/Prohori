@@ -6,12 +6,12 @@ import {
   BellOff,
   Bookmark,
   Building2,
+  Clock,
   GraduationCap,
   Home,
   MapPin,
   Navigation,
   Plus,
-  Radio,
   ShieldCheck,
   Sparkles,
   Trash2,
@@ -21,56 +21,80 @@ import "./SavedAreas.css";
 
 const defaultSavedAreas = [
   {
-    id: "zone-1",
+    id: "area-1",
     name: "Home",
     category: "residential",
     thana: "Dhanmondi",
     address: "Road 9/A, Dhanmondi R/A",
-    radius: "1 km",
     safetyScore: 92,
-    activeIncidents: 0,
-    recentHazard: "Road 27 transformer repaired. All streets well lit.",
+    recentStatus: "Road 27 transformer repaired. All streets well lit.",
     notificationsEnabled: true,
-    monitoredRisks: ["Crime & Snatching", "Waterlogging", "Night Harassment"],
   },
   {
-    id: "zone-2",
+    id: "area-2",
     name: "Tech Office",
     category: "work",
     thana: "Gulshan",
     address: "Gulshan Avenue, Gulshan 2 Circle",
-    radius: "500 m",
     safetyScore: 84,
-    activeIncidents: 1,
-    recentHazard: "VIP motorcade traffic slowdown near DCC market.",
+    recentStatus: "VIP motorcade traffic slowdown near DCC market.",
     notificationsEnabled: true,
-    monitoredRisks: ["Traffic Gridlock", "Public Safety"],
   },
   {
-    id: "zone-3",
+    id: "area-3",
     name: "Dhaka University Campus",
     category: "campus",
     thana: "Shahbagh",
     address: "Curzon Hall & TSC Area",
-    radius: "2 km",
     safetyScore: 78,
-    activeIncidents: 2,
-    recentHazard: "Gathering near Shahbagh intersection; detour recommended.",
-    notificationsEnabled: false,
-    monitoredRisks: ["Public Safety", "Night Harassment", "Crime & Snatching"],
+    recentStatus: "Gathering near Shahbagh intersection; detour recommended.",
+    notificationsEnabled: true,
   },
   {
-    id: "zone-4",
+    id: "area-4",
     name: "Parents' Residence",
     category: "family",
     thana: "Uttara",
     address: "Sector 4, Road 11, Uttara",
-    radius: "1.5 km",
     safetyScore: 88,
-    activeIncidents: 0,
-    recentHazard: "No active incidents in the last 24 hours.",
+    recentStatus: "No active incidents in the last 24 hours.",
     notificationsEnabled: true,
-    monitoredRisks: ["Waterlogging", "Crime & Snatching", "Fire Hazards"],
+  },
+];
+
+const initialRecentAlerts = [
+  {
+    id: "alert-1",
+    areaName: "Tech Office",
+    thana: "Gulshan",
+    category: "Traffic disruption",
+    severity: "caution",
+    timeTag: "Today, 1:15 PM",
+    title: "VIP Motorcade & Severe Gridlock",
+    description:
+      "Heavy congestion around Gulshan 2 circle and DCC market. Commuters advised to use Road 71 detour.",
+  },
+  {
+    id: "alert-2",
+    areaName: "Dhaka University Campus",
+    thana: "Shahbagh",
+    category: "Traffic disruption",
+    severity: "warning",
+    timeTag: "Yesterday, 4:45 PM",
+    title: "Student Gathering & Traffic Diversion",
+    description:
+      "Gathering near Shahbagh intersection. Traffic moving very slowly; vehicles diverted toward Katabon.",
+  },
+  {
+    id: "alert-3",
+    areaName: "Home",
+    thana: "Dhanmondi",
+    category: "Other",
+    severity: "resolved",
+    timeTag: "2 days ago",
+    title: "Transformer Repair & Power Restored",
+    description:
+      "Electrical fault on Road 27 fixed by DPDC maintenance crew. Street lights and normal road conditions restored.",
   },
 ];
 
@@ -89,6 +113,7 @@ const thanaList = [
 
 function SavedAreas() {
   const [savedAreas, setSavedAreas] = useState(defaultSavedAreas);
+  const [recentAlerts, setRecentAlerts] = useState(initialRecentAlerts);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
@@ -97,8 +122,6 @@ function SavedAreas() {
   const [formCategory, setFormCategory] = useState("residential");
   const [formThana, setFormThana] = useState("Dhanmondi");
   const [formAddress, setFormAddress] = useState("");
-  const [formRadius, setFormRadius] = useState("1 km");
-  const [formRisks, setFormRisks] = useState(["Crime & Snatching", "Waterlogging"]);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -107,58 +130,50 @@ function SavedAreas() {
 
   const toggleNotification = (id) => {
     setSavedAreas((prev) =>
-      prev.map((zone) => {
-        if (zone.id === id) {
-          const next = !zone.notificationsEnabled;
+      prev.map((area) => {
+        if (area.id === id) {
+          const next = !area.notificationsEnabled;
           showToast(
             next
-              ? `Radar alerts activated for ${zone.name}`
-              : `Alerts muted for ${zone.name}`
+              ? `Alerts enabled for ${area.name}`
+              : `Alerts muted for ${area.name}`
           );
-          return { ...zone, notificationsEnabled: next };
+          return { ...area, notificationsEnabled: next };
         }
-        return zone;
+        return area;
       })
     );
   };
 
   const handleDeleteArea = (id, name) => {
-    setSavedAreas((prev) => prev.filter((zone) => zone.id !== id));
-    showToast(`Removed "${name}" from watchzones`);
-  };
-
-  const handleToggleRiskCheckbox = (risk) => {
-    setFormRisks((prev) =>
-      prev.includes(risk) ? prev.filter((r) => r !== risk) : [...prev, risk]
-    );
+    setSavedAreas((prev) => prev.filter((area) => area.id !== id));
+    setRecentAlerts((prev) => prev.filter((a) => a.areaName !== name));
+    showToast(`Removed "${name}" from saved areas`);
   };
 
   const handleCreateArea = (e) => {
     e.preventDefault();
     if (!formName.trim() || !formAddress.trim()) {
-      showToast("Please provide a name and address for your safety watchzone.");
+      showToast("Please provide a name and address for your saved area.");
       return;
     }
 
-    const newZone = {
-      id: `zone-${Date.now()}`,
-      name: formName,
+    const newArea = {
+      id: `area-${Date.now()}`,
+      name: formName.trim(),
       category: formCategory,
       thana: formThana,
-      address: formAddress,
-      radius: formRadius,
+      address: formAddress.trim(),
       safetyScore: Math.floor(Math.random() * 15) + 82,
-      activeIncidents: 0,
-      recentHazard: "Watchzone activated. Safety monitoring is live.",
+      recentStatus: "Area added. No new safety alerts in the last 24 hours.",
       notificationsEnabled: true,
-      monitoredRisks: formRisks,
     };
 
-    setSavedAreas([newZone, ...savedAreas]);
+    setSavedAreas([newArea, ...savedAreas]);
     setIsAddModalOpen(false);
     setFormName("");
     setFormAddress("");
-    showToast(`Added "${formName}" to your active safety watchzones!`);
+    showToast(`Added "${newArea.name}" to your saved areas!`);
   };
 
   const getCategoryIcon = (cat) => {
@@ -194,13 +209,13 @@ function SavedAreas() {
       <header className="saved-header">
         <div>
           <div className="saved-badge">
-            <Radio size={14} className="pulse-radar-icon" />
-            <span>PERSONAL GEOFENCE MONITOR</span>
+            <Bookmark size={14} />
+            <span>SAVED LOCATIONS & ALERTS</span>
           </div>
-          <h1>Saved Areas & Watchzones</h1>
+          <h1>Saved Areas</h1>
           <p>
-            Monitor high-priority locations in Dhaka for instant alerts and live
-            safety scores.
+            Safety overview and recent incident alerts for your saved locations
+            across Dhaka from the last 2–3 days.
           </p>
         </div>
 
@@ -209,16 +224,24 @@ function SavedAreas() {
           onClick={() => setIsAddModalOpen(true)}
         >
           <Plus size={16} />
-          <span>Add Safety Watchzone</span>
+          <span>Add Saved Location</span>
         </button>
       </header>
 
       {/* SUMMARY BANNER */}
       <div className="saved-summary-card">
         <div className="summary-item">
-          <span className="summary-title">Active Watchzones</span>
+          <span className="summary-title">Saved Places</span>
           <strong>{savedAreas.length} Locations</strong>
-          <small>Monitored 24/7 across Dhaka</small>
+          <small>Monitored for neighborhood alerts</small>
+        </div>
+        <div className="summary-divider"></div>
+        <div className="summary-item">
+          <span className="summary-title">Recent Alerts (Last 72h)</span>
+          <strong style={{ color: recentAlerts.length > 0 ? "#f59e0b" : "#22c55e" }}>
+            {recentAlerts.length} Reported
+          </strong>
+          <small>Incidents near your saved places</small>
         </div>
         <div className="summary-divider"></div>
         <div className="summary-item">
@@ -230,56 +253,125 @@ function SavedAreas() {
             )}
             /100
           </strong>
-          <small>High overall neighborhood security</small>
-        </div>
-        <div className="summary-divider"></div>
-        <div className="summary-item">
-          <span className="summary-title">Nearby Hazards</span>
-          <strong style={{ color: "#f59e0b" }}>
-            {savedAreas.reduce((acc, curr) => acc + curr.activeIncidents, 0)}{" "}
-            Active
-          </strong>
-          <small>Verified in your selected zones</small>
+          <small>Overall neighborhood security</small>
         </div>
       </div>
 
-      {/* SAVED WATCHZONES GRID */}
-      <section className="watchzones-section">
+      {/* RECENT ALERTS IN SAVED AREAS (LAST 2-3 DAYS) */}
+      <section className="saved-alerts-section">
         <div className="section-title-row">
-          <h2>Monitored Safety Zones</h2>
+          <div>
+            <h2>Recent Alerts in Saved Areas (Last 2–3 Days)</h2>
+            <p>
+              Incidents, road hazards, and community notices reported around your
+              saved locations.
+            </p>
+          </div>
+          <span className="alert-count-pill">
+            {recentAlerts.length} Recent Alerts
+          </span>
+        </div>
+
+        {recentAlerts.length === 0 ? (
+          <div className="alerts-empty-safe-card">
+            <ShieldCheck size={20} className="safe-icon" />
+            <span>
+              All your saved areas are clear. No incidents reported in the last 72 hours.
+            </span>
+          </div>
+        ) : (
+          <div className="saved-alerts-grid">
+            {recentAlerts.map((alert) => (
+              <div
+                className={`saved-alert-card ${alert.severity}`}
+                key={alert.id}
+              >
+                <div className="saved-alert-top">
+                  <div className="alert-badge-group">
+                    <span className="alert-cat-tag">{alert.category}</span>
+                    <span className="alert-location-tag">
+                      <MapPin size={12} />
+                      {alert.areaName} ({alert.thana})
+                    </span>
+                  </div>
+
+                  <div className="alert-time-tag">
+                    <Clock size={12} />
+                    <span>{alert.timeTag}</span>
+                  </div>
+                </div>
+
+                <div className="saved-alert-body">
+                  <h3>{alert.title}</h3>
+                  <p>{alert.description}</p>
+                </div>
+
+                <div className="saved-alert-footer">
+                  <div className="alert-status-indicator">
+                    {alert.severity === "resolved" ? (
+                      <span className="status-resolved">
+                        <ShieldCheck size={13} />
+                        Resolved
+                      </span>
+                    ) : (
+                      <span className="status-caution">
+                        <AlertTriangle size={13} />
+                        Recent Notice
+                      </span>
+                    )}
+                  </div>
+
+                  <Link to="/map" className="btn-alert-map">
+                    <Navigation size={13} />
+                    <span>View on Live Map</span>
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* SAVED LOCATIONS GRID */}
+      <section className="saved-locations-section">
+        <div className="section-title-row">
+          <div>
+            <h2>Your Saved Locations</h2>
+            <p>Manage your home, workplace, and regular destinations.</p>
+          </div>
           <span className="count-pill">{savedAreas.length} Saved</span>
         </div>
 
-        <div className="watchzones-grid">
-          {savedAreas.map((zone) => {
-            const scoreColor = getScoreColor(zone.safetyScore);
+        <div className="saved-locations-grid">
+          {savedAreas.map((area) => {
+            const scoreColor = getScoreColor(area.safetyScore);
             return (
-              <div className="watchzone-card" key={zone.id}>
-                <div className="watchzone-top">
-                  <div className={`zone-cat-icon ${zone.category}`}>
-                    {getCategoryIcon(zone.category)}
+              <div className="saved-location-card" key={area.id}>
+                <div className="location-card-top">
+                  <div className={`location-cat-icon ${area.category}`}>
+                    {getCategoryIcon(area.category)}
                   </div>
 
-                  <div className="zone-meta">
-                    <h3>{zone.name}</h3>
-                    <span className="zone-thana-badge">
+                  <div className="location-meta">
+                    <h3>{area.name}</h3>
+                    <span className="location-thana-badge">
                       <MapPin size={12} />
-                      {zone.thana} · {zone.radius} radius
+                      {area.thana}
                     </span>
                   </div>
 
                   <button
                     className={`btn-notify-toggle ${
-                      zone.notificationsEnabled ? "active" : ""
+                      area.notificationsEnabled ? "active" : ""
                     }`}
-                    onClick={() => toggleNotification(zone.id)}
+                    onClick={() => toggleNotification(area.id)}
                     title={
-                      zone.notificationsEnabled
+                      area.notificationsEnabled
                         ? "Mute Alerts"
                         : "Enable Alerts"
                     }
                   >
-                    {zone.notificationsEnabled ? (
+                    {area.notificationsEnabled ? (
                       <Bell size={15} />
                     ) : (
                       <BellOff size={15} />
@@ -287,8 +379,8 @@ function SavedAreas() {
                   </button>
                 </div>
 
-                <div className="zone-address">
-                  <span>{zone.address}</span>
+                <div className="location-address">
+                  <span>{area.address}</span>
                 </div>
 
                 {/* SAFETY SCORE BAR */}
@@ -296,14 +388,14 @@ function SavedAreas() {
                   <div className="score-header">
                     <span>Neighborhood Safety Index</span>
                     <strong style={{ color: scoreColor }}>
-                      {zone.safetyScore}/100
+                      {area.safetyScore}/100
                     </strong>
                   </div>
                   <div className="score-track">
                     <div
                       className="score-fill"
                       style={{
-                        width: `${zone.safetyScore}%`,
+                        width: `${area.safetyScore}%`,
                         background: scoreColor,
                       }}
                     ></div>
@@ -311,34 +403,21 @@ function SavedAreas() {
                 </div>
 
                 {/* RECENT STATUS */}
-                <div className="zone-hazard-note">
-                  {zone.activeIncidents > 0 ? (
-                    <AlertTriangle size={15} className="hazard-warn-icon" />
-                  ) : (
-                    <ShieldCheck size={15} className="hazard-safe-icon" />
-                  )}
-                  <p>{zone.recentHazard}</p>
+                <div className="location-status-note">
+                  <ShieldCheck size={15} className="hazard-safe-icon" />
+                  <p>{area.recentStatus}</p>
                 </div>
 
-                {/* MONITORED RISKS TAGS */}
-                <div className="zone-risks-chips">
-                  {zone.monitoredRisks.map((risk) => (
-                    <span key={risk} className="risk-chip">
-                      {risk}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="zone-card-actions">
-                  <Link to="/map" className="btn-zone-map">
+                <div className="location-card-actions">
+                  <Link to="/map" className="btn-location-map">
                     <Navigation size={13} />
-                    <span>View on Live Map</span>
+                    <span>View on Map</span>
                   </Link>
 
                   <button
-                    className="btn-zone-delete"
-                    onClick={() => handleDeleteArea(zone.id, zone.name)}
-                    title="Delete Watchzone"
+                    className="btn-location-delete"
+                    onClick={() => handleDeleteArea(area.id, area.name)}
+                    title="Delete Saved Location"
                   >
                     <Trash2 size={15} />
                   </button>
@@ -349,14 +428,14 @@ function SavedAreas() {
         </div>
       </section>
 
-      {/* ADD WATCHZONE MODAL */}
+      {/* ADD SAVED LOCATION MODAL */}
       {isAddModalOpen && (
         <div className="modal-overlay">
           <div className="modal-dialog">
             <div className="modal-header">
               <div className="modal-title-group">
                 <Bookmark size={20} />
-                <h3>Add New Dhaka Watchzone</h3>
+                <h3>Add New Saved Location</h3>
               </div>
               <button
                 className="modal-close-btn"
@@ -368,10 +447,10 @@ function SavedAreas() {
 
             <form onSubmit={handleCreateArea} className="modal-form">
               <div className="form-group">
-                <label>Watchzone Label</label>
+                <label>Location Name / Label</label>
                 <input
                   type="text"
-                  placeholder="e.g. My Apartment, Coaching Center, Sister's College"
+                  placeholder="e.g. Home, Office, Sister's College, Gym"
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   required
@@ -387,7 +466,7 @@ function SavedAreas() {
                   >
                     <option value="residential">Residential / Home</option>
                     <option value="work">Workplace / Office</option>
-                    <option value="campus">University / School</option>
+                    <option value="campus">University / Campus</option>
                     <option value="family">Family & Relatives</option>
                   </select>
                 </div>
@@ -408,52 +487,14 @@ function SavedAreas() {
               </div>
 
               <div className="form-group">
-                <label>Specific Landmark / Street Address</label>
+                <label>Street Address / Area Landmark</label>
                 <input
                   type="text"
-                  placeholder="e.g. House 14, Road 27, Block A"
+                  placeholder="e.g. House 14, Road 27, Dhanmondi"
                   value={formAddress}
                   onChange={(e) => setFormAddress(e.target.value)}
                   required
                 />
-              </div>
-
-              <div className="form-group">
-                <label>Geofence Alert Radius</label>
-                <div className="radius-selector-tabs">
-                  {["500 m", "1 km", "2 km", "5 km"].map((r) => (
-                    <button
-                      type="button"
-                      key={r}
-                      className={formRadius === r ? "active" : ""}
-                      onClick={() => setFormRadius(r)}
-                    >
-                      {r}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Notify me about:</label>
-                <div className="checkboxes-grid">
-                  {[
-                    "Crime & Snatching",
-                    "Waterlogging",
-                    "Night Harassment",
-                    "Fire Hazards",
-                    "Traffic Gridlock",
-                  ].map((risk) => (
-                    <label key={risk} className="checkbox-label">
-                      <input
-                        type="checkbox"
-                        checked={formRisks.includes(risk)}
-                        onChange={() => handleToggleRiskCheckbox(risk)}
-                      />
-                      <span>{risk}</span>
-                    </label>
-                  ))}
-                </div>
               </div>
 
               <div className="modal-actions">
@@ -465,7 +506,7 @@ function SavedAreas() {
                   Cancel
                 </button>
                 <button type="submit" className="btn-modal-submit">
-                  Save Watchzone
+                  Save Location
                 </button>
               </div>
             </form>
