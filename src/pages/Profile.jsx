@@ -25,7 +25,7 @@ const initialUser = {
   fullName: "Fahim M.",
   email: "fahim@prohori.org",
   phone: "+880 1711-234567",
-  primaryThana: "Dhanmondi Thana",
+  primaryThana: "Dhanmondi",
   joinedDate: "January 2025",
   role: "Verified Citizen Sentinel",
   reputationLevel: "Level 4 Sentinel",
@@ -367,13 +367,56 @@ function Profile() {
                   value={editThana}
                   onChange={(e) => setEditThana(e.target.value)}
                 >
-                  <option value="Dhanmondi Thana">Dhanmondi Thana</option>
-                  <option value="Gulshan Thana">Gulshan Thana</option>
-                  <option value="Banani Thana">Banani Thana</option>
-                  <option value="Mirpur Model Thana">Mirpur Model Thana</option>
-                  <option value="Uttara East Thana">Uttara East Thana</option>
-                  <option value="Mohammadpur Thana">Mohammadpur Thana</option>
-                  <option value="Shahbagh Thana">Shahbagh Thana</option>
+                  <option value="Adabor">Adabor</option>
+                  <option value="Airport / Bimanbandar">Airport / Bimanbandar</option>
+                  <option value="Badda">Badda</option>
+                  <option value="Banani">Banani</option>
+                  <option value="Bangshal">Bangshal</option>
+                  <option value="Bhashantek">Bhashantek</option>
+                  <option value="Cantonment">Cantonment</option>
+                  <option value="Chalkbazar">Chalkbazar</option>
+                  <option value="Dakshinkhan">Dakshinkhan</option>
+                  <option value="Darus-Salam">Darus-Salam</option>
+                  <option value="Demra">Demra</option>
+                  <option value="Dhanmondi">Dhanmondi</option>
+                  <option value="Gandaria">Gandaria</option>
+                  <option value="Gulshan">Gulshan</option>
+                  <option value="Hatirjheel">Hatirjheel</option>
+                  <option value="Hazaribagh">Hazaribagh</option>
+                  <option value="Jatrabari">Jatrabari</option>
+                  <option value="Kadamtoli">Kadamtoli</option>
+                  <option value="Kafrul">Kafrul</option>
+                  <option value="Kalabagan">Kalabagan</option>
+                  <option value="Kamrangirchar">Kamrangirchar</option>
+                  <option value="Khilgaon">Khilgaon</option>
+                  <option value="Khilkhet">Khilkhet</option>
+                  <option value="Kotwali">Kotwali</option>
+                  <option value="Lalbagh">Lalbagh</option>
+                  <option value="Mirpur Model">Mirpur Model</option>
+                  <option value="Mohammadpur">Mohammadpur</option>
+                  <option value="Motijheel">Motijheel</option>
+                  <option value="Mugda">Mugda</option>
+                  <option value="New Market">New Market</option>
+                  <option value="Pallabi">Pallabi</option>
+                  <option value="Paltan Model">Paltan Model</option>
+                  <option value="Ramna Model">Ramna Model</option>
+                  <option value="Rampura">Rampura</option>
+                  <option value="Rupnagar">Rupnagar</option>
+                  <option value="Sabujbag">Sabujbag</option>
+                  <option value="Shah Ali">Shah Ali</option>
+                  <option value="Shahbag">Shahbag</option>
+                  <option value="Shahjahanpur">Shahjahanpur</option>
+                  <option value="Sher-e-Bangla Nagar">Sher-e-Bangla Nagar</option>
+                  <option value="Shyampur">Shyampur</option>
+                  <option value="Sutrapur">Sutrapur</option>
+                  <option value="Tejgaon">Tejgaon</option>
+                  <option value="Tejgaon Industrial Area">Tejgaon Industrial Area</option>
+                  <option value="Turag">Turag</option>
+                  <option value="Uttarkhan">Uttarkhan</option>
+                  <option value="Uttara East">Uttara East</option>
+                  <option value="Uttara West">Uttara West</option>
+                  <option value="Vatara">Vatara</option>
+                  <option value="Wari">Wari</option>
                 </select>
               </div>
               <div className="form-group">

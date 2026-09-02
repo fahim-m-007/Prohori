@@ -201,10 +201,18 @@
   flex-shrink: 0;
 }
 
-.saved-alerts-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.saved-alerts-grid.horizontal-scroll {
+  display: flex;
   gap: 18px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  scroll-behavior: smooth;
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.saved-alerts-grid.horizontal-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 .saved-alert-card {
@@ -217,6 +225,7 @@
   gap: 12px;
   box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;
+  flex: 0 0 320px;
 }
 
 .saved-alert-card:hover {
@@ -224,7 +233,7 @@
   box-shadow: var(--shadow-md);
 }
 
-.saved-alert-card.warning {
+.saved-alert-card.high {
   border-left: 4px solid var(--danger);
 }
 
@@ -287,7 +296,7 @@
 }
 
 .saved-alert-body p {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-secondary);
   line-height: 1.5;
 }
@@ -691,9 +700,7 @@
 
 /* RESPONSIVE */
 @media (max-width: 1000px) {
-  .saved-alerts-grid {
-    grid-template-columns: 1fr;
-  }
+  /* No special grid changes needed for horizontal scroll */
 }
 
 @media (max-width: 900px) {

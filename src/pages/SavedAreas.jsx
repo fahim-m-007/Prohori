@@ -2,8 +2,6 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   AlertTriangle,
-  Bell,
-  BellOff,
   Bookmark,
   Building2,
   Clock,
@@ -22,16 +20,56 @@ import { useReports } from "../context/ReportsContext";
 import { useSavedAreas } from "../context/SavedAreasContext";
 
 const thanaList = [
-  "Dhanmondi",
-  "Gulshan",
-  "Banani",
-  "Mirpur",
-  "Uttara",
-  "Mohammadpur",
-  "Shahbagh",
-  "Motijheel",
+  "Adabor",
+  "Airport / Bimanbandar",
   "Badda",
-  "Old Dhaka",
+  "Banani",
+  "Bangshal",
+  "Bhashantek",
+  "Cantonment",
+  "Chalkbazar",
+  "Dakshinkhan",
+  "Darus-Salam",
+  "Demra",
+  "Dhanmondi",
+  "Gandaria",
+  "Gulshan",
+  "Hatirjheel",
+  "Hazaribagh",
+  "Jatrabari",
+  "Kadamtoli",
+  "Kafrul",
+  "Kalabagan",
+  "Kamrangirchar",
+  "Khilgaon",
+  "Khilkhet",
+  "Kotwali",
+  "Lalbagh",
+  "Mirpur Model",
+  "Mohammadpur",
+  "Motijheel",
+  "Mugda",
+  "New Market",
+  "Pallabi",
+  "Paltan Model",
+  "Ramna Model",
+  "Rampura",
+  "Rupnagar",
+  "Sabujbag",
+  "Shah Ali",
+  "Shahbag",
+  "Shahjahanpur",
+  "Sher-e-Bangla Nagar",
+  "Shyampur",
+  "Sutrapur",
+  "Tejgaon",
+  "Tejgaon Industrial Area",
+  "Turag",
+  "Uttarkhan",
+  "Uttara East",
+  "Uttara West",
+  "Vatara",
+  "Wari"
 ];
 
 function SavedAreas() {
@@ -46,36 +84,31 @@ function SavedAreas() {
   const [formThana, setFormThana] = useState("Dhanmondi");
   const [formAddress, setFormAddress] = useState("");
 
-  const recentAlerts = useMemo(
-    () => reports
+  const recentAlerts = useMemo(() => {
+    return reports
+      .filter((report) => {
+        // filter out anything older than 3 days
+        const timeStr = report.time || "";
+        const daysMatch = timeStr.match(/(\d+)\s*days?/i);
+        if (daysMatch) {
+          const days = parseInt(daysMatch[1], 10);
+          if (days > 3) return false;
+        }
+        if (timeStr.toLowerCase().includes("week") || timeStr.toLowerCase().includes("month") || timeStr.toLowerCase().includes("year")) {
+           return false;
+        }
+        return true;
+      })
       .map((report) => {
         const area = savedAreas.find(({ thana }) => thana === report.thana);
         return area && { ...report, areaName: area.name, timeTag: report.time };
       })
-      .filter(Boolean),
-    [reports, savedAreas],
-  );
+      .filter(Boolean);
+  }, [reports, savedAreas]);
 
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(""), 3500);
-  };
-
-  const toggleNotification = (id) => {
-    setSavedAreas((prev) =>
-      prev.map((area) => {
-        if (area.id === id) {
-          const next = !area.notificationsEnabled;
-          showToast(
-            next
-              ? `Alerts enabled for ${area.name}`
-              : `Alerts muted for ${area.name}`
-          );
-          return { ...area, notificationsEnabled: next };
-        }
-        return area;
-      })
-    );
   };
 
   const handleDeleteArea = (id, name) => {
@@ -98,7 +131,6 @@ function SavedAreas() {
       address: formAddress.trim(),
       safetyScore: Math.floor(Math.random() * 15) + 82,
       recentStatus: "Area added. No new safety alerts in the last 24 hours.",
-      notificationsEnabled: true,
       position: [23.8103, 90.4125],
     };
 
@@ -148,7 +180,7 @@ function SavedAreas() {
           <h1>Saved Areas</h1>
           <p>
             Safety overview and recent incident alerts for your saved locations
-            across Dhaka from the last 2–3 days.
+            across Dhaka from the last 3 days.
           </p>
         </div>
 
@@ -170,7 +202,7 @@ function SavedAreas() {
         </div>
         <div className="summary-divider"></div>
         <div className="summary-item">
-          <span className="summary-title">Recent Alerts (Last 72h)</span>
+          <span className="summary-title">Recent Alerts (Last 3 Days)</span>
           <strong style={{ color: recentAlerts.length > 0 ? "#f59e0b" : "#22c55e" }}>
             {recentAlerts.length} Reported
           </strong>
@@ -190,11 +222,11 @@ function SavedAreas() {
         </div>
       </div>
 
-      {/* RECENT ALERTS IN SAVED AREAS (LAST 2-3 DAYS) */}
+      {/* RECENT ALERTS IN SAVED AREAS (LAST 3 DAYS) */}
       <section className="saved-alerts-section">
         <div className="section-title-row">
           <div>
-            <h2>Recent Alerts in Saved Areas (Last 2–3 Days)</h2>
+            <h2>Recent Alerts in Saved Areas (Last 3 Days)</h2>
             <p>
               Incidents, road hazards, and community notices reported around your
               saved locations.
@@ -209,11 +241,11 @@ function SavedAreas() {
           <div className="alerts-empty-safe-card">
             <ShieldCheck size={20} className="safe-icon" />
             <span>
-              All your saved areas are clear. No incidents reported in the last 72 hours.
+              All your saved areas are clear. No incidents reported in the last 3 days.
             </span>
           </div>
         ) : (
-          <div className="saved-alerts-grid">
+          <div className="saved-alerts-grid horizontal-scroll">
             {recentAlerts.map((alert) => (
               <div
                 className={`saved-alert-card ${alert.severity}`}
@@ -303,24 +335,6 @@ function SavedAreas() {
                       {area.thana}
                     </span>
                   </div>
-
-                  <button
-                    className={`btn-notify-toggle ${
-                      area.notificationsEnabled ? "active" : ""
-                    }`}
-                    onClick={() => toggleNotification(area.id)}
-                    title={
-                      area.notificationsEnabled
-                        ? "Mute Alerts"
-                        : "Enable Alerts"
-                    }
-                  >
-                    {area.notificationsEnabled ? (
-                      <Bell size={15} />
-                    ) : (
-                      <BellOff size={15} />
-                    )}
-                  </button>
                 </div>
 
                 <div className="location-address">
