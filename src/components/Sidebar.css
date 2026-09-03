@@ -15,17 +15,26 @@
 
   color: white;
 
-  z-index: 100;
+  /* Keep navigation above Leaflet tiles, markers, tooltips, and controls. */
+  z-index: 1200;
 }
 
 /* LOGO */
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  padding: 0 10px;
+}
 
 .sidebar-logo {
   display: flex;
   align-items: center;
   gap: 10px;
 
-  padding: 0 10px;
+  min-width: 0;
 
   font-family: var(--font-heading);
 
@@ -34,7 +43,26 @@
 
   letter-spacing: -0.5px;
 
-  margin-bottom: 30px;
+}
+
+.sidebar-toggle {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.sidebar-toggle:hover {
+  background: var(--blue);
+  transform: scale(1.05);
 }
 
 .sidebar-logo-mark {
@@ -299,13 +327,27 @@
 .sidebar.collapsed {
   width: 72px;
   padding: 20px 10px;
+  overflow: visible;
 }
 
 /* Keep the logo mark visible, hide only the wordmark. */
 .sidebar.collapsed .sidebar-logo {
   justify-content: center;
   padding: 0;
+}
+
+.sidebar.collapsed .sidebar-brand {
+  justify-content: center;
   margin-bottom: 24px;
+  padding: 0;
+}
+
+.sidebar.collapsed .sidebar-toggle {
+  position: absolute;
+  top: 20px;
+  right: -15px;
+  z-index: 1;
+  background: var(--navy);
 }
 
 .sidebar.collapsed .sidebar-logo span,

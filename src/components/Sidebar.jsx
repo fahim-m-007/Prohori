@@ -7,17 +7,30 @@ import {
   UserRound,
   LogOut,
   Plus,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
 
-function Sidebar({ collapsed = false }) {
+function Sidebar({ collapsed = false, onToggle }) {
   return (
     <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
       {/* LOGO */}
-      <Link to="/dashboard" className="sidebar-logo">
-        <div className="sidebar-logo-mark">P</div>
-        <span>PROHORI</span>
-      </Link>
+      <div className="sidebar-brand">
+        <Link to="/dashboard" className="sidebar-logo">
+          <div className="sidebar-logo-mark">P</div>
+          <span>PROHORI</span>
+        </Link>
+        <button
+          type="button"
+          className="sidebar-toggle"
+          onClick={onToggle}
+          aria-label={collapsed ? "Show sidebar" : "Hide sidebar"}
+          title={collapsed ? "Show sidebar" : "Hide sidebar"}
+        >
+          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+        </button>
+      </div>
 
       {/* REPORT BUTTON */}
       <Link to="/report-incident" className="sidebar-report-btn">

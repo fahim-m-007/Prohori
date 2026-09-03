@@ -13,49 +13,8 @@
   margin-left: 72px;
 }
 
-.sidebar-toggle {
-  width: 30px;
-  height: 30px;
-
-  position: fixed;
-  top: 20px;
-  left: 235px;
-  z-index: 110;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 50%;
-
-  color: white;
-  background: var(--navy);
-
-  box-shadow: 0 4px 14px rgba(11, 23, 54, 0.2);
-
-  transition: left 0.25s ease, transform 0.2s ease, background 0.2s ease;
-}
-
-.sidebar-toggle:hover {
-  background: var(--blue);
-  transform: scale(1.05);
-}
-
-.sidebar-collapsed .sidebar-toggle {
-  left: 57px;
-}
-
 @media (max-width: 700px) {
   .dashboard-main {
     margin-left: 0;
-  }
-
-  .sidebar-toggle {
-    left: 14px;
-  }
-
-  .sidebar-collapsed .sidebar-toggle {
-    left: 14px;
   }
 }
