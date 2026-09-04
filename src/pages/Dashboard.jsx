@@ -14,12 +14,16 @@ import {
 import { Link } from "react-router-dom";
 import { useReports } from "../context/ReportsContext";
 import { useSavedAreas } from "../context/SavedAreasContext";
+import { useAuth } from "../context/AuthContext";
 
 import "./Dashboard.css";
 
 function Dashboard() {
   const { reports, setReports } = useReports();
   const { savedAreas } = useSavedAreas();
+  const { user } = useAuth();
+  const displayName = user?.name || "there";
+  const userInitial = displayName.charAt(0).toUpperCase();
 
   const handleVote = (id) => {
     setReports((prev) =>
@@ -38,12 +42,13 @@ function Dashboard() {
 
   // Determine the primary area to show in the header card
   const primaryArea = savedAreas.length > 0 ? savedAreas[0] : null;
-  const displayThana = primaryArea ? primaryArea.thana : "Dhaka City";
+  const accountThana = user?.thana?.trim();
+  const displayThana = accountThana || (primaryArea ? primaryArea.thana : "Dhaka City");
 
-  // Filter reports that belong to any of the user's saved areas
-  const relevantReports = reports.filter((r) =>
-    savedAreas.some((area) => area.thana === r.thana)
-  );
+  // Prefer the thana selected at registration; fall back to demo saved areas.
+  const relevantReports = accountThana
+    ? reports.filter((report) => report.thana === accountThana)
+    : reports.filter((report) => savedAreas.some((area) => area.thana === report.thana));
 
   // If no relevant reports, just show recent global reports
   const displayReports = (relevantReports.length > 0 ? relevantReports : reports).slice(0, 4);
@@ -76,7 +81,7 @@ function Dashboard() {
       <header className="dashboard-header">
         <div>
           <span className="dashboard-label">COMMUNITY SAFETY</span>
-          <h1>Good morning, Fahim 👋</h1>
+          <h1>Good morning, {displayName} 👋</h1>
           <p>See what&apos;s happening in your selected areas.</p>
         </div>
 
@@ -86,7 +91,7 @@ function Dashboard() {
             className="header-avatar"
             aria-label="Open profile"
           >
-            F
+            {userInitial}
           </Link>
         </div>
       </header>
@@ -101,9 +106,11 @@ function Dashboard() {
             </span>
             <h2>{displayThana}</h2>
             <p>
-              {primaryArea 
-                ? `Safety overview for your saved location: ${primaryArea.name}`
-                : "Add a saved area to get personalized neighborhood updates."}
+              {accountThana
+                ? "Safety overview for the thana selected in your account."
+                : primaryArea
+                  ? `Safety overview for your saved location: ${primaryArea.name}`
+                  : "Add a saved area to get personalized neighborhood updates."}
             </p>
           </div>
 

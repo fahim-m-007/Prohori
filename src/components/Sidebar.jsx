@@ -10,9 +10,18 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Sidebar({ collapsed = false, onToggle }) {
+  const { logout } = useAuth();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const displayName = user?.name || "Member";
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login", { replace: true });
+  };
   return (
     <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
       {/* LOGO */}
@@ -104,17 +113,17 @@ function Sidebar({ collapsed = false, onToggle }) {
 
       {/* BOTTOM */}
       <div className="sidebar-bottom">
-        <Link to="/login" className="sidebar-link logout-btn">
+        <button type="button" className="sidebar-link logout-btn" onClick={handleLogout}>
           <LogOut size={19} />
           <span>Log out</span>
-        </Link>
+        </button>
 
         {/* USER */}
         <Link to="/profile" className="sidebar-user">
-          <div className="user-avatar">F</div>
+          <div className="user-avatar">{displayName.charAt(0).toUpperCase()}</div>
 
           <div className="user-info">
-            <strong>Fahim</strong>
+            <strong>{displayName}</strong>
             <span>Verified Member</span>
           </div>
 

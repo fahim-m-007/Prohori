@@ -14,6 +14,8 @@ import Profile from "./pages/Profile";
 import DashboardLayout from "./layouts/DashboardLayout";
 import { ReportsProvider } from "./context/ReportsContext";
 import { SavedAreasProvider } from "./context/SavedAreasContext";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import "./App.css";
 
@@ -22,6 +24,7 @@ function App() {
     <ReportsProvider>
     <SavedAreasProvider>
     <BrowserRouter>
+    <AuthProvider>
       <Routes>
 
         {/* ================================
@@ -41,6 +44,7 @@ function App() {
             APPLICATION
         ================================= */}
 
+        <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
 
           {/* Dashboard */}
@@ -77,8 +81,10 @@ function App() {
           />
 
         </Route>
+        </Route>
 
       </Routes>
+    </AuthProvider>
     </BrowserRouter>
     </SavedAreasProvider>
     </ReportsProvider>

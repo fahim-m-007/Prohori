@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 import "./Signup.css";
 
@@ -13,6 +14,11 @@ function Signup() {
   
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const { register } = useAuth();
 
   // Thana Dropdown states
   const [thanaSearch, setThanaSearch] = useState("");
@@ -87,6 +93,16 @@ function Signup() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (password !== confirmPassword) return setError("Passwords do not match.");
+    setError("");
+    setSubmitting(true);
+    try { await register({ name, email, password, thana: thanaSearch }); navigate("/dashboard", { replace: true }); }
+    catch (requestError) { setError(requestError.response?.data?.message || "Unable to create your account. Try again."); }
+    finally { setSubmitting(false); }
+  };
+
   return (
     <div className="auth-page">
 
@@ -106,10 +122,7 @@ function Signup() {
         </div>
 
         <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            navigate("/dashboard");
-          }}
+          onSubmit={handleSubmit}
         >
 
           <div className="auth-field">
@@ -118,6 +131,9 @@ function Signup() {
               id="name"
               type="text"
               placeholder="Enter your full name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              required
             />
           </div>
 
@@ -127,6 +143,9 @@ function Signup() {
               id="email"
               type="email"
               placeholder="Enter your email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
             />
           </div>
 
@@ -170,7 +189,9 @@ function Signup() {
                 className="password-input"
                 type={showPassword ? "text" : "password"}
                 placeholder="Create a password"
+                value={password}
                 onChange={(e) => setPassword(e.target.value || "")}
+                required
               />
               {password && password.length > 0 && (
                 <button 
@@ -192,7 +213,9 @@ function Signup() {
                 className="password-input"
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm your password"
+                value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value || "")}
+                required
               />
               {confirmPassword && confirmPassword.length > 0 && (
                 <button 
@@ -206,8 +229,9 @@ function Signup() {
             </div>
           </div>
 
-          <button type="submit" className="auth-button">
-            Create account
+          {error && <p className="auth-error" role="alert">{error}</p>}
+          <button type="submit" className="auth-button" disabled={submitting}>
+            {submitting ? "Creating account..." : "Create account"}
           </button>
 
         </form>

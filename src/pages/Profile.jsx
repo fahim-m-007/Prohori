@@ -19,6 +19,7 @@ import {
   Zap,
 } from "lucide-react";
 import "./Profile.css";
+import { useAuth } from "../context/AuthContext";
 
 const initialUser = {
   name: "Fahim",
@@ -105,7 +106,14 @@ const initialMyReports = [
 ];
 
 function Profile() {
-  const [user, setUser] = useState(initialUser);
+  const { user: authUser } = useAuth();
+  const [user, setUser] = useState(() => ({
+    ...initialUser,
+    name: authUser?.name || initialUser.name,
+    fullName: authUser?.name || initialUser.fullName,
+    email: authUser?.email || initialUser.email,
+    primaryThana: authUser?.thana || initialUser.primaryThana,
+  }));
   const [myReports] = useState(initialMyReports);
   const [toastMessage, setToastMessage] = useState("");
 
