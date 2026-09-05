@@ -16,6 +16,9 @@ function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (password.length < 8) {
+      return setError("Password must be at least 8 characters long.");
+    }
     setError("");
     setSubmitting(true);
     try { await login({ email, password }); navigate("/dashboard", { replace: true }); }
@@ -71,9 +74,10 @@ function Login() {
                 id="password"
                 className="password-input"
                 type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
+                placeholder="Enter your password (min. 8 characters)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value || "")}
+                minLength={8}
                 required
               />
               {password && password.length > 0 && (
@@ -86,6 +90,7 @@ function Login() {
                 </button>
               )}
             </div>
+            <span className="auth-hint">Must be at least 8 characters</span>
           </div>
 
           {error && <p className="auth-error" role="alert">{error}</p>}

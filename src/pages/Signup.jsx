@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ChevronDown } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
+import "./Login.css";
 import "./Signup.css";
 
 function Signup() {
@@ -23,7 +24,9 @@ function Signup() {
   // Thana Dropdown states
   const [thanaSearch, setThanaSearch] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const dropdownRef = useRef(null);
+  const listRef = useRef(null);
 
   const thanaList = [
     "Adabor",
@@ -87,14 +90,69 @@ function Signup() {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
+        setHighlightedIndex(-1);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Scroll highlighted item into view
+  useEffect(() => {
+    if (isDropdownOpen && listRef.current && highlightedIndex >= 0) {
+      const items = listRef.current.querySelectorAll(".custom-dropdown-item");
+      if (items[highlightedIndex]) {
+        items[highlightedIndex].scrollIntoView({ block: "nearest" });
+      }
+    }
+  }, [highlightedIndex, isDropdownOpen]);
+
+  const handleSelectThana = (thana) => {
+    setThanaSearch(thana);
+    setIsDropdownOpen(false);
+    setHighlightedIndex(-1);
+  };
+
+  const handleThanaKeyDown = (e) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (!isDropdownOpen) {
+        setIsDropdownOpen(true);
+        setHighlightedIndex(0);
+      } else if (filteredThanas.length > 0) {
+        setHighlightedIndex((prev) => 
+          prev < filteredThanas.length - 1 ? prev + 1 : 0
+        );
+      }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (!isDropdownOpen) {
+        setIsDropdownOpen(true);
+        setHighlightedIndex(filteredThanas.length - 1);
+      } else if (filteredThanas.length > 0) {
+        setHighlightedIndex((prev) => 
+          prev > 0 ? prev - 1 : filteredThanas.length - 1
+        );
+      }
+    } else if (e.key === "Enter") {
+      if (isDropdownOpen && filteredThanas.length > 0) {
+        e.preventDefault();
+        const selected = (highlightedIndex >= 0 && highlightedIndex < filteredThanas.length)
+          ? filteredThanas[highlightedIndex]
+          : filteredThanas[0];
+        handleSelectThana(selected);
+      } else if (isDropdownOpen && filteredThanas.length === 0) {
+        e.preventDefault();
+      }
+    } else if (e.key === "Escape") {
+      setIsDropdownOpen(false);
+      setHighlightedIndex(-1);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (password.length < 8) return setError("Password must be at least 8 characters long.");
     if (password !== confirmPassword) return setError("Passwords do not match.");
     setError("");
     setSubmitting(true);
@@ -151,32 +209,61 @@ function Signup() {
 
           <div className="auth-field" ref={dropdownRef} style={{ position: "relative" }}>
             <label htmlFor="thana">Select your Thana</label>
-            <input 
-              id="thana" 
-              type="text"
-              autoComplete="off"
-              placeholder="Type to search Thana" 
-              value={thanaSearch}
-              onChange={(e) => {
-                setThanaSearch(e.target.value);
-                setIsDropdownOpen(true);
-              }}
-              onFocus={() => setIsDropdownOpen(true)}
-            />
-            {isDropdownOpen && thanaSearch.length > 0 && filteredThanas.length > 0 && (
-              <div className="custom-dropdown-menu">
-                {filteredThanas.map(thana => (
-                  <div 
-                    key={thana} 
-                    className="custom-dropdown-item"
-                    onClick={() => {
-                      setThanaSearch(thana);
-                      setIsDropdownOpen(false);
-                    }}
-                  >
-                    {thana}
-                  </div>
-                ))}
+            <div className="dropdown-input-wrapper">
+              <input 
+                id="thana" 
+                type="text"
+                autoComplete="off"
+                placeholder="Select or search Thana" 
+                value={thanaSearch}
+                onChange={(e) => {
+                  setThanaSearch(e.target.value);
+                  setIsDropdownOpen(true);
+                  setHighlightedIndex(0);
+                }}
+                onFocus={() => {
+                  setIsDropdownOpen(true);
+                  if (highlightedIndex === -1 && filteredThanas.length > 0) {
+                    setHighlightedIndex(0);
+                  }
+                }}
+                onClick={() => setIsDropdownOpen(true)}
+                onKeyDown={handleThanaKeyDown}
+              />
+              <button
+                type="button"
+                className="dropdown-toggle-button"
+                onClick={() => {
+                  setIsDropdownOpen((prev) => {
+                    const nextState = !prev;
+                    if (nextState) setHighlightedIndex(0);
+                    return nextState;
+                  });
+                }}
+                tabIndex={-1}
+                aria-label="Toggle thana dropdown"
+              >
+                <ChevronDown size={16} className={`dropdown-chevron ${isDropdownOpen ? "open" : ""}`} />
+              </button>
+            </div>
+            {isDropdownOpen && (
+              <div className="custom-dropdown-menu" ref={listRef} role="listbox">
+                {filteredThanas.length > 0 ? (
+                  filteredThanas.map((thana, index) => (
+                    <div 
+                      key={thana} 
+                      role="option"
+                      aria-selected={highlightedIndex === index}
+                      className={`custom-dropdown-item ${highlightedIndex === index ? "highlighted" : ""}`}
+                      onMouseEnter={() => setHighlightedIndex(index)}
+                      onClick={() => handleSelectThana(thana)}
+                    >
+                      {thana}
+                    </div>
+                  ))
+                ) : (
+                  <div className="custom-dropdown-empty">No thanas found</div>
+                )}
               </div>
             )}
           </div>
@@ -188,9 +275,10 @@ function Signup() {
                 id="password"
                 className="password-input"
                 type={showPassword ? "text" : "password"}
-                placeholder="Create a password"
+                placeholder="Create a password (min. 8 characters)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value || "")}
+                minLength={8}
                 required
               />
               {password && password.length > 0 && (
@@ -203,6 +291,7 @@ function Signup() {
                 </button>
               )}
             </div>
+            <span className="auth-hint">Must be at least 8 characters</span>
           </div>
 
           <div className="auth-field">
@@ -212,9 +301,10 @@ function Signup() {
                 id="confirm-password"
                 className="password-input"
                 type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirm your password"
+                placeholder="Confirm your password (min. 8 characters)"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value || "")}
+                minLength={8}
                 required
               />
               {confirmPassword && confirmPassword.length > 0 && (

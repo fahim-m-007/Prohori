@@ -259,34 +259,104 @@
 .auth-field input.password-input {
   padding-right: 40px;
 }
-/* CUSTOM DROPDOWN */
+
+/* AUTH HINT & ERROR */
+
+.auth-hint {
+  display: block;
+  margin-top: 5px;
+  color: var(--text-secondary);
+  font-size: 9px;
+}
+
+.auth-error {
+  margin-top: 8px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* CUSTOM DROPDOWN & INPUT WRAPPER */
+
+.dropdown-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-input-wrapper input {
+  padding-right: 36px;
+}
+
+.dropdown-toggle-button {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #aeb7c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.dropdown-toggle-button:hover {
+  color: var(--blue);
+}
+
+.dropdown-chevron {
+  transition: transform 0.2s ease;
+}
+
+.dropdown-chevron.open {
+  transform: rotate(180deg);
+}
 
 .custom-dropdown-menu {
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
-  z-index: 10;
+  z-index: 50;
   margin-top: 4px;
   background: white;
   border: 1px solid #d9dfeb;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
   max-height: 200px;
   overflow-y: auto;
 }
 
 .custom-dropdown-item {
-  padding: 10px 12px;
+  padding: 9px 12px;
   font-family: var(--font-body);
   font-size: 10px;
   color: var(--navy);
   cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
-.custom-dropdown-item:hover {
-  background: #f7f9fc;
+.custom-dropdown-item:hover,
+.custom-dropdown-item.highlighted {
+  background: #eff6ff;
   color: var(--blue);
+  font-weight: 600;
+}
+
+.custom-dropdown-empty {
+  padding: 12px;
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: #aeb7c7;
+  text-align: center;
 }
 
 .text-toggle {
