@@ -30,7 +30,7 @@ const initialUser = {
   joinedDate: "January 2025",
   role: "Verified Citizen Sentinel",
   reputationLevel: "Level 4 Sentinel",
-  bio: "Active commuter in Dhanmondi & Gulshan. Committed to making Dhaka streets safer and well-monitored for everyone.",
+  bio: "Active commuter in Dhanmondi. Committed to making Dhaka streets safer and well-monitored for everyone.",
 };
 
 const initialBadges = [
@@ -107,13 +107,26 @@ const initialMyReports = [
 
 function Profile() {
   const { user: authUser } = useAuth();
-  const [user, setUser] = useState(() => ({
+  const [customProfile, setCustomProfile] = useState(null);
+
+  const primaryThana = customProfile?.primaryThana || authUser?.thana || initialUser.primaryThana;
+  const name = customProfile?.name || authUser?.name || initialUser.name;
+  const fullName = customProfile?.fullName || authUser?.name || initialUser.fullName;
+  const email = customProfile?.email || authUser?.email || initialUser.email;
+  const bio = customProfile?.bio || authUser?.bio || (primaryThana
+    ? `Active commuter in ${primaryThana}. Committed to making Dhaka streets safer and well-monitored for everyone.`
+    : initialUser.bio);
+
+  const user = {
     ...initialUser,
-    name: authUser?.name || initialUser.name,
-    fullName: authUser?.name || initialUser.fullName,
-    email: authUser?.email || initialUser.email,
-    primaryThana: authUser?.thana || initialUser.primaryThana,
-  }));
+    name,
+    fullName,
+    email,
+    primaryThana,
+    bio,
+    phone: customProfile?.phone || initialUser.phone,
+  };
+
   const [myReports] = useState(initialMyReports);
   const [toastMessage, setToastMessage] = useState("");
 
@@ -130,10 +143,18 @@ function Profile() {
     setTimeout(() => setToastMessage(""), 3500);
   };
 
+  const handleOpenEdit = () => {
+    setEditName(user.name);
+    setEditFullName(user.fullName);
+    setEditPhone(user.phone);
+    setEditBio(user.bio);
+    setEditThana(user.primaryThana);
+    setIsEditProfileOpen(true);
+  };
+
   const handleSaveProfile = (e) => {
     e.preventDefault();
-    setUser({
-      ...user,
+    setCustomProfile({
       name: editName,
       fullName: editFullName,
       phone: editPhone,
@@ -197,7 +218,7 @@ function Profile() {
 
           <button
             className="btn-edit-profile"
-            onClick={() => setIsEditProfileOpen(true)}
+            onClick={handleOpenEdit}
           >
             <Edit3 size={15} />
             <span>Edit Profile</span>

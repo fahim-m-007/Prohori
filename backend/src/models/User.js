@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   password: { type: String, required: true, select: false, minlength: 8 },
   thana: { type: String, trim: true, maxlength: 100 },
+  bio: { type: String, trim: true, maxlength: 500, default: "" },
   role: { type: String, enum: ["user", "admin"], default: "user" },
 }, { timestamps: true });
 
