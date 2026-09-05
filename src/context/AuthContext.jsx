@@ -33,7 +33,20 @@ export function AuthProvider({ children }) {
     try { await api.post("/auth/logout"); } finally { setAccessToken(null); setUser(null); }
   };
 
-  return <AuthContext.Provider value={{ user, loading, login, register, logout }}>{children}</AuthContext.Provider>;
+  const updateProfile = async (profileData) => {
+    const { data } = await api.patch("/auth/profile", profileData);
+    if (data?.data?.user) {
+      setUser(data.data.user);
+    }
+    return data?.data?.user;
+  };
+
+  const changePassword = async ({ currentPassword, newPassword }) => {
+    const { data } = await api.patch("/auth/change-password", { currentPassword, newPassword });
+    return data;
+  };
+
+  return <AuthContext.Provider value={{ user, loading, login, register, logout, updateProfile, changePassword }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

@@ -12,6 +12,7 @@ const serializeUser = (user) => {
     id: user.id,
     name: user.name,
     email: user.email,
+    phone: user.phone || "",
     thana: user.thana,
     bio: user.bio || defaultBio,
     role: user.role,
@@ -67,4 +68,82 @@ async function refresh(req, res, next) {
 function logout(_req, res) { res.clearCookie("refreshToken", refreshCookieOptions()); return res.json({ success: true, data: null }); }
 function me(req, res) { return res.json({ success: true, data: { user: serializeUser(req.user) } }); }
 
-module.exports = { register, login, refresh, logout, me };
+async function updateProfile(req, res, next) {
+  try {
+    const { name, phone, thana, bio } = req.body;
+    if (name !== undefined && !name.trim()) {
+      return res.status(400).json({ success: false, message: "Name cannot be empty." });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
+    if (name !== undefined) user.name = name.trim();
+    if (phone !== undefined) user.phone = phone.trim();
+    if (thana !== undefined) user.thana = thana.trim();
+    if (bio !== undefined) user.bio = bio.trim();
+
+    await user.save();
+
+    return res.json({
+      success: true,
+      message: "Profile updated successfully.",
+      data: { user: serializeUser(user) },
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function changePassword(req, res, next) {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Provide both current password and new password.",
+      });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be at least 8 characters long.",
+      });
+    }
+
+    if (currentPassword === newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be different from current password.",
+      });
+    }
+
+    const user = await User.findById(req.user.id).select("+password");
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Current password is incorrect.",
+      });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    return res.json({
+      success: true,
+      message: "Password changed successfully.",
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+module.exports = { register, login, refresh, logout, me, updateProfile, changePassword };

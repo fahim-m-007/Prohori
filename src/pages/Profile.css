@@ -447,3 +447,198 @@
     justify-content: space-between;
   }
 }
+
+/* MODAL STYLES */
+.profile-page .modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 23, 54, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.profile-page .modal-dialog {
+  background: white;
+  border-radius: var(--radius-xl);
+  max-width: 500px;
+  width: 100%;
+  padding: 28px;
+  box-shadow: var(--shadow-lg);
+  animation: modalPop 0.25s ease-out;
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.profile-page .modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.profile-page .modal-tab-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-page .modal-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-page .modal-tab-btn:hover {
+  color: var(--navy);
+  background: #f1f5f9;
+}
+
+.profile-page .modal-tab-btn.active {
+  color: var(--blue);
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.profile-page .modal-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-light);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.profile-page .modal-close-btn:hover {
+  color: var(--navy);
+  background: #f1f5f9;
+}
+
+.profile-page .modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-page .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-page .form-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.profile-page .form-group input,
+.profile-page .form-group select,
+.profile-page .form-group textarea {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.profile-page .form-group input:focus,
+.profile-page .form-group select:focus,
+.profile-page .form-group textarea:focus {
+  border-color: var(--blue);
+}
+
+.profile-page .modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.profile-page .btn-modal-cancel {
+  background: white;
+  border: 1px solid var(--border);
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.profile-page .btn-modal-submit {
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  color: white;
+  border: none;
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.profile-page .btn-modal-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.profile-page .password-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.profile-page .password-input-wrap input {
+  width: 100%;
+  padding-right: 42px;
+}
+
+.profile-page .password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-light);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.2s ease;
+}
+
+.profile-page .password-toggle-btn:hover {
+  color: var(--navy);
+}
+
