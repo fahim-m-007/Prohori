@@ -1,20 +1,37 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState } from "react";
-import api, { setAccessToken } from "../api/client";
+import api, { getToken, setToken, removeToken } from "../api/client";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => Boolean(getToken()));
 
-  const applySession = ({ user: nextUser, accessToken }) => {
-    setAccessToken(accessToken);
-    setUser(nextUser);
+  const applySession = (sessionData) => {
+    const token = sessionData?.token || sessionData?.accessToken;
+    if (token) {
+      setToken(token);
+    }
+    setUser(sessionData?.user || null);
   };
 
   useEffect(() => {
-    api.post("/auth/refresh").then(({ data }) => applySession(data.data)).catch(() => setAccessToken(null)).finally(() => setLoading(false));
+    const token = getToken();
+    if (!token) return;
+
+    api
+      .get("/auth/me")
+      .then(({ data }) => {
+        setUser(data.data.user);
+      })
+      .catch(() => {
+        removeToken();
+        setUser(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   const login = async (credentials) => {
@@ -30,7 +47,14 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    try { await api.post("/auth/logout"); } finally { setAccessToken(null); setUser(null); }
+    try {
+      await api.post("/auth/logout");
+    } catch {
+      // Ignore network errors during logout
+    } finally {
+      removeToken();
+      setUser(null);
+    }
   };
 
   const updateProfile = async (profileData) => {

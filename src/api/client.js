@@ -1,33 +1,43 @@
 import axios from "axios";
 
-let accessToken = null;
-let refreshRequest = null;
+export const getToken = () => localStorage.getItem("token");
 
-export const setAccessToken = (token) => { accessToken = token; };
+export const setToken = (token) => {
+  if (token) {
+    localStorage.setItem("token", token);
+  } else {
+    localStorage.removeItem("token");
+  }
+};
+
+export const removeToken = () => {
+  localStorage.removeItem("token");
+};
+
+// Backward compatibility alias
+export const setAccessToken = setToken;
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
-  withCredentials: true,
 });
 
 api.interceptors.request.use((config) => {
-  if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
+  const token = getToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const request = error.config;
-    const isAuthRequest = request?.url?.startsWith("/auth/");
-    if (error.response?.status !== 401 || request?._retry || isAuthRequest) return Promise.reject(error);
-    request._retry = true;
-    refreshRequest ??= api.post("/auth/refresh").then(({ data }) => data.data.accessToken).finally(() => { refreshRequest = null; });
-    const token = await refreshRequest;
-    setAccessToken(token);
-    request.headers.Authorization = `Bearer ${token}`;
-    return api(request);
+  (error) => {
+    if (error.response?.status === 401) {
+      removeToken();
+    }
+    return Promise.reject(error);
   },
 );
 
 export default api;
+

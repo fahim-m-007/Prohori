@@ -1,6 +1,5 @@
-const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const { generateTokens, refreshCookieOptions } = require("../utils/generateTokens");
+const { generateToken } = require("../utils/generateTokens");
 
 const serializeUser = (user) => {
   const thanaName = user.thana?.trim();
@@ -20,10 +19,21 @@ const serializeUser = (user) => {
 };
 const isEmail = (email) => /^\S+@\S+\.\S+$/.test(email || "");
 
+function clearLegacyCookie(res) {
+  res.clearCookie("refreshToken", { path: "/api/auth" });
+}
+
 function sendSession(res, status, user) {
-  const { accessToken, refreshToken } = generateTokens(user);
-  res.cookie("refreshToken", refreshToken, refreshCookieOptions());
-  return res.status(status).json({ success: true, data: { user: serializeUser(user), accessToken } });
+  clearLegacyCookie(res);
+  const token = generateToken(user);
+  return res.status(status).json({
+    success: true,
+    data: {
+      user: serializeUser(user),
+      token,
+      accessToken: token,
+    },
+  });
 }
 
 async function register(req, res, next) {
@@ -51,21 +61,10 @@ async function login(req, res, next) {
   } catch (error) { return next(error); }
 }
 
-async function refresh(req, res, next) {
-  try {
-    const token = req.cookies.refreshToken;
-    if (!token) return res.status(401).json({ success: false, message: "Session expired. Please log in again." });
-    const payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-    const user = await User.findById(payload.sub);
-    if (!user) return res.status(401).json({ success: false, message: "Session is no longer valid." });
-    return sendSession(res, 200, user);
-  } catch (error) {
-    if (["JsonWebTokenError", "TokenExpiredError"].includes(error.name)) return res.status(401).json({ success: false, message: "Session expired. Please log in again." });
-    return next(error);
-  }
+function logout(_req, res) {
+  clearLegacyCookie(res);
+  return res.json({ success: true, message: "Logged out successfully.", data: null });
 }
-
-function logout(_req, res) { res.clearCookie("refreshToken", refreshCookieOptions()); return res.json({ success: true, data: null }); }
 function me(req, res) { return res.json({ success: true, data: { user: serializeUser(req.user) } }); }
 
 async function updateProfile(req, res, next) {
@@ -146,4 +145,5 @@ async function changePassword(req, res, next) {
   }
 }
 
-module.exports = { register, login, refresh, logout, me, updateProfile, changePassword };
+module.exports = { register, login, logout, me, updateProfile, changePassword };
+

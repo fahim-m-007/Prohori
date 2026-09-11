@@ -1,15 +1,17 @@
 const jwt = require("jsonwebtoken");
 
-function generateTokens(user) {
+function generateToken(user) {
   const payload = { sub: user.id, role: user.role };
-  return {
-    accessToken: jwt.sign(payload, process.env.JWT_ACCESS_SECRET, { expiresIn: "15m" }),
-    refreshToken: jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" }),
-  };
+  return jwt.sign(payload, process.env.JWT_SECRET || process.env.JWT_ACCESS_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || "7d",
+  });
 }
 
-function refreshCookieOptions() {
-  return { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/api/auth", maxAge: 7 * 24 * 60 * 60 * 1000 };
+// Backward compatibility alias
+function generateTokens(user) {
+  const token = generateToken(user);
+  return { token, accessToken: token };
 }
 
-module.exports = { generateTokens, refreshCookieOptions };
+module.exports = { generateToken, generateTokens };
+
