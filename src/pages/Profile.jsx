@@ -184,6 +184,20 @@ function Profile() {
 
   const handleSaveProfile = async (e) => {
     e.preventDefault();
+
+    const hasChanges =
+      editName.trim() !== (user.name || "").trim() ||
+      editFullName.trim() !== (user.fullName || "").trim() ||
+      editPhone.trim() !== (user.phone || "").trim() ||
+      editBio.trim() !== (user.bio || "").trim() ||
+      editThana !== (user.primaryThana || "");
+
+    if (!hasChanges) {
+      showToast("No changes were made.");
+      setIsEditProfileOpen(false);
+      return;
+    }
+
     setIsSavingProfile(true);
     try {
       if (updateProfile) {
@@ -562,7 +576,7 @@ function Profile() {
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>Short Bio</label>
+                  <label>Short Bio (Optional)</label>
                   <textarea
                     rows={3}
                     value={editBio}
