@@ -31,13 +31,11 @@ function App() {
             PUBLIC WEBSITE
         ================================= */}
 
-        <Route path="/" element={<Landing />} />
-
-        {/* Login */}
-        <Route path="/login" element={<Login />} />
-
-        {/* Sign Up */}
-        <Route path="/signup" element={<Signup />} />
+        <Route element={<ProtectedRoute guestOnly />}>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+        </Route>
 
 
         {/* ================================
