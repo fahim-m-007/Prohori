@@ -321,10 +321,55 @@ async function addComment(req, res, next) {
   }
 }
 
+async function flagReport(req, res, next) {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ success: false, message: "Report not found." });
+    }
+
+    const report = await Report.findById(id);
+    if (!report) {
+      return res.status(404).json({ success: false, message: "Report not found." });
+    }
+
+    const userId = req.user ? req.user._id.toString() : null;
+    let isFlagged = false;
+
+    if (userId) {
+      const hasFlagged = (report.flaggedBy || []).some((uid) => uid.toString() === userId);
+      if (hasFlagged) {
+        report.flaggedBy = report.flaggedBy.filter((uid) => uid.toString() !== userId);
+        isFlagged = false;
+      } else {
+        report.flaggedBy.push(req.user._id);
+        isFlagged = true;
+      }
+      report.flagged = report.flaggedBy.length > 0;
+    } else {
+      report.flagged = !report.flagged;
+      isFlagged = report.flagged;
+    }
+
+    await report.save();
+
+    return res.json({
+      success: true,
+      message: isFlagged ? "Report flagged for moderation review." : "Flag removed.",
+      data: {
+        report: serializeReport(report, req.user),
+      },
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   createReport,
   getReports,
   getReportById,
   voteReport,
+  flagReport,
   addComment,
 };

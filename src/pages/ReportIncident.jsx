@@ -241,11 +241,9 @@ function ReportIncident() {
   const thanaDropdownRef = useRef(null);
   const thanaListRef = useRef(null);
 
-  const filteredThanas = useMemo(() => {
-    return thanaList.filter((t) =>
-      t.toLowerCase().includes(thanaSearch.toLowerCase())
-    );
-  }, [thanaSearch]);
+  const filteredThanas = thanaList.filter((t) =>
+    t.toLowerCase().includes(thanaSearch.toLowerCase())
+  );
 
   // Close dropdown on outside click
   useEffect(() => {

@@ -86,7 +86,13 @@ const thanas = [
 ];
 
 function Reports() {
-  const { reports, setReports } = useReports();
+  const {
+    reports,
+    voteReport,
+    flagReport,
+    addCommentToReport,
+    isLoadingReports,
+  } = useReports();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedThana, setSelectedThana] = useState("All Thanas");
@@ -101,79 +107,53 @@ function Reports() {
     setTimeout(() => setToastMessage(""), 3500);
   };
 
-  const handleVote = (id, type) => {
-    setReports((prev) =>
-      prev.map((r) => {
-        if (r.id === id) {
-          if (r.userVoted === type) {
-            return {
-              ...r,
-              upvotes: type === "up" ? r.upvotes - 1 : r.upvotes,
-              userVoted: null,
-            };
-          } else {
-            const upDelta =
-              type === "up"
-                ? r.userVoted === "down"
-                  ? 1
-                  : 1
-                : r.userVoted === "up"
-                ? -1
-                : 0;
-            showToast(
-              type === "up"
-                ? "Confirmed incident! Thank you for verifying."
-                : "Feedback recorded."
-            );
-            return {
-              ...r,
-              upvotes: r.upvotes + upDelta,
-              userVoted: type,
-            };
-          }
-        }
-        return r;
-      })
-    );
+  const handleVote = async (id) => {
+    try {
+      const updated = await voteReport(id);
+      showToast(
+        updated.userVoted === "up"
+          ? "Confirmed incident! Thank you for verifying."
+          : "Vote removed."
+      );
+      if (activeDetailModal && activeDetailModal.id === id) {
+        setActiveDetailModal(updated);
+      }
+    } catch (err) {
+      showToast(err.response?.data?.message || "Please log in to confirm incidents.");
+    }
   };
 
-  const handleFlag = (id) => {
-    setReports((prev) =>
-      prev.map((r) => {
-        if (r.id === id) {
-          showToast("Report flagged for moderator review.");
-          return { ...r, flagged: !r.flagged };
-        }
-        return r;
-      })
-    );
+  const handleFlag = async (id) => {
+    try {
+      const updated = await flagReport(id);
+      showToast(
+        updated.flagged
+          ? "Report flagged for moderator review."
+          : "Flag removed."
+      );
+      if (activeDetailModal && activeDetailModal.id === id) {
+        setActiveDetailModal(updated);
+      }
+    } catch (err) {
+      showToast(err.response?.data?.message || "Failed to flag report.");
+    }
   };
 
-  const handleAddComment = (e) => {
+  const handleAddComment = async (e) => {
     e.preventDefault();
     if (!newCommentText.trim() || !activeDetailModal) return;
 
-    const newComment = {
-      author: "Fahim (You)",
-      time: "Just now",
-      text: newCommentText.trim(),
-    };
-
-    setReports((prev) =>
-      prev.map((r) =>
-        r.id === activeDetailModal.id
-          ? { ...r, comments: [...r.comments, newComment] }
-          : r
-      )
-    );
-
-    setActiveDetailModal((prev) => ({
-      ...prev,
-      comments: [...prev.comments, newComment],
-    }));
-
-    setNewCommentText("");
-    showToast("Your update was posted to the community feed!");
+    try {
+      const updated = await addCommentToReport(
+        activeDetailModal.id,
+        newCommentText.trim()
+      );
+      setActiveDetailModal(updated);
+      setNewCommentText("");
+      showToast("Your update was posted to the community feed!");
+    } catch (err) {
+      showToast(err.response?.data?.message || "Please log in to post updates.");
+    }
   };
 
   const filteredReports = useMemo(() => {
@@ -304,12 +284,22 @@ function Reports() {
 
       {/* FEED METRICS */}
       <div className="reports-feed-count">
-        <span>Showing {filteredReports.length} results</span>
+        {isLoadingReports ? (
+          <span>Loading live reports from MongoDB...</span>
+        ) : (
+          <span>Showing {filteredReports.length} results</span>
+        )}
       </div>
 
       {/* REPORTS LIST */}
       <div className="reports-cards-grid">
-        {filteredReports.length === 0 ? (
+        {isLoadingReports ? (
+          <div className="no-reports-card">
+            <div className="spinner-md"></div>
+            <h3>Loading community safety feed...</h3>
+            <p>Fetching real-time incident reports across Dhaka.</p>
+          </div>
+        ) : filteredReports.length === 0 ? (
           <div className="no-reports-card">
             <CheckCircle2 size={44} className="empty-check" />
             <h3>No reports match your filters</h3>
@@ -347,6 +337,11 @@ function Reports() {
                 {report.title}
               </h2>
 
+              <div className="report-author-meta">
+                <span className="author-label">Reported by:</span>
+                <span className="author-name">{report.reporterName || "Citizen Reporter"}</span>
+              </div>
+
               <div className="report-location-badge">
                 <MapPin size={13} className="loc-pin" />
                 <span>{report.location}</span>
@@ -359,7 +354,7 @@ function Reports() {
                 <div className="verification-controls">
                   <button
                     className={`btn-vote ${report.userVoted === "up" ? "active" : ""}`}
-                    onClick={() => handleVote(report.id, "up")}
+                    onClick={() => handleVote(report.id)}
                     title="Confirm incident is happening"
                   >
                     <ThumbsUp size={14} />
@@ -381,7 +376,7 @@ function Reports() {
                     onClick={() => setActiveDetailModal(report)}
                   >
                     <MessageSquare size={14} />
-                    <span>{report.comments.length} updates</span>
+                    <span>{report.comments?.length || 0} updates</span>
                   </button>
 
                   <Link
@@ -414,6 +409,10 @@ function Reports() {
               <div>
                 <span className="cat-tag">{activeDetailModal.category}</span>
                 <h3 className="modal-report-title">{activeDetailModal.title}</h3>
+                <div className="modal-author-strip">
+                  <span className="author-label">Reported by:</span>
+                  <strong className="author-name">{activeDetailModal.reporterName || "Citizen Reporter"}</strong>
+                </div>
               </div>
               <button
                 className="modal-close-btn"

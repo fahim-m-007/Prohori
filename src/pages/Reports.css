@@ -238,13 +238,50 @@
   font-weight: 700;
   color: var(--navy);
   line-height: 1.4;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   cursor: pointer;
   transition: color 0.2s ease;
 }
 
 .report-heading:hover {
   color: var(--blue);
+}
+
+.report-author-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.report-author-meta .author-label {
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+.report-author-meta .author-name {
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.modal-author-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.modal-author-strip .author-label {
+  color: var(--text-light);
+}
+
+.modal-author-strip .author-name {
+  color: var(--navy);
+  font-weight: 700;
 }
 
 .report-location-badge {

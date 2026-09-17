@@ -4,6 +4,7 @@ const {
   getReports,
   getReportById,
   voteReport,
+  flagReport,
   addComment,
 } = require("../controllers/report.controller");
 const { protect, optionalAuth } = require("../middleware/auth.middleware");
@@ -12,6 +13,7 @@ router.get("/", optionalAuth, getReports);
 router.post("/", protect, createReport);
 router.get("/:id", optionalAuth, getReportById);
 router.post("/:id/vote", protect, voteReport);
+router.post("/:id/flag", optionalAuth, flagReport);
 router.post("/:id/comments", protect, addComment);
 
 module.exports = router;

@@ -2,17 +2,16 @@ const mongoose = require("mongoose");
 
 const commentSchema = new mongoose.Schema(
   {
-    author: { type: String, required: true, trim: true },
-    text: { type: String, required: true, trim: true },
+    author: { type: String, required: true, trim: true, default: "Citizen" },
+    text: { type: String, required: true, trim: true, maxlength: 1000 },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    createdAt: { type: Date, default: Date.now },
   },
-  { _id: true }
+  { timestamps: true }
 );
 
 const reportSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true, trim: true, maxlength: 150 },
+    title: { type: String, required: true, trim: true, maxlength: 200 },
     category: {
       type: String,
       required: true,
@@ -31,32 +30,59 @@ const reportSchema = new mongoose.Schema(
     },
     severity: {
       type: String,
-      enum: ["high", "caution", "resolved", "low"],
+      enum: ["high", "caution", "low", "resolved"],
       default: "caution",
     },
     thana: { type: String, required: true, trim: true },
     location: { type: String, required: true, trim: true },
     description: { type: String, trim: true, default: "" },
     position: {
-      type: [Number], // [latitude, longitude]
-      default: [23.8103, 90.4125],
+      type: [Number],
+      default: [23.8103, 90.4125], // [lat, lng]
     },
     images: {
       type: [String],
       default: [],
     },
-    upvotes: { type: Number, default: 0 },
-    upvotedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    flagged: { type: Boolean, default: false },
-    flaggedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     status: {
       type: String,
-      enum: ["verified", "pending", "resolved"],
+      enum: ["verified", "investigating", "resolved"],
       default: "verified",
     },
-    reportedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    reporterName: { type: String, default: "Anonymous Commuter" },
-    comments: [commentSchema],
+    reporterName: {
+      type: String,
+      trim: true,
+      default: "Citizen Reporter",
+    },
+    reportedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    upvotes: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    upvotedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    flagged: {
+      type: Boolean,
+      default: false,
+    },
+    flaggedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    comments: {
+      type: [commentSchema],
+      default: [],
+    },
   },
   { timestamps: true }
 );
