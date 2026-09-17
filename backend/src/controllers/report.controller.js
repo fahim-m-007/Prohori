@@ -62,9 +62,6 @@ function serializeReport(report, currentUser) {
   const upvoted = currentUserId
     ? (report.upvotedBy || []).some((uid) => uid.toString() === currentUserId)
     : false;
-  const flagged = currentUserId
-    ? (report.flaggedBy || []).some((uid) => uid.toString() === currentUserId)
-    : (report.flagged || false);
 
   return {
     id: report._id.toString(),
@@ -81,7 +78,6 @@ function serializeReport(report, currentUser) {
     images: report.images || [],
     upvotes: report.upvotes || 0,
     userVoted: upvoted ? "up" : null,
-    flagged,
     status: report.status || "verified",
     reporterName: report.reporterName || "Anonymous Commuter",
     reportedBy: report.reportedBy ? report.reportedBy.toString() : null,
@@ -160,11 +156,10 @@ async function createReport(req, res, next) {
       description: cleanDescription,
       position: resolvedPosition,
       images: cleanImages,
-      reportedBy: req.user._id,
-      reporterName: req.user.name || "Citizen Reporter",
+      reportedBy: req.user ? req.user._id : undefined,
+      reporterName: req.user?.name || "Citizen Reporter",
       upvotes: 0,
       upvotedBy: [],
-      flagged: false,
       status: "verified",
       comments: [],
     });
@@ -321,55 +316,10 @@ async function addComment(req, res, next) {
   }
 }
 
-async function flagReport(req, res, next) {
-  try {
-    const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(404).json({ success: false, message: "Report not found." });
-    }
-
-    const report = await Report.findById(id);
-    if (!report) {
-      return res.status(404).json({ success: false, message: "Report not found." });
-    }
-
-    const userId = req.user ? req.user._id.toString() : null;
-    let isFlagged = false;
-
-    if (userId) {
-      const hasFlagged = (report.flaggedBy || []).some((uid) => uid.toString() === userId);
-      if (hasFlagged) {
-        report.flaggedBy = report.flaggedBy.filter((uid) => uid.toString() !== userId);
-        isFlagged = false;
-      } else {
-        report.flaggedBy.push(req.user._id);
-        isFlagged = true;
-      }
-      report.flagged = report.flaggedBy.length > 0;
-    } else {
-      report.flagged = !report.flagged;
-      isFlagged = report.flagged;
-    }
-
-    await report.save();
-
-    return res.json({
-      success: true,
-      message: isFlagged ? "Report flagged for moderation review." : "Flag removed.",
-      data: {
-        report: serializeReport(report, req.user),
-      },
-    });
-  } catch (error) {
-    return next(error);
-  }
-}
-
 module.exports = {
   createReport,
   getReports,
   getReportById,
   voteReport,
-  flagReport,
   addComment,
 };

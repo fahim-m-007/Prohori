@@ -356,26 +356,6 @@
   color: var(--blue);
 }
 
-.btn-flag {
-  background: #f8fafc;
-  border: 1px solid var(--border);
-  padding: 6px 8px;
-  border-radius: 8px;
-  color: var(--text-light);
-  transition: 0.2s ease;
-}
-
-.btn-flag:hover {
-  color: var(--danger);
-  border-color: var(--danger);
-}
-
-.btn-flag.flagged {
-  background: #fef2f2;
-  color: var(--danger);
-  border-color: var(--danger);
-}
-
 .report-meta-actions {
   display: flex;
   align-items: center;

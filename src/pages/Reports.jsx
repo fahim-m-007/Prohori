@@ -5,7 +5,6 @@ import {
   ChevronRight,
   Clock,
   FileText,
-  Flag,
   MapPin,
   MessageSquare,
   Plus,
@@ -89,7 +88,6 @@ function Reports() {
   const {
     reports,
     voteReport,
-    flagReport,
     addCommentToReport,
     isLoadingReports,
   } = useReports();
@@ -120,22 +118,6 @@ function Reports() {
       }
     } catch (err) {
       showToast(err.response?.data?.message || "Please log in to confirm incidents.");
-    }
-  };
-
-  const handleFlag = async (id) => {
-    try {
-      const updated = await flagReport(id);
-      showToast(
-        updated.flagged
-          ? "Report flagged for moderator review."
-          : "Flag removed."
-      );
-      if (activeDetailModal && activeDetailModal.id === id) {
-        setActiveDetailModal(updated);
-      }
-    } catch (err) {
-      showToast(err.response?.data?.message || "Failed to flag report.");
     }
   };
 
@@ -359,14 +341,6 @@ function Reports() {
                   >
                     <ThumbsUp size={14} />
                     <span>Confirm ({report.upvotes})</span>
-                  </button>
-
-                  <button
-                    className={`btn-flag ${report.flagged ? "flagged" : ""}`}
-                    onClick={() => handleFlag(report.id)}
-                    title="Flag report as inaccurate"
-                  >
-                    <Flag size={14} />
                   </button>
                 </div>
 

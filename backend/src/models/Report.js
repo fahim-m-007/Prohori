@@ -69,16 +69,6 @@ const reportSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    flagged: {
-      type: Boolean,
-      default: false,
-    },
-    flaggedBy: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
     comments: {
       type: [commentSchema],
       default: [],

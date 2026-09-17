@@ -66,20 +66,6 @@ export function ReportsProvider({ children }) {
     }
   };
 
-  const flagReport = async (id) => {
-    try {
-      const { data } = await api.post(`/reports/${id}/flag`);
-      if (data?.success && data?.data?.report) {
-        const updated = data.data.report;
-        setReports((prev) => prev.map((r) => (r.id === id ? updated : r)));
-        return updated;
-      }
-    } catch (err) {
-      console.error("Failed to flag:", err);
-      throw err;
-    }
-  };
-
   const addCommentToReport = async (id, text) => {
     try {
       const { data } = await api.post(`/reports/${id}/comments`, { text });
@@ -101,7 +87,6 @@ export function ReportsProvider({ children }) {
         setReports,
         createReport,
         voteReport,
-        flagReport,
         addCommentToReport,
         fetchReports,
         isLoadingReports,
