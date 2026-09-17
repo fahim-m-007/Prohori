@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import api from "../api/client";
 
 export const initialReports = [
   {
@@ -26,7 +27,52 @@ const ReportsContext = createContext(null);
 
 export function ReportsProvider({ children }) {
   const [reports, setReports] = useState(initialReports);
-  return <ReportsContext.Provider value={{ reports, setReports }}>{children}</ReportsContext.Provider>;
+  const [isLoadingReports, setIsLoadingReports] = useState(false);
+
+  const fetchReports = useCallback(async () => {
+    try {
+      setIsLoadingReports(true);
+      const { data } = await api.get("/reports");
+      if (data?.success && Array.isArray(data?.data?.reports)) {
+        const backendReports = data.data.reports;
+        const backendIds = new Set(backendReports.map((r) => r.id));
+        const nonDuplicateInitial = initialReports.filter((r) => !backendIds.has(r.id));
+        setReports([...backendReports, ...nonDuplicateInitial]);
+      }
+    } catch (err) {
+      console.warn("Could not fetch reports from backend, using local state:", err.message);
+    } finally {
+      setIsLoadingReports(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchReports();
+  }, [fetchReports]);
+
+  const createReport = async (reportData) => {
+    const { data } = await api.post("/reports", reportData);
+    if (data?.success && data?.data?.report) {
+      const newReport = data.data.report;
+      setReports((prev) => [newReport, ...prev.filter((r) => r.id !== newReport.id)]);
+      return newReport;
+    }
+    throw new Error(data?.message || "Failed to submit report.");
+  };
+
+  return (
+    <ReportsContext.Provider
+      value={{
+        reports,
+        setReports,
+        createReport,
+        fetchReports,
+        isLoadingReports,
+      }}
+    >
+      {children}
+    </ReportsContext.Provider>
+  );
 }
 
 export function useReports() {

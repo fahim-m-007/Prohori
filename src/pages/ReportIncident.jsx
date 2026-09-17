@@ -1,7 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { CircleMarker, MapContainer, TileLayer, useMapEvents } from "react-leaflet";
-import { ArrowLeft, Camera, ChevronDown, Map as MapIcon, MapPin, ShieldAlert, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Camera,
+  CheckCircle2,
+  ChevronDown,
+  Map as MapIcon,
+  MapPin,
+  ShieldAlert,
+  X,
+} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useReports } from "../context/ReportsContext";
 
 import "leaflet/dist/leaflet.css";
 import "./ReportIncident.css";
@@ -116,6 +127,113 @@ function LocationMapPicker({ position, onPick }) {
 }
 
 function ReportIncident() {
+  const navigate = useNavigate();
+  const { createReport } = useReports();
+
+  // Form states
+  const [incidentType, setIncidentType] = useState("");
+  const [title, setTitle] = useState("");
+  const [severity, setSeverity] = useState("caution");
+  const [description, setDescription] = useState("");
+  const [photos, setPhotos] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const photoInputRef = useRef(null);
+
+  const handlePhotoChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    const remainingSlots = 3 - photos.length;
+    if (remainingSlots <= 0) return;
+
+    const selectedFiles = files.slice(0, remainingSlots);
+
+    selectedFiles.forEach((file) => {
+      if (!file.type.startsWith("image/")) {
+        setErrorMessage("Only image files are allowed.");
+        return;
+      }
+      if (file.size > 4 * 1024 * 1024) {
+        setErrorMessage("Images should be smaller than 4MB each.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setPhotos((prev) => {
+          if (prev.length >= 3) return prev;
+          return [
+            ...prev,
+            {
+              id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              dataUrl: event.target.result,
+              name: file.name,
+            },
+          ];
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+
+    if (photoInputRef.current) photoInputRef.current.value = "";
+  };
+
+  const removePhoto = (photoId) => {
+    setPhotos((prev) => prev.filter((p) => p.id !== photoId));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    if (!incidentType) {
+      setErrorMessage("Please select an incident type.");
+      return;
+    }
+
+    if (!thanaSearch.trim()) {
+      setErrorMessage("Please select or enter a Thana area.");
+      return;
+    }
+
+    if (!locationQuery.trim()) {
+      setErrorMessage("Please provide a location detail or landmark.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const payload = {
+        title: title.trim() || `${incidentType} at ${locationQuery.trim()}`,
+        category: incidentType,
+        severity,
+        thana: thanaSearch.trim(),
+        location: locationQuery.trim(),
+        description: description.trim(),
+        position: locationCoordinates || undefined,
+        images: photos.map((p) => p.dataUrl),
+      };
+
+      await createReport(payload);
+      setSuccessMessage("Incident report submitted successfully! Redirecting to feed...");
+      setTimeout(() => {
+        navigate("/reports");
+      }, 1000);
+    } catch (err) {
+      console.error("Failed to submit incident report:", err);
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to submit incident report. Please try again.";
+      setErrorMessage(message);
+      setIsSubmitting(false);
+    }
+  };
+
   // Thana Dropdown states
   const [thanaSearch, setThanaSearch] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -232,7 +350,7 @@ function ReportIncident() {
           id: result.place_id,
           name: result.address_line1 || result.name || result.formatted,
           detail: result.address_line2 || result.formatted || "Dhaka, Bangladesh",
-          coordinates: [result.lon, result.lat],
+          coordinates: [result.lat, result.lon],
         })).filter(({ name }) => name);
       };
 
@@ -334,7 +452,20 @@ function ReportIncident() {
       </header>
 
       <main className="report-incident-content">
-        <form className="incident-form">
+        <form className="incident-form" onSubmit={handleSubmit}>
+          {errorMessage && (
+            <div className="report-alert-box error" role="alert">
+              <AlertTriangle size={16} />
+              <span>{errorMessage}</span>
+            </div>
+          )}
+          {successMessage && (
+            <div className="report-alert-box success" role="status">
+              <CheckCircle2 size={16} />
+              <span>{successMessage}</span>
+            </div>
+          )}
+
           <section className="incident-form-section">
             <div className="form-section-heading">
               <span>01</span>
@@ -347,18 +478,60 @@ function ReportIncident() {
             <label>
               Incident type
               <div className="select-wrap">
-                <select defaultValue="">
+                <select
+                  value={incidentType}
+                  onChange={(e) => {
+                    const selected = e.target.value;
+                    setIncidentType(selected);
+                    const highCats = [
+                      "Road accident",
+                      "Theft",
+                      "Mugging",
+                      "Violence",
+                      "Hijacking",
+                      "Fire & Explosion",
+                    ];
+                    setSeverity(highCats.includes(selected) ? "high" : "caution");
+                  }}
+                  required
+                >
                   <option value="" disabled>Select an incident type</option>
-                  <option>Road accident</option>
-                  <option>Traffic disruption</option>
-                  <option>Waterlogging</option>
-                  <option>Theft</option>
-                  <option>Mugging</option>
-                  <option>Violence</option>
-                  <option>Hijacking</option>
-                  <option>Fire &amp; Explosion</option>
-                  <option>Protest Blockade</option>
-                  <option>Other</option>
+                  <option value="Road accident">Road accident</option>
+                  <option value="Traffic disruption">Traffic disruption</option>
+                  <option value="Waterlogging">Waterlogging</option>
+                  <option value="Theft">Theft</option>
+                  <option value="Mugging">Mugging</option>
+                  <option value="Violence">Violence</option>
+                  <option value="Hijacking">Hijacking</option>
+                  <option value="Fire & Explosion">Fire &amp; Explosion</option>
+                  <option value="Protest Blockade">Protest Blockade</option>
+                  <option value="Other">Other</option>
+                </select>
+                <ChevronDown size={17} />
+              </div>
+            </label>
+
+            <label>
+              Report title <span className="optional">(optional)</span>
+              <input
+                type="text"
+                placeholder="e.g. Severe waterlogging blocking Kazipara lane"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                maxLength={120}
+              />
+            </label>
+
+            <label>
+              Urgency / Severity
+              <div className="select-wrap">
+                <select
+                  value={severity}
+                  onChange={(e) => setSeverity(e.target.value)}
+                >
+                  <option value="caution">Caution - Moderate impact / Hazard</option>
+                  <option value="high">High Risk - Urgent / Danger / Gridlock</option>
+                  <option value="low">Low - Minor issue</option>
                 </select>
                 <ChevronDown size={17} />
               </div>
@@ -366,7 +539,12 @@ function ReportIncident() {
 
             <label>
               Description <span className="optional">(optional)</span>
-              <textarea rows="5" placeholder="Tell us what you saw, including any useful details..." />
+              <textarea
+                rows="5"
+                placeholder="Tell us what you saw, including any useful details..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
             </label>
           </section>
 
@@ -525,16 +703,62 @@ function ReportIncident() {
               </div>
             </div>
 
-            <button type="button" className="photo-upload">
-              <Camera size={22} />
-              <strong>Add photos</strong>
-              <span>Upload up to 3 images</span>
-            </button>
+            <input
+              type="file"
+              ref={photoInputRef}
+              accept="image/*"
+              multiple
+              onChange={handlePhotoChange}
+              style={{ display: "none" }}
+            />
+
+            {photos.length < 3 && (
+              <button
+                type="button"
+                className="photo-upload"
+                onClick={() => photoInputRef.current?.click()}
+              >
+                <Camera size={22} />
+                <strong>Add photos</strong>
+                <span>Upload up to 3 images ({3 - photos.length} remaining)</span>
+              </button>
+            )}
+
+            {photos.length > 0 && (
+              <div className="photo-preview-grid">
+                {photos.map((photo) => (
+                  <div key={photo.id} className="photo-preview-item">
+                    <img src={photo.dataUrl} alt={photo.name || "Incident evidence"} />
+                    <button
+                      type="button"
+                      className="photo-remove-btn"
+                      onClick={() => removePhoto(photo.id)}
+                      aria-label="Remove photo"
+                    >
+                      <X size={13} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
 
           <div className="incident-form-actions">
             <Link to="/dashboard" className="cancel-report">Cancel</Link>
-            <button type="submit" className="submit-report">Submit report</button>
+            <button
+              type="submit"
+              className="submit-report"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <span className="spinner-sm"></span>
+                  <span>Submitting...</span>
+                </>
+              ) : (
+                "Submit report"
+              )}
+            </button>
           </div>
         </form>
 
@@ -542,7 +766,7 @@ function ReportIncident() {
           <ShieldAlert size={21} />
           <h2>Report responsibly</h2>
           <p>Only share information you believe is accurate. Do not include personal or sensitive details.</p>
-          <Link to="/alerts">View active alerts</Link>
+          <Link to="/reports">View active reports</Link>
         </aside>
       </main>
     </div>
