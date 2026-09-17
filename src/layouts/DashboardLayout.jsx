@@ -9,7 +9,9 @@ function DashboardLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className={`dashboard-layout ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
+    <div
+      className={`dashboard-layout ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}
+    >
       <Sidebar
         collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed((collapsed) => !collapsed)}

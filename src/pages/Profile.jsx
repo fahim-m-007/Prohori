@@ -112,16 +112,26 @@ function Profile() {
   const { user: authUser, updateProfile, changePassword } = useAuth();
   const [customProfile, setCustomProfile] = useState(null);
 
-  const primaryThana = customProfile?.primaryThana ?? authUser?.thana ?? initialUser.primaryThana;
+  const primaryThana =
+    customProfile?.primaryThana ?? authUser?.thana ?? initialUser.primaryThana;
   const name = customProfile?.name ?? authUser?.name ?? initialUser.name;
   const fullName = customProfile?.fullName ?? authUser?.name ?? name;
   const email = customProfile?.email ?? authUser?.email ?? initialUser.email;
-  const bio = customProfile?.bio ?? authUser?.bio ?? (primaryThana
-    ? `Active commuter in ${primaryThana}. Committed to making Dhaka streets safer and well-monitored for everyone.`
-    : initialUser.bio);
-  const phone = customProfile?.phone !== undefined ? customProfile.phone : (authUser?.phone || "");
+  const bio =
+    customProfile?.bio ??
+    authUser?.bio ??
+    (primaryThana
+      ? `Active commuter in ${primaryThana}. Committed to making Dhaka streets safer and well-monitored for everyone.`
+      : initialUser.bio);
+  const phone =
+    customProfile?.phone !== undefined
+      ? customProfile.phone
+      : authUser?.phone || "";
   const joinedDate = authUser?.createdAt
-    ? new Date(authUser.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })
+    ? new Date(authUser.createdAt).toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+      })
     : initialUser.joinedDate;
 
   const user = {
@@ -246,7 +256,9 @@ function Profile() {
       setIsEditProfileOpen(false);
       showToast("Password changed successfully!");
     } catch (err) {
-      setPasswordError(err.response?.data?.message || "Failed to change password.");
+      setPasswordError(
+        err.response?.data?.message || "Failed to change password.",
+      );
     } finally {
       setIsChangingPassword(false);
     }
@@ -310,8 +322,7 @@ function Profile() {
                   }}
                   title="Click to add phone number"
                 >
-                  <Phone size={13} />
-                  + Add phone
+                  <Phone size={13} />+ Add phone
                 </button>
               )}
               <span className="meta-chip">
@@ -524,7 +535,9 @@ function Profile() {
                     onChange={(e) => setEditThana(e.target.value)}
                   >
                     <option value="Adabor">Adabor</option>
-                    <option value="Airport / Bimanbandar">Airport / Bimanbandar</option>
+                    <option value="Airport / Bimanbandar">
+                      Airport / Bimanbandar
+                    </option>
                     <option value="Badda">Badda</option>
                     <option value="Banani">Banani</option>
                     <option value="Bangshal">Bangshal</option>
@@ -562,11 +575,15 @@ function Profile() {
                     <option value="Shah Ali">Shah Ali</option>
                     <option value="Shahbag">Shahbag</option>
                     <option value="Shahjahanpur">Shahjahanpur</option>
-                    <option value="Sher-e-Bangla Nagar">Sher-e-Bangla Nagar</option>
+                    <option value="Sher-e-Bangla Nagar">
+                      Sher-e-Bangla Nagar
+                    </option>
                     <option value="Shyampur">Shyampur</option>
                     <option value="Sutrapur">Sutrapur</option>
                     <option value="Tejgaon">Tejgaon</option>
-                    <option value="Tejgaon Industrial Area">Tejgaon Industrial Area</option>
+                    <option value="Tejgaon Industrial Area">
+                      Tejgaon Industrial Area
+                    </option>
                     <option value="Turag">Turag</option>
                     <option value="Uttarkhan">Uttarkhan</option>
                     <option value="Uttara East">Uttara East</option>
@@ -631,10 +648,16 @@ function Profile() {
                       type="button"
                       className="password-toggle-btn"
                       onClick={() => setShowCurrentPassword((prev) => !prev)}
-                      title={showCurrentPassword ? "Hide password" : "Show password"}
+                      title={
+                        showCurrentPassword ? "Hide password" : "Show password"
+                      }
                       tabIndex="-1"
                     >
-                      {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      {showCurrentPassword ? (
+                        <EyeOff size={16} />
+                      ) : (
+                        <Eye size={16} />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -653,10 +676,16 @@ function Profile() {
                       type="button"
                       className="password-toggle-btn"
                       onClick={() => setShowNewPassword((prev) => !prev)}
-                      title={showNewPassword ? "Hide password" : "Show password"}
+                      title={
+                        showNewPassword ? "Hide password" : "Show password"
+                      }
                       tabIndex="-1"
                     >
-                      {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      {showNewPassword ? (
+                        <EyeOff size={16} />
+                      ) : (
+                        <Eye size={16} />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -675,10 +704,16 @@ function Profile() {
                       type="button"
                       className="password-toggle-btn"
                       onClick={() => setShowConfirmPassword((prev) => !prev)}
-                      title={showConfirmPassword ? "Hide password" : "Show password"}
+                      title={
+                        showConfirmPassword ? "Hide password" : "Show password"
+                      }
                       tabIndex="-1"
                     >
-                      {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      {showConfirmPassword ? (
+                        <EyeOff size={16} />
+                      ) : (
+                        <Eye size={16} />
+                      )}
                     </button>
                   </div>
                 </div>

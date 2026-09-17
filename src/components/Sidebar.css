@@ -42,7 +42,6 @@
   font-weight: 800;
 
   letter-spacing: -0.5px;
-
 }
 
 .sidebar-toggle {
@@ -57,7 +56,9 @@
   color: white;
   background: rgba(255, 255, 255, 0.08);
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .sidebar-toggle:hover {

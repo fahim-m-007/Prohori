@@ -2,7 +2,16 @@ import { useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { MapContainer, Marker, TileLayer, Tooltip } from "react-leaflet";
 import { divIcon } from "leaflet";
-import { AlertTriangle, ArrowLeft, Bookmark, Filter, MapPin, Navigation, ShieldCheck, X } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Bookmark,
+  Filter,
+  MapPin,
+  Navigation,
+  ShieldCheck,
+  X,
+} from "lucide-react";
 
 import "leaflet/dist/leaflet.css";
 import { useReports } from "../context/ReportsContext";
@@ -30,7 +39,10 @@ const savedLocationIcons = {
 };
 
 function createSavedLocationIcon(category) {
-  const locationIcon = savedLocationIcons[category] || { label: "Saved location", icon: "●" };
+  const locationIcon = savedLocationIcons[category] || {
+    label: "Saved location",
+    icon: "●",
+  };
   return divIcon({
     className: "saved-location-marker-wrapper",
     html: `<span class="saved-location-marker ${category}" aria-label="${locationIcon.label}"><b>${locationIcon.icon}</b></span>`,
@@ -63,8 +75,10 @@ function LiveMap() {
 
   const visibleIncidents = useMemo(() => {
     if (activeFilter === "All incidents") return reports;
-    if (activeFilter === "High risk") return reports.filter(({ severity }) => severity === "high");
-    if (activeFilter === "Caution") return reports.filter(({ severity }) => severity === "caution");
+    if (activeFilter === "High risk")
+      return reports.filter(({ severity }) => severity === "high");
+    if (activeFilter === "Caution")
+      return reports.filter(({ severity }) => severity === "caution");
     return reports.filter(({ status }) => status === "resolved");
   }, [activeFilter, reports]);
 
@@ -73,21 +87,30 @@ function LiveMap() {
       {navState && (
         <div className={`map-context-banner ${navState.from}`}>
           <div className="context-banner-icon">
-            {navState.from === "location" ? <Bookmark size={16} /> : <AlertTriangle size={16} />}
+            {navState.from === "location" ? (
+              <Bookmark size={16} />
+            ) : (
+              <AlertTriangle size={16} />
+            )}
           </div>
           <div className="context-banner-text">
             <strong>
-              {navState.from === "location"
-                ? navState.name
-                : navState.title}
+              {navState.from === "location" ? navState.name : navState.title}
             </strong>
             <span>
-              {navState.thana && <><MapPin size={12} /> {navState.thana}</>}
+              {navState.thana && (
+                <>
+                  <MapPin size={12} /> {navState.thana}
+                </>
+              )}
               {navState.category && <> · {navState.category}</>}
               {navState.location && <> · {navState.location}</>}
             </span>
           </div>
-          <button className="context-banner-close" onClick={() => window.history.back()}>
+          <button
+            className="context-banner-close"
+            onClick={() => window.history.back()}
+          >
             <ArrowLeft size={14} />
             <span>Back</span>
           </button>
@@ -100,12 +123,17 @@ function LiveMap() {
           <h1>Dhaka Safety Map</h1>
           <p>Track community reports and active incidents across Dhaka.</p>
         </div>
-        <div className="dhaka-badge"><MapPin size={16} /> Dhaka only</div>
+        <div className="dhaka-badge">
+          <MapPin size={16} /> Dhaka only
+        </div>
       </header>
 
       <section className="live-map-content">
         <div className="map-toolbar">
-          <button className="filter-toggle" onClick={() => setShowReports((visible) => !visible)}>
+          <button
+            className="filter-toggle"
+            onClick={() => setShowReports((visible) => !visible)}
+          >
             <Filter size={16} />
             Recent reports
           </button>
@@ -133,11 +161,14 @@ function LiveMap() {
           >
             <TileLayer
               url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution={'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}
+              attribution={
+                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              }
             />
 
             {visibleIncidents.map((incident) => {
-              const markerKey = incident.status === "resolved" ? "resolved" : incident.severity;
+              const markerKey =
+                incident.status === "resolved" ? "resolved" : incident.severity;
               const marker = markerStyles[markerKey];
               return (
                 <Marker
@@ -148,34 +179,42 @@ function LiveMap() {
                 >
                   <Tooltip direction="top" offset={[0, -10]} opacity={1}>
                     <div className="incident-popup">
-                      <span style={{ color: marker.color }}>{marker.label}</span>
+                      <span style={{ color: marker.color }}>
+                        {marker.label}
+                      </span>
                       <strong>{incident.title}</strong>
                       <p>{incident.location}</p>
-                      <small>{incident.category} · {incident.time}</small>
+                      <small>
+                        {incident.category} · {incident.time}
+                      </small>
                     </div>
                   </Tooltip>
                 </Marker>
               );
             })}
 
-            {showSavedAreas && savedAreas.map((area) => (
-              <Marker
-                key={area.id}
-                position={area.position}
-                icon={createSavedLocationIcon(area.category)}
-                title={`${area.name} (${savedLocationIcons[area.category]?.label || "Saved location"})`}
-                zIndexOffset={500}
-              >
-                <Tooltip direction="top" offset={[0, -8]} opacity={1}>
-                  <div className="saved-location-popup">
-                    <span>SAVED LOCATION</span>
-                    <strong>{area.name}</strong>
-                    <p>{area.address}</p>
-                    <small>{area.thana} · Safety index {area.safetyScore}/100</small>
-                  </div>
-                </Tooltip>
-              </Marker>
-            ))}
+            {showSavedAreas &&
+              savedAreas.map((area) => (
+                <Marker
+                  key={area.id || area._id}
+                  position={area.position}
+                  icon={createSavedLocationIcon(area.category)}
+                  title={`${area.name} (${savedLocationIcons[area.category]?.label || "Saved location"})`}
+                  zIndexOffset={500}
+                >
+                  <Tooltip direction="top" offset={[0, -8]} opacity={1}>
+                    <div className="saved-location-popup">
+                      <span>SAVED LOCATION</span>
+                      <strong>{area.name}</strong>
+                      <p>{area.address}</p>
+                      <small>
+                        {area.thana}
+                        {area.note ? ` · ${area.note}` : ""}
+                      </small>
+                    </div>
+                  </Tooltip>
+                </Marker>
+              ))}
           </MapContainer>
 
           {showReports && (
@@ -185,7 +224,12 @@ function LiveMap() {
                   <span>COMMUNITY ACTIVITY</span>
                   <strong>Recent reports</strong>
                 </div>
-                <button aria-label="Close recent reports" onClick={() => setShowReports(false)}><X size={16} /></button>
+                <button
+                  aria-label="Close recent reports"
+                  onClick={() => setShowReports(false)}
+                >
+                  <X size={16} />
+                </button>
               </div>
               <div className="filter-options">
                 {filters.map((filter) => (
@@ -200,13 +244,20 @@ function LiveMap() {
               </div>
               <div className="map-report-list">
                 {visibleIncidents.map((incident) => {
-                  const marker = markerStyles[incident.status === "resolved" ? "resolved" : incident.severity];
+                  const marker =
+                    markerStyles[
+                      incident.status === "resolved"
+                        ? "resolved"
+                        : incident.severity
+                    ];
                   return (
                     <div className="map-report-item" key={incident.id}>
                       <i style={{ background: marker.color }}></i>
                       <div>
                         <strong>{incident.title}</strong>
-                        <span><MapPin size={11} /> {incident.location}</span>
+                        <span>
+                          <MapPin size={11} /> {incident.location}
+                        </span>
                       </div>
                       <time>{incident.time}</time>
                     </div>
@@ -216,22 +267,42 @@ function LiveMap() {
             </aside>
           )}
 
-          <div className="map-location-note"><Navigation size={14} /> Map limited to Dhaka</div>
+          <div className="map-location-note">
+            <Navigation size={14} /> Map limited to Dhaka
+          </div>
         </div>
 
         <div className="map-bottom-bar">
           <div className="map-legend-live">
-            <span><i className="risk"></i>High risk</span>
-            <span><i className="caution"></i>Caution</span>
-            <span><i className="resolved"></i>Resolved</span>
-            {showSavedAreas && <>
-              <span><i className="saved home"></i>Home</span>
-              <span><i className="saved office"></i>Office</span>
-              <span><i className="saved campus"></i>Campus</span>
-              <span><i className="saved family"></i>Family</span>
-            </>}
+            <span>
+              <i className="risk"></i>High risk
+            </span>
+            <span>
+              <i className="caution"></i>Caution
+            </span>
+            <span>
+              <i className="resolved"></i>Resolved
+            </span>
+            {showSavedAreas && (
+              <>
+                <span>
+                  <i className="saved home"></i>Home
+                </span>
+                <span>
+                  <i className="saved office"></i>Office
+                </span>
+                <span>
+                  <i className="saved campus"></i>Campus
+                </span>
+                <span>
+                  <i className="saved family"></i>Family
+                </span>
+              </>
+            )}
           </div>
-          <div className="map-status"><ShieldCheck size={15} /> Updated just now</div>
+          <div className="map-status">
+            <ShieldCheck size={15} /> Updated just now
+          </div>
         </div>
       </section>
     </div>

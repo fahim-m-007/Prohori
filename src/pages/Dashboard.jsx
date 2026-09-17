@@ -9,7 +9,7 @@ import {
   Home,
   GraduationCap,
   Bookmark,
-  ThumbsUp
+  ThumbsUp,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useReports } from "../context/ReportsContext";
@@ -36,29 +36,38 @@ function Dashboard() {
           }
         }
         return r;
-      })
+      }),
     );
   };
 
   // Determine the primary area to show in the header card
   const primaryArea = savedAreas.length > 0 ? savedAreas[0] : null;
   const accountThana = user?.thana?.trim();
-  const displayThana = accountThana || (primaryArea ? primaryArea.thana : "Dhaka City");
+  const displayThana =
+    accountThana || (primaryArea ? primaryArea.thana : "Dhaka City");
 
   // Prefer the thana selected at registration; fall back to demo saved areas.
   const relevantReports = accountThana
     ? reports.filter((report) => report.thana === accountThana)
-    : reports.filter((report) => savedAreas.some((area) => area.thana === report.thana));
+    : reports.filter((report) =>
+        savedAreas.some((area) => area.thana === report.thana),
+      );
 
   // If no relevant reports, just show recent global reports
-  const displayReports = (relevantReports.length > 0 ? relevantReports : reports).slice(0, 4);
+  const displayReports = (
+    relevantReports.length > 0 ? relevantReports : reports
+  ).slice(0, 4);
 
   const getSeverityClass = (severity) => {
     switch (severity) {
-      case "high": return "red";
-      case "caution": return "orange";
-      case "resolved": return "blue";
-      default: return "purple";
+      case "high":
+        return "red";
+      case "caution":
+        return "orange";
+      case "resolved":
+        return "blue";
+      default:
+        return "purple";
     }
   };
 
@@ -116,7 +125,11 @@ function Dashboard() {
 
           <div className="thana-count">
             <strong>{relevantReports.length}</strong>
-            <span>reports<br />nearby</span>
+            <span>
+              reports
+              <br />
+              nearby
+            </span>
           </div>
         </section>
 
@@ -136,12 +149,26 @@ function Dashboard() {
             </div>
 
             {displayReports.length === 0 ? (
-              <p style={{ fontSize: '12px', color: 'var(--text-secondary)', padding: '10px 0' }}>No recent reports available.</p>
+              <p
+                style={{
+                  fontSize: "12px",
+                  color: "var(--text-secondary)",
+                  padding: "10px 0",
+                }}
+              >
+                No recent reports available.
+              </p>
             ) : (
               displayReports.map((report) => (
                 <div className="report-item" key={report.id}>
-                  <div className={`report-icon ${getSeverityClass(report.severity)}`}>
-                    {report.severity === "resolved" ? <ShieldCheck size={18} /> : <AlertTriangle size={18} />}
+                  <div
+                    className={`report-icon ${getSeverityClass(report.severity)}`}
+                  >
+                    {report.severity === "resolved" ? (
+                      <ShieldCheck size={18} />
+                    ) : (
+                      <AlertTriangle size={18} />
+                    )}
                   </div>
 
                   <div className="report-content">
@@ -155,20 +182,29 @@ function Dashboard() {
                       {report.location} ({report.thana})
                     </span>
 
-                    <span className="report-category">
-                      {report.category}
-                    </span>
+                    <span className="report-category">{report.category}</span>
 
                     <p>{report.description}</p>
 
                     <div className="report-actions">
-                      <Link to="/reports" style={{ fontSize: '8px', fontWeight: '700', color: 'var(--blue)', textDecoration: 'none' }}>
+                      <Link
+                        to="/reports"
+                        style={{
+                          fontSize: "8px",
+                          fontWeight: "700",
+                          color: "var(--blue)",
+                          textDecoration: "none",
+                        }}
+                      >
                         View in Feed
                       </Link>
 
-                      <button 
-                        className={`flag-button ${report.userVoted === "up" ? "voted" : ""}`} 
-                        style={{ cursor: 'pointer', color: report.userVoted === "up" ? 'var(--blue)' : '' }}
+                      <button
+                        className={`flag-button ${report.userVoted === "up" ? "voted" : ""}`}
+                        style={{
+                          cursor: "pointer",
+                          color: report.userVoted === "up" ? "var(--blue)" : "",
+                        }}
                         onClick={() => handleVote(report.id)}
                       >
                         <ThumbsUp size={12} />
@@ -196,17 +232,22 @@ function Dashboard() {
               </div>
 
               {savedAreas.length === 0 ? (
-                <p style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>You haven't saved any locations yet.</p>
+                <p style={{ fontSize: "10px", color: "var(--text-secondary)" }}>
+                  You haven't saved any locations yet.
+                </p>
               ) : (
                 savedAreas.slice(0, 3).map((area) => (
-                  <div className="alert-item" key={area.id}>
-                    <div className="small-icon" style={{ background: '#f8fafc', color: 'var(--navy)' }}>
+                  <div className="alert-item" key={area.id || area._id}>
+                    <div
+                      className="small-icon"
+                      style={{ background: "#f8fafc", color: "var(--navy)" }}
+                    >
                       {getCategoryIcon(area.category)}
                     </div>
                     <div>
                       <strong>{area.name}</strong>
                       <span>{area.thana}</span>
-                      <small>Safety Score: {area.safetyScore}/100</small>
+                      <small>{area.address || `${area.thana}, Dhaka`}</small>
                     </div>
                   </div>
                 ))
@@ -253,7 +294,10 @@ function Dashboard() {
               </div>
 
               <div className="my-report">
-                <div className="small-icon green" style={{ background: '#ecfdf5', color: '#10b981' }}>
+                <div
+                  className="small-icon green"
+                  style={{ background: "#ecfdf5", color: "#10b981" }}
+                >
                   <ShieldCheck size={14} />
                 </div>
                 <div>
@@ -280,10 +324,7 @@ function Dashboard() {
             <h2>See something that matters?</h2>
             <p>Report a safety or civic issue in your area.</p>
           </div>
-          <Link
-            to="/report-incident"
-            className="dashboard-report-button"
-          >
+          <Link to="/report-incident" className="dashboard-report-button">
             Report an incident
             <ArrowRight size={14} />
           </Link>

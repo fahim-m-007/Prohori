@@ -21,14 +21,20 @@ function Login() {
     }
     setError("");
     setSubmitting(true);
-    try { await login({ email, password }); navigate("/dashboard", { replace: true }); }
-    catch (requestError) { setError(requestError.response?.data?.message || "Unable to log in. Try again."); }
-    finally { setSubmitting(false); }
+    try {
+      await login({ email, password });
+      navigate("/dashboard", { replace: true });
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message || "Unable to log in. Try again.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="auth-page">
-
       <div className="auth-brand">
         <Link to="/" className="auth-logo">
           <div className="auth-logo-mark">P</div>
@@ -37,17 +43,13 @@ function Login() {
       </div>
 
       <div className="auth-card">
-
         <div className="auth-heading">
           <span>WELCOME BACK</span>
           <h1>Log in to Prohori</h1>
           <p>Stay informed about safety in your area.</p>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-        >
-
+        <form onSubmit={handleSubmit}>
           <div className="auth-field">
             <label htmlFor="email">Email</label>
             <input
@@ -81,9 +83,9 @@ function Login() {
                 required
               />
               {password && password.length > 0 && (
-                <button 
-                  type="button" 
-                  className="password-toggle" 
+                <button
+                  type="button"
+                  className="password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -93,24 +95,25 @@ function Login() {
             <span className="auth-hint">Must be at least 8 characters</span>
           </div>
 
-          {error && <p className="auth-error" role="alert">{error}</p>}
+          {error && (
+            <p className="auth-error" role="alert">
+              {error}
+            </p>
+          )}
           <button type="submit" className="auth-button" disabled={submitting}>
             {submitting ? "Logging in..." : "Log in"}
           </button>
-
         </form>
 
         <p className="auth-switch">
           Not a user yet?
           <Link to="/signup"> Register</Link>
         </p>
-
       </div>
 
       <Link to="/" className="auth-back">
         ← Back to Prohori
       </Link>
-
     </div>
   );
 }

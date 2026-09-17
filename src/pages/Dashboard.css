@@ -5,7 +5,6 @@
   padding-bottom: 40px;
 }
 
-
 /* HEADER */
 
 .dashboard-header {
@@ -87,13 +86,11 @@
   transform: translateY(-1px);
 }
 
-
 /* CONTENT */
 
 .dashboard-content {
   padding: 22px 38px;
 }
-
 
 /* SELECTED THANA */
 
@@ -218,7 +215,6 @@
   font-size: 9px;
   font-weight: 700;
 }
-
 
 /* RECENT REPORTS */
 
@@ -360,7 +356,6 @@
   color: var(--danger);
 }
 
-
 /* RIGHT SIDE */
 
 .dashboard-side {
@@ -455,7 +450,6 @@
   font-weight: 700;
 }
 
-
 /* REPORT CTA */
 
 .dashboard-report-card {
@@ -506,7 +500,7 @@
   width: 190px;
   height: 190px;
 
-  border: 1px solid rgba(125, 157, 255, 0.10);
+  border: 1px solid rgba(125, 157, 255, 0.1);
   border-radius: 50%;
 
   pointer-events: none;
@@ -557,7 +551,9 @@
 
   box-shadow: 0 8px 22px rgba(48, 91, 235, 0.24);
 
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .dashboard-report-icon:hover {
@@ -613,14 +609,15 @@
 
   text-decoration: none;
 
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
 }
 
 .dashboard-report-button:hover {
   transform: translateY(-1px);
   background: #f7f9ff;
 }
-
 
 /* RESPONSIVE */
 
@@ -676,7 +673,6 @@
 }
 
 @media (max-width: 480px) {
-
   .report-top {
     align-items: flex-start;
     flex-direction: column;

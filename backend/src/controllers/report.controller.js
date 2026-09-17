@@ -3,28 +3,28 @@ const Report = require("../models/Report");
 
 // Approximate Dhaka Thana coordinate centroids for fallbacks
 const thanaCoordinates = {
-  "Dhanmondi": [23.7465, 90.3742],
+  Dhanmondi: [23.7465, 90.3742],
   "Mirpur Model": [23.8067, 90.3688],
-  "Shahbag": [23.7381, 90.3956],
-  "Shahbagh": [23.7381, 90.3956],
-  "Mohammadpur": [23.7512, 90.3578],
-  "Gulshan": [23.7945, 90.4149],
-  "Banani": [23.7937, 90.4046],
+  Shahbag: [23.7381, 90.3956],
+  Shahbagh: [23.7381, 90.3956],
+  Mohammadpur: [23.7512, 90.3578],
+  Gulshan: [23.7945, 90.4149],
+  Banani: [23.7937, 90.4046],
   "Uttara East": [23.8728, 90.3984],
   "Uttara West": [23.8752, 90.3842],
-  "Badda": [23.7806, 90.4267],
-  "Tejgaon": [23.7598, 90.3912],
+  Badda: [23.7806, 90.4267],
+  Tejgaon: [23.7598, 90.3912],
   "Tejgaon Industrial Area": [23.7662, 90.4043],
-  "Motijheel": [23.7334, 90.4178],
+  Motijheel: [23.7334, 90.4178],
   "New Market": [23.7335, 90.3842],
-  "Khilgaon": [23.7505, 90.4347],
-  "Rampura": [23.7612, 90.4208],
-  "Hatirjheel": [23.7710, 90.4100],
-  "Paltan Model": [23.7350, 90.4140],
-  "Ramna Model": [23.7420, 90.4000],
-  "Jatrabari": [23.7118, 90.4350],
-  "Lalbagh": [23.7196, 90.3882],
-  "Vatara": [23.8050, 90.4320],
+  Khilgaon: [23.7505, 90.4347],
+  Rampura: [23.7612, 90.4208],
+  Hatirjheel: [23.771, 90.41],
+  "Paltan Model": [23.735, 90.414],
+  "Ramna Model": [23.742, 90.4],
+  Jatrabari: [23.7118, 90.435],
+  Lalbagh: [23.7196, 90.3882],
+  Vatara: [23.805, 90.432],
 };
 
 function formatTimeAgo(date) {
@@ -58,7 +58,8 @@ function getDefaultSeverity(category) {
 }
 
 function serializeReport(report, currentUser) {
-  const currentUserId = currentUser?._id?.toString() || currentUser?.id?.toString();
+  const currentUserId =
+    currentUser?._id?.toString() || currentUser?.id?.toString();
   const upvoted = currentUserId
     ? (report.upvotedBy || []).some((uid) => uid.toString() === currentUserId)
     : false;
@@ -72,9 +73,10 @@ function serializeReport(report, currentUser) {
     thana: report.thana,
     location: report.location,
     description: report.description || "",
-    position: Array.isArray(report.position) && report.position.length === 2
-      ? report.position
-      : [23.8103, 90.4125],
+    position:
+      Array.isArray(report.position) && report.position.length === 2
+        ? report.position
+        : [23.8103, 90.4125],
     images: report.images || [],
     upvotes: report.upvotes || 0,
     userVoted: upvoted ? "up" : null,
@@ -108,13 +110,19 @@ async function createReport(req, res, next) {
     } = req.body;
 
     if (!category?.trim()) {
-      return res.status(400).json({ success: false, message: "Please select an incident type." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Please select an incident type." });
     }
     if (!thana?.trim()) {
-      return res.status(400).json({ success: false, message: "Please select a thana area." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Please select a thana area." });
     }
     if (!location?.trim()) {
-      return res.status(400).json({ success: false, message: "Please provide a location detail." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Please provide a location detail." });
     }
 
     const cleanCategory = category.trim();
@@ -126,9 +134,10 @@ async function createReport(req, res, next) {
       ? title.trim()
       : `${cleanCategory} at ${cleanLocation}`;
 
-    const cleanSeverity = severity && ["high", "caution", "resolved", "low"].includes(severity)
-      ? severity
-      : getDefaultSeverity(cleanCategory);
+    const cleanSeverity =
+      severity && ["high", "caution", "resolved", "low"].includes(severity)
+        ? severity
+        : getDefaultSeverity(cleanCategory);
 
     // Resolve coordinates: provided position -> thana centroid -> default Dhaka center
     let resolvedPosition = [23.8103, 90.4125];
@@ -144,7 +153,9 @@ async function createReport(req, res, next) {
     }
 
     const cleanImages = Array.isArray(images)
-      ? images.filter((img) => typeof img === "string" && img.trim().length > 0).slice(0, 3)
+      ? images
+          .filter((img) => typeof img === "string" && img.trim().length > 0)
+          .slice(0, 3)
       : [];
 
     const newReport = await Report.create({
@@ -201,7 +212,8 @@ async function getReports(req, res, next) {
       ];
     }
 
-    const sortOption = sortBy === "upvotes" ? { upvotes: -1, createdAt: -1 } : { createdAt: -1 };
+    const sortOption =
+      sortBy === "upvotes" ? { upvotes: -1, createdAt: -1 } : { createdAt: -1 };
 
     const reports = await Report.find(query).sort(sortOption);
 
@@ -220,12 +232,16 @@ async function getReportById(req, res, next) {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(404).json({ success: false, message: "Report not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Report not found." });
     }
 
     const report = await Report.findById(id);
     if (!report) {
-      return res.status(404).json({ success: false, message: "Report not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Report not found." });
     }
 
     return res.json({
@@ -243,19 +259,25 @@ async function voteReport(req, res, next) {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(404).json({ success: false, message: "Report not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Report not found." });
     }
 
     const report = await Report.findById(id);
     if (!report) {
-      return res.status(404).json({ success: false, message: "Report not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Report not found." });
     }
 
     const userId = req.user._id.toString();
     const hasVoted = report.upvotedBy.some((uid) => uid.toString() === userId);
 
     if (hasVoted) {
-      report.upvotedBy = report.upvotedBy.filter((uid) => uid.toString() !== userId);
+      report.upvotedBy = report.upvotedBy.filter(
+        (uid) => uid.toString() !== userId,
+      );
       report.upvotes = Math.max(0, report.upvotes - 1);
     } else {
       report.upvotedBy.push(req.user._id);
@@ -282,16 +304,22 @@ async function addComment(req, res, next) {
     const { text } = req.body;
 
     if (!text?.trim()) {
-      return res.status(400).json({ success: false, message: "Comment cannot be empty." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Comment cannot be empty." });
     }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(404).json({ success: false, message: "Report not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Report not found." });
     }
 
     const report = await Report.findById(id);
     if (!report) {
-      return res.status(404).json({ success: false, message: "Report not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Report not found." });
     }
 
     const comment = {

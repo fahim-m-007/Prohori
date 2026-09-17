@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import "./Reports.css";
 import { useReports } from "../context/ReportsContext";
+import ReportDetailModal from "../components/ReportDetailModal";
 
 const categories = [
   "All Categories",
@@ -81,23 +82,17 @@ const thanas = [
   "Uttara East",
   "Uttara West",
   "Vatara",
-  "Wari"
+  "Wari",
 ];
 
 function Reports() {
-  const {
-    reports,
-    voteReport,
-    addCommentToReport,
-    isLoadingReports,
-  } = useReports();
+  const { reports, voteReport, isLoadingReports } = useReports();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedThana, setSelectedThana] = useState("All Thanas");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [sortBy, setSortBy] = useState("recent");
   const [activeDetailModal, setActiveDetailModal] = useState(null);
-  const [newCommentText, setNewCommentText] = useState("");
   const [toastMessage, setToastMessage] = useState("");
 
   const showToast = (msg) => {
@@ -111,30 +106,15 @@ function Reports() {
       showToast(
         updated.userVoted === "up"
           ? "Confirmed incident! Thank you for verifying."
-          : "Vote removed."
+          : "Vote removed.",
       );
       if (activeDetailModal && activeDetailModal.id === id) {
         setActiveDetailModal(updated);
       }
     } catch (err) {
-      showToast(err.response?.data?.message || "Please log in to confirm incidents.");
-    }
-  };
-
-  const handleAddComment = async (e) => {
-    e.preventDefault();
-    if (!newCommentText.trim() || !activeDetailModal) return;
-
-    try {
-      const updated = await addCommentToReport(
-        activeDetailModal.id,
-        newCommentText.trim()
+      showToast(
+        err.response?.data?.message || "Please log in to confirm incidents.",
       );
-      setActiveDetailModal(updated);
-      setNewCommentText("");
-      showToast("Your update was posted to the community feed!");
-    } catch (err) {
-      showToast(err.response?.data?.message || "Please log in to post updates.");
     }
   };
 
@@ -158,7 +138,14 @@ function Reports() {
         if (sortBy === "upvotes") return b.upvotes - a.upvotes;
         return 0;
       });
-  }, [reports, searchQuery, selectedCategory, selectedThana, selectedStatus, sortBy]);
+  }, [
+    reports,
+    searchQuery,
+    selectedCategory,
+    selectedThana,
+    selectedStatus,
+    sortBy,
+  ]);
 
   return (
     <div className="reports-page">
@@ -253,10 +240,7 @@ function Reports() {
 
           <div className="select-wrap">
             <label>Sort By</label>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-            >
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
               <option value="recent">Most Recent</option>
               <option value="upvotes">Most Confirmed</option>
             </select>
@@ -285,7 +269,10 @@ function Reports() {
           <div className="no-reports-card">
             <CheckCircle2 size={44} className="empty-check" />
             <h3>No reports match your filters</h3>
-            <p>Try searching for a different landmark or clearing your category filters.</p>
+            <p>
+              Try searching for a different landmark or clearing your category
+              filters.
+            </p>
             <button
               className="btn-reset-filters"
               onClick={() => {
@@ -321,7 +308,9 @@ function Reports() {
 
               <div className="report-author-meta">
                 <span className="author-label">Reported by:</span>
-                <span className="author-name">{report.reporterName || "Citizen Reporter"}</span>
+                <span className="author-name">
+                  {report.reporterName || "Citizen Reporter"}
+                </span>
               </div>
 
               <div className="report-location-badge">
@@ -377,79 +366,11 @@ function Reports() {
 
       {/* DETAIL & COMMENTS MODAL */}
       {activeDetailModal && (
-        <div className="modal-overlay">
-          <div className="modal-dialog report-detail-modal">
-            <div className="modal-header">
-              <div>
-                <span className="cat-tag">{activeDetailModal.category}</span>
-                <h3 className="modal-report-title">{activeDetailModal.title}</h3>
-                <div className="modal-author-strip">
-                  <span className="author-label">Reported by:</span>
-                  <strong className="author-name">{activeDetailModal.reporterName || "Citizen Reporter"}</strong>
-                </div>
-              </div>
-              <button
-                className="modal-close-btn"
-                onClick={() => setActiveDetailModal(null)}
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <div className="modal-location-strip">
-              <MapPin size={14} />
-              <strong>{activeDetailModal.location}</strong>
-              <span>({activeDetailModal.thana} Thana)</span>
-              <span className="modal-time">· Reported {activeDetailModal.time}</span>
-            </div>
-
-            <p className="modal-full-desc">{activeDetailModal.description}</p>
-
-            <div className="modal-confirmations-strip">
-              <CheckCircle2 size={16} />
-              <span>
-                <strong>{activeDetailModal.upvotes} citizens</strong> have
-                confirmed this incident live on ground.
-              </span>
-            </div>
-
-            {/* LIVE UPDATES / COMMENTS */}
-            <div className="modal-comments-section">
-              <h4>Community Updates & On-ground Notes ({activeDetailModal.comments.length})</h4>
-
-              <div className="comments-feed-box">
-                {activeDetailModal.comments.length === 0 ? (
-                  <p className="no-comments-msg">
-                    No live updates yet. Are you near this area? Post a situation update below.
-                  </p>
-                ) : (
-                  activeDetailModal.comments.map((c, idx) => (
-                    <div className="single-comment-item" key={idx}>
-                      <div className="comment-author-line">
-                        <strong>{c.author}</strong>
-                        <small>{c.time}</small>
-                      </div>
-                      <p>{c.text}</p>
-                    </div>
-                  ))
-                )}
-              </div>
-
-              <form onSubmit={handleAddComment} className="comment-input-form">
-                <input
-                  type="text"
-                  placeholder="Add a live update (e.g. 'Road cleared', 'Water receding')..."
-                  value={newCommentText}
-                  onChange={(e) => setNewCommentText(e.target.value)}
-                  required
-                />
-                <button type="submit" className="btn-send-update">
-                  Post Update
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
+        <ReportDetailModal
+          report={activeDetailModal}
+          onClose={() => setActiveDetailModal(null)}
+          onToast={showToast}
+        />
       )}
     </div>
   );

@@ -11,5 +11,9 @@ export default function ProtectedRoute({ guestOnly = false }) {
     return user ? <Navigate to="/dashboard" replace /> : <Outlet />;
   }
 
-  return user ? <Outlet /> : <Navigate to="/login" replace state={{ from: location }} />;
+  return user ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/login" replace state={{ from: location }} />
+  );
 }

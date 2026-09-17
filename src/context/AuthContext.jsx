@@ -66,11 +66,28 @@ export function AuthProvider({ children }) {
   };
 
   const changePassword = async ({ currentPassword, newPassword }) => {
-    const { data } = await api.patch("/auth/change-password", { currentPassword, newPassword });
+    const { data } = await api.patch("/auth/change-password", {
+      currentPassword,
+      newPassword,
+    });
     return data;
   };
 
-  return <AuthContext.Provider value={{ user, loading, login, register, logout, updateProfile, changePassword }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        logout,
+        updateProfile,
+        changePassword,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

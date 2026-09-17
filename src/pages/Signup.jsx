@@ -8,11 +8,11 @@ import "./Signup.css";
 
 function Signup() {
   const navigate = useNavigate();
-  
+
   // Password states
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
-  
+
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
@@ -78,11 +78,11 @@ function Signup() {
     "Uttara East",
     "Uttara West",
     "Vatara",
-    "Wari"
+    "Wari",
   ];
 
-  const filteredThanas = thanaList.filter(t => 
-    t.toLowerCase().includes(thanaSearch.toLowerCase())
+  const filteredThanas = thanaList.filter((t) =>
+    t.toLowerCase().includes(thanaSearch.toLowerCase()),
   );
 
   // Close dropdown on outside click
@@ -120,8 +120,8 @@ function Signup() {
         setIsDropdownOpen(true);
         setHighlightedIndex(0);
       } else if (filteredThanas.length > 0) {
-        setHighlightedIndex((prev) => 
-          prev < filteredThanas.length - 1 ? prev + 1 : 0
+        setHighlightedIndex((prev) =>
+          prev < filteredThanas.length - 1 ? prev + 1 : 0,
         );
       }
     } else if (e.key === "ArrowUp") {
@@ -130,16 +130,17 @@ function Signup() {
         setIsDropdownOpen(true);
         setHighlightedIndex(filteredThanas.length - 1);
       } else if (filteredThanas.length > 0) {
-        setHighlightedIndex((prev) => 
-          prev > 0 ? prev - 1 : filteredThanas.length - 1
+        setHighlightedIndex((prev) =>
+          prev > 0 ? prev - 1 : filteredThanas.length - 1,
         );
       }
     } else if (e.key === "Enter") {
       if (isDropdownOpen && filteredThanas.length > 0) {
         e.preventDefault();
-        const selected = (highlightedIndex >= 0 && highlightedIndex < filteredThanas.length)
-          ? filteredThanas[highlightedIndex]
-          : filteredThanas[0];
+        const selected =
+          highlightedIndex >= 0 && highlightedIndex < filteredThanas.length
+            ? filteredThanas[highlightedIndex]
+            : filteredThanas[0];
         handleSelectThana(selected);
       } else if (isDropdownOpen && filteredThanas.length === 0) {
         e.preventDefault();
@@ -152,18 +153,27 @@ function Signup() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (password.length < 8) return setError("Password must be at least 8 characters long.");
-    if (password !== confirmPassword) return setError("Passwords do not match.");
+    if (password.length < 8)
+      return setError("Password must be at least 8 characters long.");
+    if (password !== confirmPassword)
+      return setError("Passwords do not match.");
     setError("");
     setSubmitting(true);
-    try { await register({ name, email, password, thana: thanaSearch }); navigate("/dashboard", { replace: true }); }
-    catch (requestError) { setError(requestError.response?.data?.message || "Unable to create your account. Try again."); }
-    finally { setSubmitting(false); }
+    try {
+      await register({ name, email, password, thana: thanaSearch });
+      navigate("/dashboard", { replace: true });
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message ||
+          "Unable to create your account. Try again.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="auth-page">
-
       <div className="auth-brand">
         <Link to="/" className="auth-logo">
           <div className="auth-logo-mark">P</div>
@@ -172,17 +182,13 @@ function Signup() {
       </div>
 
       <div className="auth-card signup-card">
-
         <div className="auth-heading">
           <span>CREATE YOUR ACCOUNT</span>
           <h1>Join Prohori</h1>
           <p>Choose your area to see relevant safety reports.</p>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-        >
-
+        <form onSubmit={handleSubmit}>
           <div className="auth-field">
             <label htmlFor="name">Full name</label>
             <input
@@ -207,14 +213,18 @@ function Signup() {
             />
           </div>
 
-          <div className="auth-field" ref={dropdownRef} style={{ position: "relative" }}>
+          <div
+            className="auth-field"
+            ref={dropdownRef}
+            style={{ position: "relative" }}
+          >
             <label htmlFor="thana">Select your Thana</label>
             <div className="dropdown-input-wrapper">
-              <input 
-                id="thana" 
+              <input
+                id="thana"
                 type="text"
                 autoComplete="off"
-                placeholder="Select or search Thana" 
+                placeholder="Select or search Thana"
                 value={thanaSearch}
                 onChange={(e) => {
                   setThanaSearch(e.target.value);
@@ -243,15 +253,22 @@ function Signup() {
                 tabIndex={-1}
                 aria-label="Toggle thana dropdown"
               >
-                <ChevronDown size={16} className={`dropdown-chevron ${isDropdownOpen ? "open" : ""}`} />
+                <ChevronDown
+                  size={16}
+                  className={`dropdown-chevron ${isDropdownOpen ? "open" : ""}`}
+                />
               </button>
             </div>
             {isDropdownOpen && (
-              <div className="custom-dropdown-menu" ref={listRef} role="listbox">
+              <div
+                className="custom-dropdown-menu"
+                ref={listRef}
+                role="listbox"
+              >
                 {filteredThanas.length > 0 ? (
                   filteredThanas.map((thana, index) => (
-                    <div 
-                      key={thana} 
+                    <div
+                      key={thana}
                       role="option"
                       aria-selected={highlightedIndex === index}
                       className={`custom-dropdown-item ${highlightedIndex === index ? "highlighted" : ""}`}
@@ -282,9 +299,9 @@ function Signup() {
                 required
               />
               {password && password.length > 0 && (
-                <button 
-                  type="button" 
-                  className="password-toggle" 
+                <button
+                  type="button"
+                  className="password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -308,35 +325,40 @@ function Signup() {
                 required
               />
               {confirmPassword && confirmPassword.length > 0 && (
-                <button 
-                  type="button" 
-                  className="password-toggle" 
+                <button
+                  type="button"
+                  className="password-toggle"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showConfirmPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
                 </button>
               )}
             </div>
           </div>
 
-          {error && <p className="auth-error" role="alert">{error}</p>}
+          {error && (
+            <p className="auth-error" role="alert">
+              {error}
+            </p>
+          )}
           <button type="submit" className="auth-button" disabled={submitting}>
             {submitting ? "Creating account..." : "Create account"}
           </button>
-
         </form>
 
         <p className="auth-switch">
           Already a user?
           <Link to="/login"> Log in</Link>
         </p>
-
       </div>
 
       <Link to="/" className="auth-back">
         ← Back to Prohori
       </Link>
-
     </div>
   );
 }

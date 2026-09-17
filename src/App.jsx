@@ -21,71 +21,51 @@ import "./App.css";
 
 function App() {
   return (
-    <ReportsProvider>
-    <SavedAreasProvider>
     <BrowserRouter>
-    <AuthProvider>
-      <Routes>
-
-        {/* ================================
+      <AuthProvider>
+        <ReportsProvider>
+          <SavedAreasProvider>
+            <Routes>
+              {/* ================================
             PUBLIC WEBSITE
         ================================= */}
 
-        <Route element={<ProtectedRoute guestOnly />}>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-        </Route>
+              <Route element={<ProtectedRoute guestOnly />}>
+                <Route path="/" element={<Landing />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+              </Route>
 
-
-        {/* ================================
+              {/* ================================
             APPLICATION
         ================================= */}
 
-        <Route element={<ProtectedRoute />}>
-        <Route element={<DashboardLayout />}>
+              <Route element={<ProtectedRoute />}>
+                <Route element={<DashboardLayout />}>
+                  {/* Dashboard */}
+                  <Route path="/dashboard" element={<Dashboard />} />
 
-          {/* Dashboard */}
-          <Route path="/dashboard" element={<Dashboard />} />
+                  {/* Report an incident */}
+                  <Route path="/report-incident" element={<ReportIncident />} />
 
-          {/* Report an incident */}
-          <Route
-            path="/report-incident"
-            element={<ReportIncident />}
-          />
+                  {/* Live Map */}
+                  <Route path="/map" element={<LiveMap />} />
 
-          {/* Live Map */}
-          <Route
-            path="/map"
-            element={<LiveMap />}
-          />
+                  {/* Reports */}
+                  <Route path="/reports" element={<Reports />} />
 
-          {/* Reports */}
-          <Route
-            path="/reports"
-            element={<Reports />}
-          />
+                  {/* Saved Areas */}
+                  <Route path="/saved" element={<SavedAreas />} />
 
-          {/* Saved Areas */}
-          <Route
-            path="/saved"
-            element={<SavedAreas />}
-          />
-
-          {/* Profile */}
-          <Route
-            path="/profile"
-            element={<Profile />}
-          />
-
-        </Route>
-        </Route>
-
-      </Routes>
-    </AuthProvider>
+                  {/* Profile */}
+                  <Route path="/profile" element={<Profile />} />
+                </Route>
+              </Route>
+            </Routes>
+          </SavedAreasProvider>
+        </ReportsProvider>
+      </AuthProvider>
     </BrowserRouter>
-    </SavedAreasProvider>
-    </ReportsProvider>
   );
 }
 

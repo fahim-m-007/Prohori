@@ -13,7 +13,6 @@
   background: #f7f9fc;
 }
 
-
 /* BRAND */
 
 .auth-brand {
@@ -49,7 +48,6 @@
 
   background: linear-gradient(135deg, var(--blue), var(--purple));
 }
-
 
 /* CARD */
 
@@ -97,7 +95,6 @@
 
   font-size: 10px;
 }
-
 
 /* FORM */
 
@@ -165,7 +162,6 @@
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
 }
 
-
 /* BUTTON */
 
 .auth-button {
@@ -189,7 +185,6 @@
   opacity: 0.94;
 }
 
-
 /* SWITCH */
 
 .auth-switch {
@@ -207,7 +202,6 @@
   font-weight: 700;
 }
 
-
 /* BACK */
 
 .auth-back {
@@ -221,7 +215,6 @@
 .auth-back:hover {
   color: var(--blue);
 }
-
 
 /* MOBILE */
 
@@ -341,7 +334,9 @@
   font-size: 10px;
   color: var(--navy);
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .custom-dropdown-item:hover,

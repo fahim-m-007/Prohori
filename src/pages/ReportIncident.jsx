@@ -1,5 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CircleMarker, MapContainer, TileLayer, useMapEvents } from "react-leaflet";
+import {
+  CircleMarker,
+  MapContainer,
+  TileLayer,
+  useMapEvents,
+} from "react-leaflet";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -23,7 +28,10 @@ const dhakaLocations = [
   { name: "Mirpur 10 Roundabout", detail: "Mirpur, Dhaka" },
   { name: "Farmgate", detail: "Tejgaon, Dhaka" },
   { name: "Dhanmondi 27", detail: "Dhanmondi, Dhaka" },
-  { name: "Hazrat Shahjalal International Airport", detail: "Airport Road, Dhaka" },
+  {
+    name: "Hazrat Shahjalal International Airport",
+    detail: "Airport Road, Dhaka",
+  },
   { name: "Shahbagh", detail: "Shahbagh, Dhaka" },
   { name: "Uttara Sector 7", detail: "Uttara, Dhaka" },
   { name: "Motijheel Shapla Chattar", detail: "Motijheel, Dhaka" },
@@ -86,12 +94,17 @@ const thanaList = [
 
 const geoapifyKey = import.meta.env.VITE_GEOAPIFY_KEY;
 const DHAKA_CENTER = [23.8103, 90.4125];
-const DHAKA_BOUNDS = [[23.65, 90.28], [23.92, 90.55]];
+const DHAKA_BOUNDS = [
+  [23.65, 90.28],
+  [23.92, 90.55],
+];
 
 function findLocalLocations(query) {
   const normalizedQuery = query.trim().toLocaleLowerCase();
   return dhakaLocations
-    .filter(({ name, detail }) => `${name} ${detail}`.toLocaleLowerCase().includes(normalizedQuery))
+    .filter(({ name, detail }) =>
+      `${name} ${detail}`.toLocaleLowerCase().includes(normalizedQuery),
+    )
     .slice(0, 5);
 }
 
@@ -118,10 +131,23 @@ function LocationMapPicker({ position, onPick }) {
     >
       <TileLayer
         url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution={'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}
+        attribution={
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }
       />
       <MapClickHandler onPick={onPick} />
-      {position && <CircleMarker center={position} radius={9} pathOptions={{ color: "white", fillColor: "#2563eb", fillOpacity: 1, weight: 4 }} />}
+      {position && (
+        <CircleMarker
+          center={position}
+          radius={9}
+          pathOptions={{
+            color: "white",
+            fillColor: "#2563eb",
+            fillOpacity: 1,
+            weight: 4,
+          }}
+        />
+      )}
     </MapContainer>
   );
 }
@@ -219,7 +245,9 @@ function ReportIncident() {
       };
 
       await createReport(payload);
-      setSuccessMessage("Incident report submitted successfully! Redirecting to feed...");
+      setSuccessMessage(
+        "Incident report submitted successfully! Redirecting to feed...",
+      );
       setTimeout(() => {
         navigate("/reports");
       }, 1000);
@@ -242,13 +270,16 @@ function ReportIncident() {
   const thanaListRef = useRef(null);
 
   const filteredThanas = thanaList.filter((t) =>
-    t.toLowerCase().includes(thanaSearch.toLowerCase())
+    t.toLowerCase().includes(thanaSearch.toLowerCase()),
   );
 
   // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event) {
-      if (thanaDropdownRef.current && !thanaDropdownRef.current.contains(event.target)) {
+      if (
+        thanaDropdownRef.current &&
+        !thanaDropdownRef.current.contains(event.target)
+      ) {
         setIsDropdownOpen(false);
         setHighlightedIndex(-1);
       }
@@ -260,7 +291,9 @@ function ReportIncident() {
   // Scroll highlighted item into view
   useEffect(() => {
     if (isDropdownOpen && thanaListRef.current && highlightedIndex >= 0) {
-      const items = thanaListRef.current.querySelectorAll(".custom-dropdown-item");
+      const items = thanaListRef.current.querySelectorAll(
+        ".custom-dropdown-item",
+      );
       if (items[highlightedIndex]) {
         items[highlightedIndex].scrollIntoView({ block: "nearest" });
       }
@@ -281,7 +314,7 @@ function ReportIncident() {
         setHighlightedIndex(0);
       } else if (filteredThanas.length > 0) {
         setHighlightedIndex((prev) =>
-          prev < filteredThanas.length - 1 ? prev + 1 : 0
+          prev < filteredThanas.length - 1 ? prev + 1 : 0,
         );
       }
     } else if (e.key === "ArrowUp") {
@@ -291,7 +324,7 @@ function ReportIncident() {
         setHighlightedIndex(filteredThanas.length - 1);
       } else if (filteredThanas.length > 0) {
         setHighlightedIndex((prev) =>
-          prev > 0 ? prev - 1 : filteredThanas.length - 1
+          prev > 0 ? prev - 1 : filteredThanas.length - 1,
         );
       }
     } else if (e.key === "Enter") {
@@ -340,16 +373,22 @@ function ReportIncident() {
           format: "json",
           limit: "5",
         });
-        const response = await fetch(`https://api.geoapify.com/v1/geocode/autocomplete?${parameters}`, { signal: controller.signal });
+        const response = await fetch(
+          `https://api.geoapify.com/v1/geocode/autocomplete?${parameters}`,
+          { signal: controller.signal },
+        );
         if (!response.ok) throw new Error("Location search failed");
 
         const { results = [] } = await response.json();
-        return results.map((result) => ({
-          id: result.place_id,
-          name: result.address_line1 || result.name || result.formatted,
-          detail: result.address_line2 || result.formatted || "Dhaka, Bangladesh",
-          coordinates: [result.lat, result.lon],
-        })).filter(({ name }) => name);
+        return results
+          .map((result) => ({
+            id: result.place_id,
+            name: result.address_line1 || result.name || result.formatted,
+            detail:
+              result.address_line2 || result.formatted || "Dhaka, Bangladesh",
+            coordinates: [result.lat, result.lon],
+          }))
+          .filter(({ name }) => name);
       };
 
       try {
@@ -370,7 +409,8 @@ function ReportIncident() {
           setSuggestions(broaderDhakaResults);
         }
       } catch (error) {
-        if (error.name !== "AbortError") setSuggestions(findLocalLocations(query));
+        if (error.name !== "AbortError")
+          setSuggestions(findLocalLocations(query));
       } finally {
         if (!controller.signal.aborted) setIsSearching(false);
       }
@@ -391,14 +431,18 @@ function ReportIncident() {
 
   const selectMapLocation = (coordinates) => {
     setLocationCoordinates(coordinates);
-    setLocationQuery(`Pinned location · ${coordinates[0].toFixed(5)}, ${coordinates[1].toFixed(5)}`);
+    setLocationQuery(
+      `Pinned location · ${coordinates[0].toFixed(5)}, ${coordinates[1].toFixed(5)}`,
+    );
     setShowSuggestions(false);
     setLocationMessage("Location pinned on the map.");
   };
 
   const useCurrentLocation = () => {
     if (!navigator.geolocation) {
-      setLocationMessage("Your browser does not support location access. Pick a spot on the map instead.");
+      setLocationMessage(
+        "Your browser does not support location access. Pick a spot on the map instead.",
+      );
       return;
     }
 
@@ -408,7 +452,10 @@ function ReportIncident() {
         selectMapLocation([coords.latitude, coords.longitude]);
         setIsMapPickerOpen(true);
       },
-      () => setLocationMessage("We could not access your location. Please allow permission or pin a spot on the map."),
+      () =>
+        setLocationMessage(
+          "We could not access your location. Please allow permission or pin a spot on the map.",
+        ),
       { enableHighAccuracy: true, timeout: 10000 },
     );
   };
@@ -418,12 +465,18 @@ function ReportIncident() {
 
     if (event.key === "ArrowDown") {
       event.preventDefault();
-      setActiveSuggestion((current) => (current + 1) % displayedSuggestions.length);
+      setActiveSuggestion(
+        (current) => (current + 1) % displayedSuggestions.length,
+      );
     }
 
     if (event.key === "ArrowUp") {
       event.preventDefault();
-      setActiveSuggestion((current) => (current - 1 + displayedSuggestions.length) % displayedSuggestions.length);
+      setActiveSuggestion(
+        (current) =>
+          (current - 1 + displayedSuggestions.length) %
+          displayedSuggestions.length,
+      );
     }
 
     if (event.key === "Enter" && activeSuggestion >= 0) {
@@ -444,9 +497,13 @@ function ReportIncident() {
           </Link>
           <span className="report-eyebrow">COMMUNITY SAFETY</span>
           <h1>Report an incident</h1>
-          <p>Share what happened to help keep your community informed and safe.</p>
+          <p>
+            Share what happened to help keep your community informed and safe.
+          </p>
         </div>
-        <div className="report-header-icon"><ShieldAlert size={21} /></div>
+        <div className="report-header-icon">
+          <ShieldAlert size={21} />
+        </div>
       </header>
 
       <main className="report-incident-content">
@@ -489,11 +546,15 @@ function ReportIncident() {
                       "Hijacking",
                       "Fire & Explosion",
                     ];
-                    setSeverity(highCats.includes(selected) ? "high" : "caution");
+                    setSeverity(
+                      highCats.includes(selected) ? "high" : "caution",
+                    );
                   }}
                   required
                 >
-                  <option value="" disabled>Select an incident type</option>
+                  <option value="" disabled>
+                    Select an incident type
+                  </option>
                   <option value="Road accident">Road accident</option>
                   <option value="Traffic disruption">Traffic disruption</option>
                   <option value="Waterlogging">Waterlogging</option>
@@ -527,8 +588,12 @@ function ReportIncident() {
                   value={severity}
                   onChange={(e) => setSeverity(e.target.value)}
                 >
-                  <option value="caution">Caution - Moderate impact / Hazard</option>
-                  <option value="high">High Risk - Urgent / Danger / Gridlock</option>
+                  <option value="caution">
+                    Caution - Moderate impact / Hazard
+                  </option>
+                  <option value="high">
+                    High Risk - Urgent / Danger / Gridlock
+                  </option>
                   <option value="low">Low - Minor issue</option>
                 </select>
                 <ChevronDown size={17} />
@@ -558,11 +623,11 @@ function ReportIncident() {
             <div className="thana-dropdown-field" ref={thanaDropdownRef}>
               <label htmlFor="incident-thana">Thana</label>
               <div className="dropdown-input-wrapper">
-                <input 
-                  id="incident-thana" 
+                <input
+                  id="incident-thana"
                   type="text"
                   autoComplete="off"
-                  placeholder="Select or search Thana" 
+                  placeholder="Select or search Thana"
                   value={thanaSearch}
                   onChange={(e) => {
                     setThanaSearch(e.target.value);
@@ -591,15 +656,22 @@ function ReportIncident() {
                   tabIndex={-1}
                   aria-label="Toggle thana dropdown"
                 >
-                  <ChevronDown size={16} className={`dropdown-chevron ${isDropdownOpen ? "open" : ""}`} />
+                  <ChevronDown
+                    size={16}
+                    className={`dropdown-chevron ${isDropdownOpen ? "open" : ""}`}
+                  />
                 </button>
               </div>
               {isDropdownOpen && (
-                <div className="custom-dropdown-menu" ref={thanaListRef} role="listbox">
+                <div
+                  className="custom-dropdown-menu"
+                  ref={thanaListRef}
+                  role="listbox"
+                >
                   {filteredThanas.length > 0 ? (
                     filteredThanas.map((thana, index) => (
-                      <div 
-                        key={thana} 
+                      <div
+                        key={thana}
                         role="option"
                         aria-selected={highlightedIndex === index}
                         className={`custom-dropdown-item ${highlightedIndex === index ? "highlighted" : ""}`}
@@ -627,7 +699,9 @@ function ReportIncident() {
                     placeholder="Search an area, road, or landmark"
                     role="combobox"
                     aria-autocomplete="list"
-                    aria-expanded={showSuggestions && locationQuery.trim().length > 0}
+                    aria-expanded={
+                      showSuggestions && locationQuery.trim().length > 0
+                    }
                     aria-controls="location-suggestions"
                     onChange={(event) => {
                       setLocationQuery(event.target.value);
@@ -639,44 +713,76 @@ function ReportIncident() {
                     onFocus={() => setShowSuggestions(true)}
                     onKeyDown={handleLocationKeyDown}
                   />
-                  <button type="button" onClick={useCurrentLocation}>Use my location</button>
+                  <button type="button" onClick={useCurrentLocation}>
+                    Use my location
+                  </button>
                 </div>
                 {showSuggestions && locationQuery.trim() && (
-                  <ul className="location-suggestions" id="location-suggestions" role="listbox">
-                    {isSearching && <li className="location-search-message">Finding locations in Dhaka...</li>}
-                    {!isSearching && displayedSuggestions.map((location, index) => (
-                      <li key={location.name} role="option" aria-selected={index === activeSuggestion}>
-                        <button
-                          type="button"
-                          className={index === activeSuggestion ? "active" : ""}
-                          onMouseDown={(event) => event.preventDefault()}
-                          onClick={() => selectLocation(location)}
-                        >
-                          <MapPin size={16} />
-                          <span><strong>{location.name}</strong><small>{location.detail}</small></span>
-                        </button>
+                  <ul
+                    className="location-suggestions"
+                    id="location-suggestions"
+                    role="listbox"
+                  >
+                    {isSearching && (
+                      <li className="location-search-message">
+                        Finding locations in Dhaka...
                       </li>
-                    ))}
+                    )}
+                    {!isSearching &&
+                      displayedSuggestions.map((location, index) => (
+                        <li
+                          key={location.name}
+                          role="option"
+                          aria-selected={index === activeSuggestion}
+                        >
+                          <button
+                            type="button"
+                            className={
+                              index === activeSuggestion ? "active" : ""
+                            }
+                            onMouseDown={(event) => event.preventDefault()}
+                            onClick={() => selectLocation(location)}
+                          >
+                            <MapPin size={16} />
+                            <span>
+                              <strong>{location.name}</strong>
+                              <small>{location.detail}</small>
+                            </span>
+                          </button>
+                        </li>
+                      ))}
                     {!isSearching && displayedSuggestions.length === 0 && (
-                      <li className="location-search-message">No Dhaka locations found. Try an area, road, or landmark.</li>
+                      <li className="location-search-message">
+                        No Dhaka locations found. Try an area, road, or
+                        landmark.
+                      </li>
                     )}
-                    {geoapifyKey && !isSearching && displayedSuggestions.length > 0 && (
-                      <li className="location-search-attribution">Search powered by Geoapify</li>
-                    )}
+                    {geoapifyKey &&
+                      !isSearching &&
+                      displayedSuggestions.length > 0 && (
+                        <li className="location-search-attribution">
+                          Search powered by Geoapify
+                        </li>
+                      )}
                   </ul>
                 )}
               </div>
             </label>
 
             <div className="location-map-actions">
-              <button type="button" onClick={() => setIsMapPickerOpen((open) => !open)}>
+              <button
+                type="button"
+                onClick={() => setIsMapPickerOpen((open) => !open)}
+              >
                 <MapIcon size={15} />
                 {isMapPickerOpen ? "Hide map" : "Pick a location on the map"}
               </button>
               <span>Can&apos;t find the exact place?</span>
             </div>
 
-            {locationMessage && <p className="location-message">{locationMessage}</p>}
+            {locationMessage && (
+              <p className="location-message">{locationMessage}</p>
+            )}
 
             {isMapPickerOpen && (
               <div className="location-picker">
@@ -685,9 +791,18 @@ function ReportIncident() {
                     <strong>Pin the incident location</strong>
                     <span>Click anywhere on the Dhaka map to set the pin.</span>
                   </div>
-                  <button type="button" aria-label="Close location map" onClick={() => setIsMapPickerOpen(false)}><X size={16} /></button>
+                  <button
+                    type="button"
+                    aria-label="Close location map"
+                    onClick={() => setIsMapPickerOpen(false)}
+                  >
+                    <X size={16} />
+                  </button>
                 </div>
-                <LocationMapPicker position={locationCoordinates} onPick={selectMapLocation} />
+                <LocationMapPicker
+                  position={locationCoordinates}
+                  onPick={selectMapLocation}
+                />
               </div>
             )}
           </section>
@@ -718,7 +833,9 @@ function ReportIncident() {
               >
                 <Camera size={22} />
                 <strong>Add photos</strong>
-                <span>Upload up to 3 images ({3 - photos.length} remaining)</span>
+                <span>
+                  Upload up to 3 images ({3 - photos.length} remaining)
+                </span>
               </button>
             )}
 
@@ -726,7 +843,10 @@ function ReportIncident() {
               <div className="photo-preview-grid">
                 {photos.map((photo) => (
                   <div key={photo.id} className="photo-preview-item">
-                    <img src={photo.dataUrl} alt={photo.name || "Incident evidence"} />
+                    <img
+                      src={photo.dataUrl}
+                      alt={photo.name || "Incident evidence"}
+                    />
                     <button
                       type="button"
                       className="photo-remove-btn"
@@ -742,7 +862,9 @@ function ReportIncident() {
           </section>
 
           <div className="incident-form-actions">
-            <Link to="/dashboard" className="cancel-report">Cancel</Link>
+            <Link to="/dashboard" className="cancel-report">
+              Cancel
+            </Link>
             <button
               type="submit"
               className="submit-report"
@@ -763,7 +885,10 @@ function ReportIncident() {
         <aside className="report-help-card">
           <ShieldAlert size={21} />
           <h2>Report responsibly</h2>
-          <p>Only share information you believe is accurate. Do not include personal or sensitive details.</p>
+          <p>
+            Only share information you believe is accurate. Do not include
+            personal or sensitive details.
+          </p>
           <Link to="/reports">View active reports</Link>
         </aside>
       </main>

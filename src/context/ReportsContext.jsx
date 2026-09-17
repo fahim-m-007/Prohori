@@ -1,5 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import api from "../api/client";
 
 const ReportsContext = createContext(null);
@@ -46,7 +52,10 @@ export function ReportsProvider({ children }) {
     const { data } = await api.post("/reports", reportData);
     if (data?.success && data?.data?.report) {
       const newReport = data.data.report;
-      setReports((prev) => [newReport, ...prev.filter((r) => r.id !== newReport.id)]);
+      setReports((prev) => [
+        newReport,
+        ...prev.filter((r) => r.id !== newReport.id),
+      ]);
       return newReport;
     }
     throw new Error(data?.message || "Failed to submit report.");
@@ -99,6 +108,7 @@ export function ReportsProvider({ children }) {
 
 export function useReports() {
   const context = useContext(ReportsContext);
-  if (!context) throw new Error("useReports must be used within ReportsProvider");
+  if (!context)
+    throw new Error("useReports must be used within ReportsProvider");
   return context;
 }

@@ -113,14 +113,20 @@ function Sidebar({ collapsed = false, onToggle }) {
 
       {/* BOTTOM */}
       <div className="sidebar-bottom">
-        <button type="button" className="sidebar-link logout-btn" onClick={handleLogout}>
+        <button
+          type="button"
+          className="sidebar-link logout-btn"
+          onClick={handleLogout}
+        >
           <LogOut size={19} />
           <span>Log out</span>
         </button>
 
         {/* USER */}
         <Link to="/profile" className="sidebar-user">
-          <div className="user-avatar">{displayName.charAt(0).toUpperCase()}</div>
+          <div className="user-avatar">
+            {displayName.charAt(0).toUpperCase()}
+          </div>
 
           <div className="user-info">
             <strong>{displayName}</strong>
