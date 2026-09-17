@@ -20,9 +20,14 @@ import { useReports } from "../context/ReportsContext";
 const categories = [
   "All Categories",
   "Road accident",
-  "Waterlogging",
   "Traffic disruption",
+  "Waterlogging",
   "Theft",
+  "Mugging",
+  "Violence",
+  "Hijacking",
+  "Fire & Explosion",
+  "Protest Blockade",
   "Other",
 ];
 

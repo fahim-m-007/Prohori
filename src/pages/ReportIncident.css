@@ -103,6 +103,92 @@
 .select-wrap select { appearance: none; }
 .select-wrap svg { position: absolute; right: 12px; bottom: 13px; pointer-events: none; color: var(--text-secondary); }
 
+.thana-dropdown-field {
+  position: relative;
+}
+
+.thana-dropdown-field + label {
+  margin-top: 16px !important;
+}
+
+.dropdown-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.dropdown-input-wrapper input {
+  margin-top: 0 !important;
+  padding-right: 38px !important;
+}
+
+.dropdown-toggle-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #aeb7c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.dropdown-toggle-button:hover {
+  color: var(--blue);
+}
+
+.dropdown-chevron {
+  transition: transform 0.2s ease;
+}
+
+.dropdown-chevron.open {
+  transform: rotate(180deg);
+}
+
+.custom-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  box-shadow: var(--shadow-md);
+  max-height: 210px;
+  overflow-y: auto;
+}
+
+.custom-dropdown-item {
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--navy);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.custom-dropdown-item:hover,
+.custom-dropdown-item.highlighted {
+  background: #eff6ff;
+  color: var(--blue);
+  font-weight: 600;
+}
+
+.custom-dropdown-empty {
+  padding: 14px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
 .location-input { display: flex; align-items: center; gap: 9px; margin-top: 8px; padding: 0 10px; border: 1px solid var(--border); border-radius: 9px; color: var(--blue); }
 .location-input input { margin: 0; border: 0; box-shadow: none !important; }
 .location-input button { padding: 6px 0 6px 10px; border: 0; border-left: 1px solid var(--border); color: var(--blue); background: transparent; font-size: 10px; font-weight: 700; white-space: nowrap; }

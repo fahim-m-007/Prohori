@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CircleMarker, MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 import { ArrowLeft, Camera, ChevronDown, Map as MapIcon, MapPin, ShieldAlert, X } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -18,6 +18,59 @@ const dhakaLocations = [
   { name: "Motijheel Shapla Chattar", detail: "Motijheel, Dhaka" },
   { name: "Bashundhara Gate", detail: "Kuril, Dhaka" },
   { name: "New Market", detail: "Dhanmondi, Dhaka" },
+];
+
+const thanaList = [
+  "Adabor",
+  "Airport / Bimanbandar",
+  "Badda",
+  "Banani",
+  "Bangshal",
+  "Bhashantek",
+  "Cantonment",
+  "Chalkbazar",
+  "Dakshinkhan",
+  "Darus-Salam",
+  "Demra",
+  "Dhanmondi",
+  "Gandaria",
+  "Gulshan",
+  "Hatirjheel",
+  "Hazaribagh",
+  "Jatrabari",
+  "Kadamtoli",
+  "Kafrul",
+  "Kalabagan",
+  "Kamrangirchar",
+  "Khilgaon",
+  "Khilkhet",
+  "Kotwali",
+  "Lalbagh",
+  "Mirpur Model",
+  "Mohammadpur",
+  "Motijheel",
+  "Mugda",
+  "New Market",
+  "Pallabi",
+  "Paltan Model",
+  "Ramna Model",
+  "Rampura",
+  "Rupnagar",
+  "Sabujbag",
+  "Shah Ali",
+  "Shahbag",
+  "Shahjahanpur",
+  "Sher-e-Bangla Nagar",
+  "Shyampur",
+  "Sutrapur",
+  "Tejgaon",
+  "Tejgaon Industrial Area",
+  "Turag",
+  "Uttarkhan",
+  "Uttara East",
+  "Uttara West",
+  "Vatara",
+  "Wari",
 ];
 
 const geoapifyKey = import.meta.env.VITE_GEOAPIFY_KEY;
@@ -63,6 +116,85 @@ function LocationMapPicker({ position, onPick }) {
 }
 
 function ReportIncident() {
+  // Thana Dropdown states
+  const [thanaSearch, setThanaSearch] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const thanaDropdownRef = useRef(null);
+  const thanaListRef = useRef(null);
+
+  const filteredThanas = useMemo(() => {
+    return thanaList.filter((t) =>
+      t.toLowerCase().includes(thanaSearch.toLowerCase())
+    );
+  }, [thanaSearch]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (thanaDropdownRef.current && !thanaDropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+        setHighlightedIndex(-1);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Scroll highlighted item into view
+  useEffect(() => {
+    if (isDropdownOpen && thanaListRef.current && highlightedIndex >= 0) {
+      const items = thanaListRef.current.querySelectorAll(".custom-dropdown-item");
+      if (items[highlightedIndex]) {
+        items[highlightedIndex].scrollIntoView({ block: "nearest" });
+      }
+    }
+  }, [highlightedIndex, isDropdownOpen]);
+
+  const handleSelectThana = (thana) => {
+    setThanaSearch(thana);
+    setIsDropdownOpen(false);
+    setHighlightedIndex(-1);
+  };
+
+  const handleThanaKeyDown = (e) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (!isDropdownOpen) {
+        setIsDropdownOpen(true);
+        setHighlightedIndex(0);
+      } else if (filteredThanas.length > 0) {
+        setHighlightedIndex((prev) =>
+          prev < filteredThanas.length - 1 ? prev + 1 : 0
+        );
+      }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (!isDropdownOpen) {
+        setIsDropdownOpen(true);
+        setHighlightedIndex(filteredThanas.length - 1);
+      } else if (filteredThanas.length > 0) {
+        setHighlightedIndex((prev) =>
+          prev > 0 ? prev - 1 : filteredThanas.length - 1
+        );
+      }
+    } else if (e.key === "Enter") {
+      if (isDropdownOpen && filteredThanas.length > 0) {
+        e.preventDefault();
+        const selected =
+          highlightedIndex >= 0 && highlightedIndex < filteredThanas.length
+            ? filteredThanas[highlightedIndex]
+            : filteredThanas[0];
+        handleSelectThana(selected);
+      } else if (isDropdownOpen && filteredThanas.length === 0) {
+        e.preventDefault();
+      }
+    } else if (e.key === "Escape") {
+      setIsDropdownOpen(false);
+      setHighlightedIndex(-1);
+    }
+  };
+
   const [locationQuery, setLocationQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
@@ -218,9 +350,14 @@ function ReportIncident() {
                 <select defaultValue="">
                   <option value="" disabled>Select an incident type</option>
                   <option>Road accident</option>
-                  <option>Waterlogging</option>
                   <option>Traffic disruption</option>
+                  <option>Waterlogging</option>
                   <option>Theft</option>
+                  <option>Mugging</option>
+                  <option>Violence</option>
+                  <option>Hijacking</option>
+                  <option>Fire &amp; Explosion</option>
+                  <option>Protest Blockade</option>
                   <option>Other</option>
                 </select>
                 <ChevronDown size={17} />
@@ -240,6 +377,67 @@ function ReportIncident() {
                 <h2>Where is it?</h2>
                 <p>Use your current location or enter the location manually.</p>
               </div>
+            </div>
+
+            <div className="thana-dropdown-field" ref={thanaDropdownRef}>
+              <label htmlFor="incident-thana">Thana</label>
+              <div className="dropdown-input-wrapper">
+                <input 
+                  id="incident-thana" 
+                  type="text"
+                  autoComplete="off"
+                  placeholder="Select or search Thana" 
+                  value={thanaSearch}
+                  onChange={(e) => {
+                    setThanaSearch(e.target.value);
+                    setIsDropdownOpen(true);
+                    setHighlightedIndex(0);
+                  }}
+                  onFocus={() => {
+                    setIsDropdownOpen(true);
+                    if (highlightedIndex === -1 && filteredThanas.length > 0) {
+                      setHighlightedIndex(0);
+                    }
+                  }}
+                  onClick={() => setIsDropdownOpen(true)}
+                  onKeyDown={handleThanaKeyDown}
+                />
+                <button
+                  type="button"
+                  className="dropdown-toggle-button"
+                  onClick={() => {
+                    setIsDropdownOpen((prev) => {
+                      const nextState = !prev;
+                      if (nextState) setHighlightedIndex(0);
+                      return nextState;
+                    });
+                  }}
+                  tabIndex={-1}
+                  aria-label="Toggle thana dropdown"
+                >
+                  <ChevronDown size={16} className={`dropdown-chevron ${isDropdownOpen ? "open" : ""}`} />
+                </button>
+              </div>
+              {isDropdownOpen && (
+                <div className="custom-dropdown-menu" ref={thanaListRef} role="listbox">
+                  {filteredThanas.length > 0 ? (
+                    filteredThanas.map((thana, index) => (
+                      <div 
+                        key={thana} 
+                        role="option"
+                        aria-selected={highlightedIndex === index}
+                        className={`custom-dropdown-item ${highlightedIndex === index ? "highlighted" : ""}`}
+                        onMouseEnter={() => setHighlightedIndex(index)}
+                        onClick={() => handleSelectThana(thana)}
+                      >
+                        {thana}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="custom-dropdown-empty">No thanas found</div>
+                  )}
+                </div>
+              )}
             </div>
 
             <label>
