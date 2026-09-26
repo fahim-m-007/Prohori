@@ -212,8 +212,14 @@ async function getReports(req, res, next) {
       ];
     }
 
-    const sortOption =
-      sortBy === "upvotes" ? { upvotes: -1, createdAt: -1 } : { createdAt: -1 };
+    let sortOption = { createdAt: -1 };
+    if (sortBy === "upvotes") {
+      sortOption = { upvotes: -1, createdAt: -1 };
+    } else if (sortBy === "oldest") {
+      sortOption = { createdAt: 1 };
+    } else {
+      sortOption = { createdAt: -1 };
+    }
 
     const reports = await Report.find(query).sort(sortOption);
 
