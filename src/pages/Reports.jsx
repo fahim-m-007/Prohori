@@ -86,7 +86,7 @@ const thanas = [
 ];
 
 function Reports() {
-  const { reports, voteReport, isLoadingReports } = useReports();
+  const { reports, voteReport, isLoadingReports, fetchReports } = useReports();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedThana, setSelectedThana] = useState("All Thanas");
@@ -118,34 +118,27 @@ function Reports() {
     }
   };
 
+  const handleSortChange = (newSort) => {
+    setSortBy(newSort);
+    fetchReports({ sortBy: newSort });
+  };
+
   const filteredReports = useMemo(() => {
-    return reports
-      .filter((r) => {
-        const matchesSearch =
-          r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          r.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          r.description.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCat =
-          selectedCategory === "All Categories" ||
-          r.category === selectedCategory;
-        const matchesThana =
-          selectedThana === "All Thanas" || r.thana === selectedThana;
-        const matchesStatus =
-          selectedStatus === "all" || r.status === selectedStatus;
-        return matchesSearch && matchesCat && matchesThana && matchesStatus;
-      })
-      .sort((a, b) => {
-        if (sortBy === "upvotes") return b.upvotes - a.upvotes;
-        return 0;
-      });
-  }, [
-    reports,
-    searchQuery,
-    selectedCategory,
-    selectedThana,
-    selectedStatus,
-    sortBy,
-  ]);
+    return reports.filter((r) => {
+      const matchesSearch =
+        r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        r.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        r.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCat =
+        selectedCategory === "All Categories" ||
+        r.category === selectedCategory;
+      const matchesThana =
+        selectedThana === "All Thanas" || r.thana === selectedThana;
+      const matchesStatus =
+        selectedStatus === "all" || r.status === selectedStatus;
+      return matchesSearch && matchesCat && matchesThana && matchesStatus;
+    });
+  }, [reports, searchQuery, selectedCategory, selectedThana, selectedStatus]);
 
   return (
     <div className="reports-page">
@@ -240,7 +233,10 @@ function Reports() {
 
           <div className="select-wrap">
             <label>Sort By</label>
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+            <select
+              value={sortBy}
+              onChange={(e) => handleSortChange(e.target.value)}
+            >
               <option value="recent">Most Recent</option>
               <option value="upvotes">Most Confirmed</option>
             </select>
