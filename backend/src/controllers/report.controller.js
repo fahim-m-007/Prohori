@@ -187,6 +187,10 @@ async function createReport(req, res, next) {
   }
 }
 
+/**
+ * Retrieves incident reports with database-level multi-filtering and indexing-optimized sorting.
+ * Supports: sortBy (recent, upvotes, oldest), category, thana, status, and regex keyword search.
+ */
 async function getReports(req, res, next) {
   try {
     const { category, thana, status, search, sortBy } = req.query;

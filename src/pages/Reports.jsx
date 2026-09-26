@@ -317,6 +317,30 @@ function Reports() {
 
               <p className="report-desc-preview">{report.description}</p>
 
+              {Array.isArray(report.images) && report.images.length > 0 && (
+                <div
+                  className="report-card-images"
+                  onClick={() => setActiveDetailModal(report)}
+                  title="Click to view attached photos"
+                >
+                  {report.images.slice(0, 3).map((imgUrl, idx) => (
+                    <div className="report-img-thumb-wrap" key={idx}>
+                      <img
+                        src={imgUrl}
+                        alt={`Incident photo ${idx + 1}`}
+                        className="report-img-thumb"
+                        loading="lazy"
+                      />
+                    </div>
+                  ))}
+                  {report.images.length > 3 && (
+                    <div className="report-img-thumb-more">
+                      +{report.images.length - 3}
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="report-card-footer">
                 <div className="verification-controls">
                   <button
