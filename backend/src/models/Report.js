@@ -77,4 +77,10 @@ const reportSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Compound indexes for high-speed database-level sorting and filtering
+reportSchema.index({ createdAt: -1 });
+reportSchema.index({ upvotes: -1, createdAt: -1 });
+reportSchema.index({ thana: 1, createdAt: -1 });
+reportSchema.index({ category: 1, createdAt: -1 });
+
 module.exports = mongoose.model("Report", reportSchema);
