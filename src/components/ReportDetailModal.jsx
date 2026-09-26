@@ -110,6 +110,34 @@ export default function ReportDetailModal({ report, onClose, onToast }) {
 
         <p className="modal-full-desc">{currentReport.description}</p>
 
+        {Array.isArray(currentReport.images) &&
+          currentReport.images.length > 0 && (
+            <div className="modal-images-gallery">
+              <h4 className="modal-section-subtitle">
+                Attached Photos ({currentReport.images.length})
+              </h4>
+              <div className="modal-images-grid">
+                {currentReport.images.map((imgUrl, idx) => (
+                  <a
+                    key={idx}
+                    href={imgUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="modal-img-wrap"
+                    title="Click to view full image"
+                  >
+                    <img
+                      src={imgUrl}
+                      alt={`Incident proof ${idx + 1}`}
+                      className="modal-gallery-img"
+                      loading="lazy"
+                    />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
         <div className="modal-confirmations-strip">
           <div className="confirm-info-left">
             <CheckCircle2 size={16} />
