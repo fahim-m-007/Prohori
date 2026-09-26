@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle2, MapPin, ThumbsUp, X } from "lucide-react";
 import { useReports } from "../context/ReportsContext";
 import "./ReportDetailModal.css";
@@ -9,6 +9,15 @@ export default function ReportDetailModal({ report, onClose, onToast }) {
   const [newCommentText, setNewCommentText] = useState("");
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState(null);
+
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, []);
 
   if (!currentReport) return null;
 
@@ -118,13 +127,18 @@ export default function ReportDetailModal({ report, onClose, onToast }) {
               </h4>
               <div className="modal-images-grid">
                 {currentReport.images.map((imgUrl, idx) => (
-                  <a
+                  <div
                     key={idx}
-                    href={imgUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     className="modal-img-wrap"
-                    title="Click to view full image"
+                    onClick={() => setLightboxImage(imgUrl)}
+                    title="Click to view full photo in broad view"
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        setLightboxImage(imgUrl);
+                      }
+                    }}
                   >
                     <img
                       src={imgUrl}
@@ -132,7 +146,7 @@ export default function ReportDetailModal({ report, onClose, onToast }) {
                       className="modal-gallery-img"
                       loading="lazy"
                     />
-                  </a>
+                  </div>
                 ))}
               </div>
             </div>
@@ -201,6 +215,34 @@ export default function ReportDetailModal({ report, onClose, onToast }) {
           </form>
         </div>
       </div>
+
+      {/* PHOTO BROAD VIEW / IN-APP LIGHTBOX */}
+      {lightboxImage && (
+        <div
+          className="photo-lightbox-overlay"
+          onClick={() => setLightboxImage(null)}
+        >
+          <div
+            className="photo-lightbox-card"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="photo-lightbox-close-btn"
+              onClick={() => setLightboxImage(null)}
+              aria-label="Exit photo broad view"
+              title="Close (Exit broad view)"
+            >
+              <X size={15} />
+            </button>
+            <img
+              src={lightboxImage}
+              alt="Incident proof broad view"
+              className="photo-lightbox-img"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
