@@ -14,11 +14,15 @@ export function ReportsProvider({ children }) {
   const [reports, setReports] = useState([]);
   const [isLoadingReports, setIsLoadingReports] = useState(true);
 
-  const fetchReports = useCallback(async () => {
+  const fetchReports = useCallback(async (params = {}) => {
+    setIsLoadingReports(true);
     try {
-      const { data } = await api.get("/reports");
+      const queryParams =
+        typeof params === "string" ? { sortBy: params } : params;
+      const { data } = await api.get("/reports", { params: queryParams });
       if (data?.success && Array.isArray(data?.data?.reports)) {
         setReports(data.data.reports);
+        return data.data.reports;
       }
     } catch (err) {
       console.warn("Could not fetch reports from backend:", err.message);
@@ -30,7 +34,7 @@ export function ReportsProvider({ children }) {
   useEffect(() => {
     let isMounted = true;
     api
-      .get("/reports")
+      .get("/reports", { params: { sortBy: "recent" } })
       .then(({ data }) => {
         if (isMounted && data?.success && Array.isArray(data?.data?.reports)) {
           setReports(data.data.reports);
