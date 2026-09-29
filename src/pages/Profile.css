@@ -348,6 +348,42 @@
   background: #f8fafc;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+  user-select: none;
+}
+
+.my-report-row:hover {
+  background: #ffffff;
+  border-color: rgba(37, 99, 235, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(11, 23, 54, 0.08);
+}
+
+.my-report-row:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.report-row-arrow {
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+  margin-left: 2px;
+}
+
+.my-report-row:hover .report-row-arrow {
+  color: var(--blue);
+  transform: translateX(3px);
 }
 
 .report-status-icon {

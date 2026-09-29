@@ -4,6 +4,7 @@ import {
   Award,
   Calendar,
   CheckCircle,
+  ChevronRight,
   Clock,
   Edit3,
   Eye,
@@ -24,6 +25,7 @@ import {
 import "./Profile.css";
 import { useAuth } from "../context/AuthContext";
 import { useReports } from "../context/ReportsContext";
+import ReportDetailModal from "../components/ReportDetailModal";
 
 const initialUser = {
   name: "Citizen Sentinel",
@@ -137,6 +139,7 @@ function Profile() {
   };
 
   const [toastMessage, setToastMessage] = useState("");
+  const [activeDetailReport, setActiveDetailReport] = useState(null);
 
   // Modal State (Profile + Security Tabs)
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
@@ -462,7 +465,20 @@ function Profile() {
                   : "Recently");
 
               return (
-                <div className="my-report-row" key={reportId}>
+                <div
+                  className="my-report-row"
+                  key={reportId}
+                  onClick={() => setActiveDetailReport(report)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setActiveDetailReport(report);
+                    }
+                  }}
+                  title="Click to view full details, photos, and discussion"
+                >
                   <div className="report-status-icon">
                     {report.status === "resolved" ? (
                       <CheckCircle size={20} className="status-resolved" />
@@ -493,6 +509,10 @@ function Profile() {
                         ? "Hazard Resolved"
                         : "Community Verified"}
                     </span>
+                  </div>
+
+                  <div className="report-row-arrow" aria-hidden="true">
+                    <ChevronRight size={16} />
                   </div>
                 </div>
               );
@@ -773,6 +793,15 @@ function Profile() {
             )}
           </div>
         </div>
+      )}
+
+      {/* INCIDENT REPORT DETAIL MODAL */}
+      {activeDetailReport && (
+        <ReportDetailModal
+          report={activeDetailReport}
+          onClose={() => setActiveDetailReport(null)}
+          onToast={showToast}
+        />
       )}
     </div>
   );
