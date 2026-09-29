@@ -1,4 +1,6 @@
 import "./Sidebar.css";
+import prohoriLogoWhite from "../assets/prohori-logo-white.png";
+import prohoriMarkWhite from "../assets/prohori-mark-white.png";
 import {
   LayoutDashboard,
   Map,
@@ -27,8 +29,19 @@ function Sidebar({ collapsed = false, onToggle }) {
       {/* LOGO */}
       <div className="sidebar-brand">
         <Link to="/dashboard" className="sidebar-logo">
-          <div className="sidebar-logo-mark">P</div>
-          <span>PROHORI</span>
+          {collapsed ? (
+            <img
+              src={prohoriMarkWhite}
+              alt="Prohori"
+              className="sidebar-logo-mark-img"
+            />
+          ) : (
+            <img
+              src={prohoriLogoWhite}
+              alt="Prohori"
+              className="sidebar-logo-full-img"
+            />
+          )}
         </Link>
         <button
           type="button"
