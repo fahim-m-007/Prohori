@@ -5,7 +5,9 @@ import { divIcon } from "leaflet";
 import {
   AlertTriangle,
   ArrowLeft,
+  ArrowRight,
   Bookmark,
+  CheckCircle2,
   Filter,
   MapPin,
   Navigation,
@@ -16,6 +18,7 @@ import {
 import "leaflet/dist/leaflet.css";
 import { useReports } from "../context/ReportsContext";
 import { useSavedAreas } from "../context/SavedAreasContext";
+import ReportDetailModal from "../components/ReportDetailModal";
 import "./LiveMap.css";
 
 const DHAKA_CENTER = [23.8103, 90.4125];
@@ -72,6 +75,17 @@ function LiveMap() {
   const [activeFilter, setActiveFilter] = useState("All incidents");
   const [showReports, setShowReports] = useState(true);
   const [showSavedAreas, setShowSavedAreas] = useState(false);
+  const [activeDetailModal, setActiveDetailModal] = useState(null);
+  const [toastMessage, setToastMessage] = useState("");
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(""), 3500);
+  };
+
+  const handleViewReport = (report) => {
+    setActiveDetailModal(report);
+  };
 
   const visibleIncidents = useMemo(() => {
     if (activeFilter === "All incidents") return reports;
@@ -172,21 +186,44 @@ function LiveMap() {
               const marker = markerStyles[markerKey];
               return (
                 <Marker
-                  key={incident.id}
+                  key={incident.id || incident._id}
                   position={incident.position}
                   icon={createReportPin(markerKey)}
                   zIndexOffset={1000}
+                  eventHandlers={{
+                    click: () => handleViewReport(incident),
+                  }}
                 >
-                  <Tooltip direction="top" offset={[0, -10]} opacity={1}>
-                    <div className="incident-popup">
-                      <span style={{ color: marker.color }}>
-                        {marker.label}
-                      </span>
+                  <Tooltip
+                    interactive
+                    direction="top"
+                    offset={[0, -6]}
+                    opacity={1}
+                  >
+                    <div
+                      className="incident-popup"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewReport(incident);
+                      }}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <div className="incident-popup-top-row">
+                        <span style={{ color: marker.color }}>
+                          {marker.label}
+                        </span>
+                        <span className="incident-popup-badge">Click for details</span>
+                      </div>
                       <strong>{incident.title}</strong>
                       <p>{incident.location}</p>
                       <small>
                         {incident.category} · {incident.time}
                       </small>
+                      <div className="incident-popup-action-btn">
+                        <span>View report details</span>
+                        <ArrowRight size={13} />
+                      </div>
                     </div>
                   </Tooltip>
                 </Marker>
@@ -251,7 +288,13 @@ function LiveMap() {
                         : incident.severity
                     ];
                   return (
-                    <div className="map-report-item" key={incident.id}>
+                    <div
+                      className="map-report-item"
+                      key={incident.id || incident._id}
+                      onClick={() => handleViewReport(incident)}
+                      title="Click to view report details"
+                      style={{ cursor: "pointer" }}
+                    >
                       <i style={{ background: marker.color }}></i>
                       <div>
                         <strong>{incident.title}</strong>
@@ -305,6 +348,23 @@ function LiveMap() {
           </div>
         </div>
       </section>
+
+      {/* REPORT DETAIL MODAL */}
+      {activeDetailModal && (
+        <ReportDetailModal
+          report={activeDetailModal}
+          onClose={() => setActiveDetailModal(null)}
+          onToast={showToast}
+        />
+      )}
+
+      {/* TOAST NOTIFICATION */}
+      {toastMessage && (
+        <div className="livemap-toast">
+          <CheckCircle2 size={16} />
+          <span>{toastMessage}</span>
+        </div>
+      )}
     </div>
   );
 }

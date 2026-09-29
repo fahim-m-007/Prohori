@@ -245,8 +245,18 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 0;
+  padding: 8px 6px;
+  border-radius: 8px;
   border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.map-report-item:hover {
+  background: #f1f5f9;
+  transform: translateX(2px);
+}
+.map-report-item:hover strong {
+  color: var(--blue);
 }
 .map-report-item:last-child {
   border-bottom: 0;
@@ -352,41 +362,130 @@
   font-weight: 700;
 }
 
-.incident-popup {
-  min-width: 170px;
-  font-family: var(--font-body);
+.leaflet-tooltip {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.18), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
+  pointer-events: auto !important;
+  white-space: normal !important;
+  box-sizing: border-box;
 }
-.incident-popup > span {
-  display: block;
-  margin-bottom: 5px;
+
+.incident-popup {
+  width: 290px;
+  max-width: min(320px, calc(100vw - 48px));
+  font-family: var(--font-body);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.incident-popup::after {
+  content: "";
+  position: absolute;
+  left: -14px;
+  right: -14px;
+  bottom: -16px;
+  height: 16px;
+  background: transparent;
+}
+
+.incident-popup-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.incident-popup-top-row > span:first-child {
   font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.6px;
 }
+
+.incident-popup-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--blue);
+  background: #eff6ff;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid #bfdbfe;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .incident-popup strong {
+  display: block;
   color: var(--navy);
   font-size: 14px;
   font-weight: 700;
+  line-height: 1.35;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
+
 .incident-popup p {
-  margin: 4px 0;
+  margin: 4px 0 4px;
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
+
 .incident-popup small {
+  display: block;
   color: var(--text-light);
   font-size: 11px;
+  margin-bottom: 10px;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
-.leaflet-tooltip {
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  box-shadow: var(--shadow-md);
+
+.incident-popup-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.incident-popup:hover .incident-popup-action-btn {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.38);
+  opacity: 0.95;
 }
 .saved-location-popup {
-  min-width: 180px;
+  width: 250px;
+  max-width: min(280px, calc(100vw - 48px));
   font-family: var(--font-body);
+  white-space: normal;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 .saved-location-popup > span {
   display: block;
@@ -397,18 +496,25 @@
   letter-spacing: 0.6px;
 }
 .saved-location-popup strong {
+  display: block;
   color: var(--navy);
   font-size: 14px;
   font-weight: 700;
+  white-space: normal;
+  word-break: break-word;
 }
 .saved-location-popup p {
   margin: 4px 0;
   color: var(--text-secondary);
   font-size: 13px;
+  white-space: normal;
+  word-break: break-word;
 }
 .saved-location-popup small {
   color: var(--text-light);
   font-size: 11px;
+  white-space: normal;
+  word-break: break-word;
 }
 .saved-location-marker-wrapper {
   background: transparent;
@@ -511,3 +617,28 @@
     max-width: 276px;
   }
 }
+
+/* TOAST NOTIFICATION */
+.livemap-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #0f172a;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  font-size: 14px;
+  font-weight: 500;
+  animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.livemap-toast svg {
+  color: #22c55e;
+  flex-shrink: 0;
+}
+

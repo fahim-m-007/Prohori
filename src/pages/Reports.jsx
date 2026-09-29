@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import {
   CheckCircle2,
   ChevronRight,
@@ -86,14 +86,47 @@ const thanas = [
 ];
 
 function Reports() {
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { reports, voteReport, isLoadingReports, fetchReports } = useReports();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedThana, setSelectedThana] = useState("All Thanas");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [sortBy, setSortBy] = useState("recent");
-  const [activeDetailModal, setActiveDetailModal] = useState(null);
+  const [activeDetailModal, setActiveDetailModal] = useState(
+    () => location.state?.report || null,
+  );
   const [toastMessage, setToastMessage] = useState("");
+
+  const targetId = searchParams.get("reportId") || location.state?.reportId;
+
+  useEffect(() => {
+    if (!targetId || reports.length === 0) return;
+
+    const timer = setTimeout(() => {
+      const found = reports.find(
+        (r) =>
+          String(r.id) === String(targetId) ||
+          String(r._id) === String(targetId),
+      );
+      if (found) {
+        setActiveDetailModal((prev) => (prev ? prev : found));
+        const cardEl = document.getElementById(
+          `report-card-${found.id || found._id}`,
+        );
+        if (cardEl) {
+          cardEl.scrollIntoView({ behavior: "smooth", block: "center" });
+          cardEl.classList.add("highlighted-report-card");
+          setTimeout(() => {
+            cardEl.classList.remove("highlighted-report-card");
+          }, 3000);
+        }
+      }
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, [reports, targetId]);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -283,7 +316,11 @@ function Reports() {
           </div>
         ) : (
           filteredReports.map((report) => (
-            <article className="report-card" key={report.id}>
+            <article
+              className="report-card"
+              key={report.id || report._id}
+              id={`report-card-${report.id || report._id}`}
+            >
               <div className="report-card-top">
                 <div className="report-cat-wrap">
                   <span className="cat-tag">{report.category}</span>
@@ -388,7 +425,14 @@ function Reports() {
       {activeDetailModal && (
         <ReportDetailModal
           report={activeDetailModal}
-          onClose={() => setActiveDetailModal(null)}
+          onClose={() => {
+            setActiveDetailModal(null);
+            if (searchParams.has("reportId")) {
+              const next = new URLSearchParams(searchParams);
+              next.delete("reportId");
+              setSearchParams(next, { replace: true });
+            }
+          }}
           onToast={showToast}
         />
       )}

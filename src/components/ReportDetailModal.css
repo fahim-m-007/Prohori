@@ -1,4 +1,27 @@
 /* REPORT DETAIL MODAL SHARED COMPONENT */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 23, 54, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 .report-detail-modal {
   max-width: 620px;
   width: 100%;
