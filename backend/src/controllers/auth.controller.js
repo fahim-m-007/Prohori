@@ -8,13 +8,15 @@ const serializeUser = (user) => {
     : "Active commuter in Dhaka. Committed to making Dhaka streets safer and well-monitored for everyone.";
 
   return {
-    id: user.id,
+    id: user.id || user._id?.toString(),
+    _id: user._id ? user._id.toString() : user.id,
     name: user.name,
     email: user.email,
     phone: user.phone || "",
     thana: user.thana,
     bio: user.bio || defaultBio,
     role: user.role,
+    createdAt: user.createdAt,
   };
 };
 const isEmail = (email) => /^\S+@\S+\.\S+$/.test(email || "");

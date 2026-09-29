@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   Award,
@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import "./Profile.css";
 import { useAuth } from "../context/AuthContext";
+import { useReports } from "../context/ReportsContext";
 
 const initialUser = {
   name: "Citizen Sentinel",
@@ -75,42 +76,27 @@ const initialBadges = [
   },
 ];
 
-const initialMyReports = [
-  {
-    id: "rep-101",
-    type: "Road accident & Traffic diversion",
-    category: "Transportation",
-    location: "Satmasjid Road, Dhanmondi",
-    date: "August 18, 2026",
-    status: "verified",
-    upvotes: 34,
-    views: 312,
-  },
-  {
-    id: "rep-102",
-    type: "Dislodged manhole lid after heavy rain",
-    category: "Civic issue",
-    location: "Dhanmondi Road 27",
-    date: "August 12, 2026",
-    status: "resolved",
-    upvotes: 48,
-    views: 520,
-  },
-  {
-    id: "rep-103",
-    type: "Streetlight malfunction near footbridge",
-    category: "Public safety",
-    location: "Kalabagan Lake Bridge",
-    date: "July 29, 2026",
-    status: "resolved",
-    upvotes: 22,
-    views: 180,
-  },
-];
-
 function Profile() {
   const { user: authUser, updateProfile, changePassword } = useAuth();
+  const { reports, isLoadingReports } = useReports();
   const [customProfile, setCustomProfile] = useState(null);
+
+  const currentUserId = authUser?.id || authUser?._id;
+
+  const myReports = useMemo(() => {
+    if (!reports || !currentUserId) return [];
+    return reports.filter((r) => {
+      if (!r.reportedBy) return false;
+      return (
+        String(r.reportedBy) === String(currentUserId) ||
+        (authUser?._id && String(r.reportedBy) === String(authUser._id))
+      );
+    });
+  }, [reports, currentUserId, authUser?._id]);
+
+  const totalConfirmations = useMemo(() => {
+    return myReports.reduce((sum, r) => sum + (Number(r.upvotes) || 0), 0);
+  }, [myReports]);
 
   const primaryThana =
     customProfile?.primaryThana ?? authUser?.thana ?? initialUser.primaryThana;
@@ -133,6 +119,10 @@ function Profile() {
         year: "numeric",
       })
     : initialUser.joinedDate;
+  const role =
+    authUser?.role === "admin"
+      ? "System Administrator"
+      : initialUser.role;
 
   const user = {
     ...initialUser,
@@ -143,9 +133,9 @@ function Profile() {
     bio,
     phone,
     joinedDate,
+    role,
   };
 
-  const [myReports] = useState(initialMyReports);
   const [toastMessage, setToastMessage] = useState("");
 
   // Modal State (Profile + Security Tabs)
@@ -350,8 +340,12 @@ function Profile() {
           </div>
           <div className="stat-info">
             <span className="stat-label">Reports Submitted</span>
-            <strong className="stat-val">{myReports.length + 11}</strong>
-            <small>100% verified incidents</small>
+            <strong className="stat-val">{myReports.length}</strong>
+            <small>
+              {myReports.length === 1
+                ? "1 incident reported"
+                : `${myReports.length} incidents reported`}
+            </small>
           </div>
         </div>
 
@@ -361,8 +355,12 @@ function Profile() {
           </div>
           <div className="stat-info">
             <span className="stat-label">Helpful Confirmations</span>
-            <strong className="stat-val">186</strong>
-            <small>Citizens helped in Dhaka</small>
+            <strong className="stat-val">{totalConfirmations}</strong>
+            <small>
+              {totalConfirmations === 1
+                ? "1 citizen helped"
+                : `${totalConfirmations} citizen confirmations`}
+            </small>
           </div>
         </div>
 
@@ -426,43 +424,81 @@ function Profile() {
           </Link>
         </div>
 
-        <div className="my-reports-list">
-          {myReports.map((report) => (
-            <div className="my-report-row" key={report.id}>
-              <div className="report-status-icon">
-                {report.status === "resolved" ? (
-                  <CheckCircle size={20} className="status-resolved" />
-                ) : (
-                  <ShieldAlert size={20} className="status-verified" />
-                )}
-              </div>
-
-              <div className="report-main-info">
-                <strong>{report.type}</strong>
-                <div className="report-location-date">
-                  <span>
-                    <MapPin size={12} /> {report.location}
-                  </span>
-                  <span>·</span>
-                  <span>
-                    <Clock size={12} /> {report.date}
-                  </span>
-                </div>
-              </div>
-
-              <div className="report-impact">
-                <span className="report-upvotes">
-                  <ThumbsUp size={13} /> {report.upvotes} Confirmations
-                </span>
-                <span className={`status-pill ${report.status}`}>
-                  {report.status === "resolved"
-                    ? "Hazard Resolved"
-                    : "Community Verified"}
-                </span>
-              </div>
+        {isLoadingReports ? (
+          <div className="profile-reports-loading">
+            <p>Loading your incident history...</p>
+          </div>
+        ) : myReports.length === 0 ? (
+          <div className="profile-reports-empty">
+            <div className="empty-icon-box">
+              <ShieldAlert size={30} />
             </div>
-          ))}
-        </div>
+            <h3>No Incident Reports Yet</h3>
+            <p>
+              You haven't submitted any road hazard or community safety alerts.
+              When you report incidents in Dhaka, they will appear here with live
+              verification updates.
+            </p>
+            <Link to="/report-incident" className="btn-empty-report">
+              <Plus size={15} />
+              <span>Report Your First Incident</span>
+            </Link>
+          </div>
+        ) : (
+          <div className="my-reports-list">
+            {myReports.map((report) => {
+              const reportId = report.id || report._id;
+              const formattedLocation = report.location
+                ? `${report.location}${report.thana ? `, ${report.thana}` : ""}`
+                : report.thana || "Dhaka";
+              const formattedDate =
+                report.time ||
+                (report.createdAt
+                  ? new Date(report.createdAt).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })
+                  : "Recently");
+
+              return (
+                <div className="my-report-row" key={reportId}>
+                  <div className="report-status-icon">
+                    {report.status === "resolved" ? (
+                      <CheckCircle size={20} className="status-resolved" />
+                    ) : (
+                      <ShieldAlert size={20} className="status-verified" />
+                    )}
+                  </div>
+
+                  <div className="report-main-info">
+                    <strong>{report.title || report.type}</strong>
+                    <div className="report-location-date">
+                      <span>
+                        <MapPin size={12} /> {formattedLocation}
+                      </span>
+                      <span>·</span>
+                      <span>
+                        <Clock size={12} /> {formattedDate}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="report-impact">
+                    <span className="report-upvotes">
+                      <ThumbsUp size={13} /> {report.upvotes || 0} Confirmations
+                    </span>
+                    <span className={`status-pill ${report.status || "verified"}`}>
+                      {report.status === "resolved"
+                        ? "Hazard Resolved"
+                        : "Community Verified"}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* EDIT PROFILE MODAL */}
