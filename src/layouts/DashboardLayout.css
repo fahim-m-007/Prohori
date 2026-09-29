@@ -5,7 +5,7 @@
 
 .dashboard-main {
   min-height: 100vh;
-  margin-left: 250px;
+  margin-left: 260px;
   transition: margin-left 0.25s ease;
 }
 

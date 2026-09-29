@@ -368,10 +368,10 @@
 
   color: var(--blue);
 
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 800;
 
-  letter-spacing: 1.5px;
+  letter-spacing: 1.2px;
 
   margin-bottom: 4px;
 }
@@ -397,7 +397,7 @@
 
   color: #16a34a;
 
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -551,7 +551,7 @@
 
   backdrop-filter: blur(8px);
 
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 
   box-shadow: var(--shadow-sm);
@@ -574,7 +574,7 @@
 
   color: var(--text-secondary);
 
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
 }
 
@@ -634,7 +634,7 @@
 
   color: var(--text-secondary);
 
-  font-size: 9px;
+  font-size: 12px;
 
   margin-top: 2px;
 }
@@ -726,7 +726,7 @@
 .stat-item span {
   color: #9eadd0;
 
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .stat-divider {
@@ -819,7 +819,7 @@
 
   font-family: var(--font-heading);
 
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
 
   margin-bottom: 30px;

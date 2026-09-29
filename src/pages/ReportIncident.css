@@ -19,7 +19,7 @@
   gap: 6px;
   margin-bottom: 18px;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -30,9 +30,9 @@
 .report-eyebrow {
   display: block;
   color: var(--blue);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 1.4px;
+  letter-spacing: 1.2px;
 }
 
 .report-incident-header h1,
@@ -51,7 +51,7 @@
 .report-incident-header p {
   margin-top: 6px;
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .report-header-icon {
@@ -94,31 +94,31 @@
   margin-bottom: 20px;
 }
 .form-section-heading > span {
-  width: 27px;
-  height: 27px;
+  width: 28px;
+  height: 28px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
   border-radius: 8px;
   color: var(--blue);
   background: #eef4ff;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
 }
 .form-section-heading h2 {
-  font-size: 15px;
+  font-size: 17px;
 }
 .form-section-heading p {
   margin-top: 4px;
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .incident-form label {
   display: block;
   margin-top: 16px;
   color: var(--navy);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
 }
 .incident-form label:first-of-type {
@@ -138,7 +138,7 @@
   border-radius: 9px;
   color: var(--navy);
   background: white;
-  font-size: 12px;
+  font-size: 14px;
 }
 .incident-form select,
 .incident-form input {
@@ -235,7 +235,7 @@
 .custom-dropdown-item {
   padding: 10px 14px;
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--navy);
   cursor: pointer;
   transition:
@@ -253,7 +253,7 @@
 .custom-dropdown-empty {
   padding: 14px;
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-secondary);
   text-align: center;
 }
@@ -279,7 +279,7 @@
   border-left: 1px solid var(--border);
   color: var(--blue);
   background: transparent;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -323,22 +323,22 @@
 }
 .location-suggestions strong {
   color: var(--navy);
-  font-size: 11px;
+  font-size: 13px;
 }
 .location-suggestions small {
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 12px;
 }
 .location-search-message {
   padding: 12px 9px;
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.4;
 }
 .location-search-attribution {
   padding: 7px 9px 3px;
   color: var(--text-light);
-  font-size: 9px;
+  font-size: 11px;
 }
 .location-map-actions {
   display: flex;
@@ -353,13 +353,13 @@
   border: 0;
   color: var(--blue);
   background: transparent;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
 }
 .location-map-actions span,
 .location-message {
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 12px;
 }
 .location-message {
   margin-top: 8px;
@@ -381,13 +381,13 @@
 .location-picker-heading strong {
   display: block;
   color: var(--navy);
-  font-size: 11px;
+  font-size: 13px;
 }
 .location-picker-heading span {
   display: block;
   margin-top: 3px;
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 12px;
 }
 .location-picker-heading button {
   border: 0;
@@ -399,7 +399,7 @@
   width: 100%;
 }
 .location-picker .leaflet-control-attribution {
-  font-size: 8px !important;
+  font-size: 10px !important;
 }
 
 .photo-upload {
@@ -425,11 +425,11 @@
 }
 .photo-upload strong {
   color: var(--navy);
-  font-size: 12px;
+  font-size: 14px;
 }
 .photo-upload span {
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .photo-preview-grid {
@@ -483,7 +483,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .report-alert-box.error {
@@ -507,7 +507,7 @@
 }
 .cancel-report {
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   text-decoration: none;
 }
@@ -519,12 +519,12 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 11px 20px;
+  padding: 12px 22px;
   border: 0;
   border-radius: 9px;
   color: white;
   background: linear-gradient(135deg, var(--blue), var(--purple));
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
   cursor: pointer;
@@ -566,18 +566,18 @@
 }
 .report-help-card h2 {
   margin-top: 13px;
-  font-size: 15px;
+  font-size: 17px;
 }
 .report-help-card p {
   margin-top: 8px;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.6;
 }
 .report-help-card a {
   display: inline-block;
   margin-top: 16px;
   color: var(--blue);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 

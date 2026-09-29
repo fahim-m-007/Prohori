@@ -314,7 +314,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -330,7 +330,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--navy);
   background: #f8fafc;
@@ -357,7 +357,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--blue);
   background: #eff6ff;
@@ -820,7 +820,7 @@
   border-left: 1px solid var(--border);
   color: var(--blue);
   background: transparent;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
   cursor: pointer;
@@ -872,25 +872,25 @@
 
 .location-suggestions strong {
   color: var(--navy);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .location-suggestions small {
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .location-search-message {
   padding: 12px 9px;
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.4;
 }
 
 .location-search-attribution {
   padding: 7px 9px 3px;
   color: var(--text-light);
-  font-size: 9px;
+  font-size: 11px;
 }
 
 /* MAP ACTIONS & PICKER */
@@ -908,7 +908,7 @@
   border: 0;
   color: var(--blue);
   background: transparent;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -916,7 +916,7 @@
 .location-map-actions span,
 .location-message {
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .location-message {
@@ -942,14 +942,14 @@
 .location-picker-heading strong {
   display: block;
   color: var(--navy);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .location-picker-heading span {
   display: block;
   margin-top: 2px;
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .location-picker-heading button {
@@ -965,13 +965,13 @@
 }
 
 .location-picker .leaflet-control-attribution {
-  font-size: 8px !important;
+  font-size: 10px !important;
 }
 
 .optional-tag {
   font-weight: 400;
   color: var(--text-light);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .saved-empty-state {

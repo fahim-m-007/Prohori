@@ -25,10 +25,10 @@
 .card-label {
   color: var(--blue);
 
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 800;
 
-  letter-spacing: 1.3px;
+  letter-spacing: 1px;
 }
 
 .dashboard-header h1 {
@@ -38,7 +38,7 @@
 
   font-family: var(--font-heading);
 
-  font-size: 22px;
+  font-size: 26px;
   letter-spacing: -0.6px;
 }
 
@@ -47,7 +47,7 @@
 
   color: var(--text-secondary);
 
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .dashboard-actions {
@@ -72,7 +72,7 @@
   background: #dce8ff;
 
   font-family: var(--font-heading);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
 
   text-decoration: none;
@@ -126,7 +126,7 @@
 
   font-family: var(--font-heading);
 
-  font-size: 21px;
+  font-size: 24px;
 }
 
 .thana-card p {
@@ -134,7 +134,7 @@
 
   color: var(--text-secondary);
 
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .thana-count {
@@ -152,13 +152,13 @@
 
   font-family: var(--font-heading);
 
-  font-size: 28px;
+  font-size: 32px;
 }
 
 .thana-count span {
   color: var(--text-secondary);
 
-  font-size: 9px;
+  font-size: 12px;
   line-height: 1.3;
 }
 
@@ -202,7 +202,7 @@
 
   font-family: var(--font-heading);
 
-  font-size: 15px;
+  font-size: 17px;
 }
 
 .view-link {
@@ -212,7 +212,7 @@
 
   color: var(--blue);
 
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -282,12 +282,12 @@
 
 .report-top strong {
   color: var(--navy);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .report-top small {
   color: var(--text-light);
-  font-size: 8px;
+  font-size: 11px;
 }
 
 .report-location {
@@ -298,21 +298,21 @@
   margin-top: 4px;
 
   color: var(--text-secondary);
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .report-category {
   display: inline-block;
 
   margin-top: 5px;
-  padding: 3px 6px;
+  padding: 3px 8px;
 
   border-radius: 5px;
 
   color: var(--text-secondary);
   background: #f5f7fa;
 
-  font-size: 7px;
+  font-size: 11px;
 }
 
 .report-content p {
@@ -320,7 +320,7 @@
 
   color: var(--text-secondary);
 
-  font-size: 9px;
+  font-size: 13px;
   line-height: 1.5;
 }
 
@@ -340,7 +340,7 @@
   color: var(--blue);
   background: transparent;
 
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -365,8 +365,8 @@
 }
 
 .alert-count {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
 
   display: flex;
   align-items: center;
@@ -377,7 +377,7 @@
   color: white;
   background: var(--danger);
 
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 800;
 }
 
@@ -422,19 +422,19 @@
 .alert-item strong,
 .my-report strong {
   color: var(--navy);
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .alert-item span,
 .my-report span {
   color: var(--text-secondary);
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .alert-item small,
 .my-report > small {
   color: var(--text-light);
-  font-size: 8px;
+  font-size: 11px;
 }
 
 .side-link {
@@ -446,7 +446,7 @@
 
   color: var(--blue);
 
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -578,7 +578,7 @@
   color: white;
 
   font-family: var(--font-heading);
-  font-size: 17px;
+  font-size: 20px;
   letter-spacing: -0.2px;
 }
 
@@ -587,7 +587,7 @@
 
   color: #b7c3dc;
 
-  font-size: 9px;
+  font-size: 13px;
 }
 
 .dashboard-report-button {
@@ -597,14 +597,14 @@
   gap: 6px;
 
   margin-top: 15px;
-  padding: 9px 13px;
+  padding: 10px 18px;
 
   border-radius: 8px;
 
   color: var(--navy);
   background: white;
 
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 700;
 
   text-decoration: none;
@@ -668,7 +668,7 @@
   }
 
   .dashboard-report-content h2 {
-    font-size: 15px;
+    font-size: 17px;
   }
 }
 

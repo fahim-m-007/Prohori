@@ -24,7 +24,6 @@ import {
   ShieldCheck,
   Sparkles,
   ThumbsUp,
-  Zap,
 } from "lucide-react";
 import "./Profile.css";
 import { useAuth } from "../context/AuthContext";
