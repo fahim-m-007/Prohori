@@ -1,16 +1,20 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
+  AlertTriangle,
   Award,
   Calendar,
   CheckCircle,
+  CheckCircle2,
   ChevronRight,
   Clock,
+  CloudRain,
   Edit3,
   Eye,
   EyeOff,
   HeartHandshake,
   KeyRound,
+  Lock,
   Mail,
   MapPin,
   Phone,
@@ -29,7 +33,6 @@ import ReportDetailModal from "../components/ReportDetailModal";
 
 const initialUser = {
   name: "Citizen Sentinel",
-  fullName: "Citizen Sentinel",
   email: "",
   phone: "",
   primaryThana: "Dhaka",
@@ -38,45 +41,6 @@ const initialUser = {
   reputationLevel: "Level 1 Sentinel",
   bio: "Committed to making Dhaka streets safer and well-monitored for everyone.",
 };
-
-const initialBadges = [
-  {
-    id: "b-1",
-    name: "Dhaka Sentinel",
-    icon: <ShieldCheck size={20} />,
-    color: "#2563eb",
-    bgColor: "#eff6ff",
-    description: "Submitted 10+ verified community incident reports",
-    earnedDate: "Feb 2025",
-  },
-  {
-    id: "b-2",
-    name: "Monsoon Guide",
-    icon: <Sparkles size={20} />,
-    color: "#0ea5e9",
-    bgColor: "#f0f9ff",
-    description: "Accurately mapped waterlogging choke points during rain",
-    earnedDate: "May 2025",
-  },
-  {
-    id: "b-3",
-    name: "Rapid Spotter",
-    icon: <Zap size={20} />,
-    color: "#f59e0b",
-    bgColor: "#fffbeb",
-    description: "Reported an active hazard within 5 minutes of occurrence",
-    earnedDate: "Jul 2025",
-  },
-  {
-    id: "b-4",
-    name: "Community Pillar",
-    icon: <HeartHandshake size={20} />,
-    color: "#6d4aff",
-    bgColor: "#f5f3ff",
-    description: "Received 150+ community confirmations on alerts",
-    earnedDate: "Aug 2025",
-  },
-];
 
 function Profile() {
   const { user: authUser, updateProfile, changePassword } = useAuth();
@@ -100,10 +64,170 @@ function Profile() {
     return myReports.reduce((sum, r) => sum + (Number(r.upvotes) || 0), 0);
   }, [myReports]);
 
+  // Dynamic 5-Tier Sentinel Badges System
+  const badges = useMemo(() => {
+    const totalReports = myReports.length;
+    const waterloggingReports = myReports.filter(
+      (r) => r.category === "Waterlogging",
+    );
+    const roadHazardReports = myReports.filter((r) =>
+      ["Road accident", "Traffic disruption", "Protest Blockade"].includes(
+        r.category,
+      ),
+    );
+
+    // Chronological order for milestone unlock dates
+    const chronologicalReports = [...myReports].sort((a, b) => {
+      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return timeA - timeB;
+    });
+
+    const formatMilestoneDate = (dateVal) => {
+      if (!dateVal) return null;
+      return new Date(dateVal).toLocaleDateString("en-US", {
+        month: "short",
+        year: "numeric",
+      });
+    };
+
+    // 1. First Alert (1st report submitted)
+    const isFirstAlertUnlocked = totalReports >= 1;
+    const firstAlertEarnedDate = isFirstAlertUnlocked
+      ? formatMilestoneDate(chronologicalReports[0]?.createdAt) || "Earned"
+      : null;
+
+    // 2. Monsoon Watcher (At least 1 waterlogging report)
+    const isMonsoonUnlocked = waterloggingReports.length >= 1;
+    const monsoonEarnedDate = isMonsoonUnlocked
+      ? formatMilestoneDate(waterloggingReports[0]?.createdAt) || "Earned"
+      : null;
+
+    // 3. Road Sentinel (3 road/traffic hazard reports)
+    const roadHazardCount = roadHazardReports.length;
+    const isRoadSentinelUnlocked = roadHazardCount >= 3;
+    const roadSentinelEarnedDate = isRoadSentinelUnlocked
+      ? formatMilestoneDate(roadHazardReports[2]?.createdAt) || "Earned"
+      : null;
+
+    // 4. Community Confirmed (15 community confirmations received)
+    const isCommunityConfirmedUnlocked = totalConfirmations >= 15;
+    const communityEarnedDate = isCommunityConfirmedUnlocked ? "Earned" : null;
+
+    // 5. City Watcher (5 incident reports total)
+    const isCityWatcherUnlocked = totalReports >= 5;
+    const cityWatcherEarnedDate = isCityWatcherUnlocked
+      ? formatMilestoneDate(chronologicalReports[4]?.createdAt) || "Earned"
+      : null;
+
+    return [
+      {
+        id: "badge-frontline-scout",
+        name: "Frontline Scout",
+        icon: <ShieldCheck size={20} />,
+        color: "#2563eb",
+        bgColor: "#eff6ff",
+        description:
+          "Stepped onto the frontlines by logging your first community incident in Dhaka.",
+        isUnlocked: isFirstAlertUnlocked,
+        current: Math.min(totalReports, 1),
+        target: 1,
+        progressPercent: Math.min(100, Math.round((totalReports / 1) * 100)),
+        progressLabel: isFirstAlertUnlocked
+          ? "Completed"
+          : `${totalReports} / 1 report logged`,
+        earnedDate: firstAlertEarnedDate,
+      },
+      {
+        id: "badge-monsoon-navigator",
+        name: "Monsoon Navigator",
+        icon: <CloudRain size={20} />,
+        color: "#0284c7",
+        bgColor: "#f0f9ff",
+        description:
+          "Mapped flooded streets or waterlogged choke points during Dhaka rains.",
+        isUnlocked: isMonsoonUnlocked,
+        current: Math.min(waterloggingReports.length, 1),
+        target: 1,
+        progressPercent: Math.min(
+          100,
+          Math.round((waterloggingReports.length / 1) * 100),
+        ),
+        progressLabel: isMonsoonUnlocked
+          ? "Completed"
+          : `${waterloggingReports.length} / 1 waterlog reported`,
+        earnedDate: monsoonEarnedDate,
+      },
+      {
+        id: "badge-gridlock-breaker",
+        name: "Gridlock Breaker",
+        icon: <AlertTriangle size={20} />,
+        color: "#f59e0b",
+        bgColor: "#fffbeb",
+        description:
+          "Helped commuters avoid severe traffic jams, accidents, and route blockades 3 times.",
+        isUnlocked: isRoadSentinelUnlocked,
+        current: Math.min(roadHazardCount, 3),
+        target: 3,
+        progressPercent: Math.min(
+          100,
+          Math.round((roadHazardCount / 3) * 100),
+        ),
+        progressLabel: isRoadSentinelUnlocked
+          ? "Completed"
+          : `${roadHazardCount} / 3 road reports`,
+        earnedDate: roadSentinelEarnedDate,
+      },
+      {
+        id: "badge-trusted-vanguard",
+        name: "Trusted Vanguard",
+        icon: <HeartHandshake size={20} />,
+        color: "#6d4aff",
+        bgColor: "#f5f3ff",
+        description:
+          "Earned 15 community endorsements on your alerts from fellow commuters.",
+        isUnlocked: isCommunityConfirmedUnlocked,
+        current: Math.min(totalConfirmations, 15),
+        target: 15,
+        progressPercent: Math.min(
+          100,
+          Math.round((totalConfirmations / 15) * 100),
+        ),
+        progressLabel: isCommunityConfirmedUnlocked
+          ? "Completed"
+          : `${totalConfirmations} / 15 confirmations`,
+        earnedDate: communityEarnedDate,
+      },
+      {
+        id: "badge-dhaka-guardian",
+        name: "Dhaka Guardian",
+        icon: <Award size={20} />,
+        color: "#10b981",
+        bgColor: "#ecfdf5",
+        description:
+          "Consistently safeguarded commuters by logging 5 incident reports across the city.",
+        isUnlocked: isCityWatcherUnlocked,
+        current: Math.min(totalReports, 5),
+        target: 5,
+        progressPercent: Math.min(
+          100,
+          Math.round((totalReports / 5) * 100),
+        ),
+        progressLabel: isCityWatcherUnlocked
+          ? "Completed"
+          : `${totalReports} / 5 reports logged`,
+        earnedDate: cityWatcherEarnedDate,
+      },
+    ];
+  }, [myReports, totalConfirmations]);
+
+  const unlockedBadgesCount = useMemo(() => {
+    return badges.filter((b) => b.isUnlocked).length;
+  }, [badges]);
+
   const primaryThana =
     customProfile?.primaryThana ?? authUser?.thana ?? initialUser.primaryThana;
   const name = customProfile?.name ?? authUser?.name ?? initialUser.name;
-  const fullName = customProfile?.fullName ?? authUser?.name ?? name;
   const email = customProfile?.email ?? authUser?.email ?? initialUser.email;
   const bio =
     customProfile?.bio ??
@@ -129,7 +253,6 @@ function Profile() {
   const user = {
     ...initialUser,
     name,
-    fullName,
     email,
     primaryThana,
     bio,
@@ -147,7 +270,6 @@ function Profile() {
 
   // Edit Profile fields
   const [editName, setEditName] = useState(user.name);
-  const [editFullName, setEditFullName] = useState(user.fullName);
   const [editPhone, setEditPhone] = useState(user.phone);
   const [editBio, setEditBio] = useState(user.bio);
   const [editThana, setEditThana] = useState(user.primaryThana);
@@ -171,7 +293,6 @@ function Profile() {
   const handleOpenEdit = (tab = "profile") => {
     setActiveModalTab(tab);
     setEditName(user.name);
-    setEditFullName(user.fullName);
     setEditPhone(user.phone || "");
     setEditBio(user.bio || "");
     setEditThana(user.primaryThana || "");
@@ -190,7 +311,6 @@ function Profile() {
 
     const hasChanges =
       editName.trim() !== (user.name || "").trim() ||
-      editFullName.trim() !== (user.fullName || "").trim() ||
       editPhone.trim() !== (user.phone || "").trim() ||
       editBio.trim() !== (user.bio || "").trim() ||
       editThana !== (user.primaryThana || "");
@@ -205,15 +325,14 @@ function Profile() {
     try {
       if (updateProfile) {
         await updateProfile({
-          name: editFullName || editName,
+          name: editName.trim(),
           phone: editPhone,
           thana: editThana,
           bio: editBio,
         });
       }
       setCustomProfile({
-        name: editName,
-        fullName: editFullName,
+        name: editName.trim(),
         phone: editPhone,
         bio: editBio,
         primaryThana: editThana,
@@ -279,7 +398,7 @@ function Profile() {
 
           <div className="hero-info">
             <div className="name-role-line">
-              <h1>{user.fullName}</h1>
+              <h1>{user.name}</h1>
               <span className="role-tag">
                 <Shield size={12} />
                 {user.role}
@@ -372,45 +491,18 @@ function Profile() {
             <Award size={22} />
           </div>
           <div className="stat-info">
-            <span className="stat-label">Safety Badges</span>
-            <strong className="stat-val">{initialBadges.length}</strong>
-            <small>Sentinel achievements</small>
+            <span className="stat-label">Sentinel Badges</span>
+            <strong className="stat-val">
+              {unlockedBadgesCount} / {badges.length}
+            </strong>
+            <small>
+              {unlockedBadgesCount === badges.length
+                ? "All milestones unlocked!"
+                : `${unlockedBadgesCount} unlocked · ${badges.length - unlockedBadgesCount} in progress`}
+            </small>
           </div>
         </div>
       </div>
-
-      {/* BADGES SECTION */}
-      <section className="profile-section-card full-width">
-        <div className="section-header">
-          <div>
-            <h2>Prohori Sentinel Badges</h2>
-            <p>Achievements earned for accurate incident reporting in Dhaka.</p>
-          </div>
-        </div>
-
-        <div className="badges-grid">
-          {initialBadges.map((badge) => (
-            <div className="badge-item" key={badge.id}>
-              <div
-                className="badge-icon-box"
-                style={{
-                  background: badge.bgColor,
-                  color: badge.color,
-                }}
-              >
-                {badge.icon}
-              </div>
-              <div className="badge-details">
-                <div className="badge-title-line">
-                  <strong>{badge.name}</strong>
-                  <small>Earned {badge.earnedDate}</small>
-                </div>
-                <p>{badge.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* MY SUBMITTED REPORTS TIMELINE */}
       <section className="profile-section-card full-width">
@@ -418,7 +510,7 @@ function Profile() {
           <div>
             <h2>My Incident Reporting History</h2>
             <p>
-              Community safety reports you submitted across Dhaka city roads.
+              Community safety reports you submitted across Dhaka city.
             </p>
           </div>
           <Link to="/report-incident" className="btn-new-report-link">
@@ -521,6 +613,76 @@ function Profile() {
         )}
       </section>
 
+      {/* BADGES SECTION */}
+      <section className="profile-section-card full-width">
+        <div className="section-header">
+          <div>
+            <h2>Prohori Sentinel Badges</h2>
+            <p>
+              Achievements earned by actively reporting road hazards and helping Dhaka commuters.
+            </p>
+          </div>
+          <span className="badges-progress-counter">
+            {unlockedBadgesCount} of {badges.length} Unlocked
+          </span>
+        </div>
+
+        <div className="badges-grid">
+          {badges.map((badge) => (
+            <div
+              className={`badge-item ${badge.isUnlocked ? "unlocked" : "locked"}`}
+              key={badge.id}
+            >
+              <div
+                className="badge-icon-box"
+                style={{
+                  background: badge.isUnlocked ? badge.bgColor : "#f1f5f9",
+                  color: badge.isUnlocked ? badge.color : "#94a3b8",
+                }}
+              >
+                {badge.isUnlocked ? badge.icon : <Lock size={18} />}
+              </div>
+              <div className="badge-details">
+                <div className="badge-title-line">
+                  <strong>{badge.name}</strong>
+                  <span
+                    className={`badge-status-pill ${badge.isUnlocked ? "status-unlocked" : "status-locked"}`}
+                  >
+                    {badge.isUnlocked ? "Unlocked" : "In Progress"}
+                  </span>
+                </div>
+                <p>{badge.description}</p>
+
+                {badge.isUnlocked ? (
+                  <div className="badge-unlocked-meta">
+                    <CheckCircle2 size={13} />
+                    <span>
+                      Unlocked {badge.earnedDate ? `· ${badge.earnedDate}` : ""}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="badge-progress-wrap">
+                    <div className="badge-progress-text">
+                      <span>{badge.progressLabel}</span>
+                      <span>{badge.progressPercent}%</span>
+                    </div>
+                    <div className="badge-progress-bar-bg">
+                      <div
+                        className="badge-progress-bar-fill"
+                        style={{
+                          width: `${badge.progressPercent}%`,
+                          background: badge.color,
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* EDIT PROFILE MODAL */}
       {isEditProfileOpen && (
         <div className="modal-overlay">
@@ -558,20 +720,12 @@ function Profile() {
             {activeModalTab === "profile" ? (
               <form onSubmit={handleSaveProfile} className="modal-form">
                 <div className="form-group">
-                  <label>Display Name</label>
+                  <label>Full Name</label>
                   <input
                     type="text"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Full Legal / Citizen Name</label>
-                  <input
-                    type="text"
-                    value={editFullName}
-                    onChange={(e) => setEditFullName(e.target.value)}
+                    placeholder="Enter your full name"
                     required
                   />
                 </div>
