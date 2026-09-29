@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import "./Landing.css";
+import prohoriLogo from "../assets/prohori-logo.png";
 
 import { ArrowRight, MapPin, ShieldCheck } from "lucide-react";
 
@@ -14,9 +15,7 @@ function Landing() {
         {/* LOGO */}
 
         <button className="logo" onClick={() => navigate("/")} type="button">
-          <div className="logo-mark">P</div>
-
-          <span>PROHORI</span>
+          <img src={prohoriLogo} alt="Prohori" className="landing-nav-logo" />
         </button>
 
         {/* NAVIGATION */}

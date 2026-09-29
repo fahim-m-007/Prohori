@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import prohoriLogo from "../assets/prohori-logo.png";
 
 import "./Login.css";
 
@@ -37,8 +38,7 @@ function Login() {
     <div className="auth-page">
       <div className="auth-brand">
         <Link to="/" className="auth-logo">
-          <div className="auth-logo-mark">P</div>
-          <span>PROHORI</span>
+          <img src={prohoriLogo} alt="Prohori Logo" className="auth-logo-img" />
         </Link>
       </div>
 

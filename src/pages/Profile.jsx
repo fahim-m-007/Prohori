@@ -92,7 +92,7 @@ function Profile() {
         (authUser?._id && String(r.reportedBy) === String(authUser._id))
       );
     });
-  }, [reports, currentUserId, authUser?._id]);
+  }, [reports, currentUserId, authUser]);
 
   const totalConfirmations = useMemo(() => {
     return myReports.reduce((sum, r) => sum + (Number(r.upvotes) || 0), 0);
