@@ -6,7 +6,7 @@ import {
   useState,
   useCallback,
 } from "react";
-import api from "../api/client";
+import api, { getToken } from "../api/client";
 import { useAuth } from "./AuthContext";
 
 const SavedAreasContext = createContext(null);
@@ -14,13 +14,15 @@ const SavedAreasContext = createContext(null);
 export function SavedAreasProvider({ children }) {
   const { user } = useAuth();
   const [savedAreas, setSavedAreas] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(() => Boolean(user || getToken()));
 
   const fetchSavedAreas = useCallback(async () => {
     if (!user) {
       setSavedAreas([]);
+      setIsLoading(false);
       return;
     }
+    setIsLoading(true);
     try {
       const { data } = await api.get("/saved-areas");
       if (data?.success && Array.isArray(data?.data?.savedAreas)) {
@@ -28,6 +30,8 @@ export function SavedAreasProvider({ children }) {
       }
     } catch (err) {
       console.warn("Could not fetch saved areas from backend:", err.message);
+    } finally {
+      setIsLoading(false);
     }
   }, [user]);
 
@@ -36,7 +40,10 @@ export function SavedAreasProvider({ children }) {
 
     if (!user) {
       Promise.resolve().then(() => {
-        if (isMounted) setSavedAreas([]);
+        if (isMounted) {
+          setSavedAreas([]);
+          setIsLoading(false);
+        }
       });
       return () => {
         isMounted = false;

@@ -10,8 +10,10 @@ import {
   GraduationCap,
   Bookmark,
   ThumbsUp,
+  Sparkles,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import { useReports } from "../context/ReportsContext";
 import { useSavedAreas } from "../context/SavedAreasContext";
 import { useAuth } from "../context/AuthContext";
@@ -19,25 +21,37 @@ import { useAuth } from "../context/AuthContext";
 import "./Dashboard.css";
 
 function Dashboard() {
-  const { reports, setReports } = useReports();
+  const { reports, voteReport } = useReports();
   const { savedAreas } = useSavedAreas();
   const { user } = useAuth();
   const displayName = user?.name || "there";
   const userInitial = displayName.charAt(0).toUpperCase();
 
-  const handleVote = (id) => {
-    setReports((prev) =>
-      prev.map((r) => {
-        if (r.id === id) {
-          if (r.userVoted === "up") {
-            return { ...r, upvotes: r.upvotes - 1, userVoted: null };
-          } else {
-            return { ...r, upvotes: r.upvotes + 1, userVoted: "up" };
-          }
-        }
-        return r;
-      }),
-    );
+  const [votingId, setVotingId] = useState(null);
+  const [toastMessage, setToastMessage] = useState("");
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(""), 3500);
+  };
+
+  const handleVote = async (id) => {
+    if (votingId) return;
+    setVotingId(id);
+    try {
+      const updated = await voteReport(id);
+      showToast(
+        updated?.userVoted === "up"
+          ? "Confirmed incident! Thank you for verifying."
+          : "Vote removed.",
+      );
+    } catch (err) {
+      showToast(
+        err.response?.data?.message || "Failed to update confirmation.",
+      );
+    } finally {
+      setVotingId(null);
+    }
   };
 
   // Determine the primary area to show in the header card
@@ -86,6 +100,14 @@ function Dashboard() {
 
   return (
     <div className="dashboard-page">
+      {/* TOAST */}
+      {toastMessage && (
+        <div className="dashboard-toast">
+          <Sparkles size={16} />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       {/* HEADER */}
       <header className="dashboard-header">
         <div>
@@ -200,12 +222,24 @@ function Dashboard() {
                       </Link>
 
                       <button
+                        type="button"
                         className={`flag-button ${report.userVoted === "up" ? "voted" : ""}`}
                         style={{
-                          cursor: "pointer",
+                          cursor: votingId === report.id ? "wait" : "pointer",
                           color: report.userVoted === "up" ? "var(--blue)" : "",
                         }}
                         onClick={() => handleVote(report.id)}
+                        disabled={votingId === report.id}
+                        title={
+                          report.userVoted === "up"
+                            ? "Remove confirmation"
+                            : "Confirm incident"
+                        }
+                        aria-label={
+                          report.userVoted === "up"
+                            ? "Remove confirmation"
+                            : "Confirm incident"
+                        }
                       >
                         <ThumbsUp size={12} />
                         {report.upvotes}
