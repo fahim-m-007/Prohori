@@ -103,6 +103,16 @@
   white-space: pre-wrap;
 }
 
+.modal-full-desc.no-desc {
+  color: var(--text-light);
+  font-style: italic;
+  font-size: 13px;
+  background: #f8fafc;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px dashed var(--border);
+}
+
 .modal-images-gallery {
   margin-bottom: 20px;
 }

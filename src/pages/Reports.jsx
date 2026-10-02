@@ -352,7 +352,13 @@ function Reports() {
                 <span className="thana-label">{report.thana}</span>
               </div>
 
-              <p className="report-desc-preview">{report.description}</p>
+              <p
+                className={`report-desc-preview ${!report.description || !report.description.trim() ? "no-desc" : ""}`}
+              >
+                {report.description && report.description.trim()
+                  ? report.description
+                  : "No additional description provided."}
+              </p>
 
               {Array.isArray(report.images) && report.images.length > 0 && (
                 <div

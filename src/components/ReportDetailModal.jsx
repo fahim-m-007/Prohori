@@ -117,7 +117,13 @@ export default function ReportDetailModal({ report, onClose, onToast }) {
           </span>
         </div>
 
-        <p className="modal-full-desc">{currentReport.description}</p>
+        <p
+          className={`modal-full-desc ${!currentReport.description || !currentReport.description.trim() ? "no-desc" : ""}`}
+        >
+          {currentReport.description && currentReport.description.trim()
+            ? currentReport.description
+            : "No additional written details were provided for this report."}
+        </p>
 
         {Array.isArray(currentReport.images) &&
           currentReport.images.length > 0 && (

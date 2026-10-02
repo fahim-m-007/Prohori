@@ -192,6 +192,7 @@
   padding: 24px;
   display: flex;
   flex-direction: column;
+  height: 100%;
   box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;
 }
@@ -312,7 +313,16 @@
   color: var(--text-secondary);
   line-height: 1.5;
   margin-bottom: 14px;
-  flex: 1;
+}
+
+.report-desc-preview.no-desc {
+  color: var(--text-light);
+  font-style: italic;
+  font-size: 12.5px;
+  background: #f8fafc;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px dashed #e2e8f0;
 }
 
 .report-card-images {
@@ -367,6 +377,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: auto;
   padding-top: 14px;
   border-top: 1px solid var(--border);
   gap: 12px;
