@@ -1,27 +1,29 @@
 import {
   AlertTriangle,
   ArrowRight,
-  FileText,
-  MapPin,
-  ShieldPlus,
-  ShieldCheck,
-  Building2,
-  Home,
-  GraduationCap,
   Bookmark,
-  ThumbsUp,
+  Building2,
+  Clock,
+  FileText,
+  GraduationCap,
+  Home,
+  MapPin,
+  ShieldCheck,
+  ShieldPlus,
   Sparkles,
+  ThumbsUp,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useReports } from "../context/ReportsContext";
 import { useSavedAreas } from "../context/SavedAreasContext";
 import { useAuth } from "../context/AuthContext";
+import ReportDetailModal from "../components/ReportDetailModal";
 
 import "./Dashboard.css";
 
 function Dashboard() {
-  const { reports, voteReport } = useReports();
+  const { reports, voteReport, deleteReport } = useReports();
   const { savedAreas } = useSavedAreas();
   const { user } = useAuth();
   const displayName = user?.name || "there";
@@ -29,6 +31,28 @@ function Dashboard() {
 
   const [votingId, setVotingId] = useState(null);
   const [toastMessage, setToastMessage] = useState("");
+  const [activeReportModal, setActiveReportModal] = useState(null);
+
+  // Keep active report fresh if reports list updates
+  useEffect(() => {
+    if (!activeReportModal) return;
+    const latest = reports.find(
+      (r) =>
+        String(r.id || r._id) ===
+        String(activeReportModal.id || activeReportModal._id),
+    );
+    if (latest) {
+      setActiveReportModal(latest);
+    }
+  }, [reports, activeReportModal]);
+
+  const handleDeleteReport = async (reportId) => {
+    if (deleteReport) {
+      await deleteReport(reportId);
+      setActiveReportModal(null);
+      showToast("Report deleted successfully.");
+    }
+  };
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -157,12 +181,12 @@ function Dashboard() {
 
         {/* MAIN CONTENT */}
         <section className="dashboard-grid">
-          {/* RECENT REPORTS */}
+          {/* LOCAL REPORTS */}
           <div className="dashboard-card reports-card">
             <div className="card-header">
               <div>
-                <span className="card-label">COMMUNITY FEED</span>
-                <h2>Recent Reports</h2>
+                <span className="card-label">LOCAL FEED</span>
+                <h2>Local Reports</h2>
               </div>
               <Link to="/reports" className="view-link">
                 View all
@@ -178,13 +202,16 @@ function Dashboard() {
                   padding: "10px 0",
                 }}
               >
-                No recent reports available.
+                No local reports available in {displayThana}.
               </p>
             ) : (
               displayReports.map((report) => (
-                <div className="report-item" key={report.id}>
+                <div className="report-item" key={report.id || report._id}>
                   <div
                     className={`report-icon ${getSeverityClass(report.severity)}`}
+                    onClick={() => setActiveReportModal(report)}
+                    style={{ cursor: "pointer" }}
+                    title="Click to view details"
                   >
                     {report.severity === "resolved" ? (
                       <ShieldCheck size={18} />
@@ -194,42 +221,81 @@ function Dashboard() {
                   </div>
 
                   <div className="report-content">
-                    <div className="report-top">
-                      <strong>{report.title}</strong>
-                      <small>{report.time}</small>
+                    <div className="report-card-top">
+                      <span className="cat-tag">{report.category}</span>
+                      <div className="time-tag">
+                        <Clock size={12} />
+                        <span>{report.time}</span>
+                      </div>
                     </div>
 
-                    <span className="report-location">
-                      <MapPin size={11} />
-                      {report.location} ({report.thana})
-                    </span>
+                    <h3
+                      className="report-heading"
+                      onClick={() => setActiveReportModal(report)}
+                      style={{ cursor: "pointer" }}
+                      title="Click to view details"
+                    >
+                      {report.title}
+                    </h3>
 
-                    <span className="report-category">{report.category}</span>
+                    <div className="report-author-meta">
+                      <span className="author-label">Reported by:</span>
+                      <span className="author-name">
+                        {report.reporterName || "Citizen Reporter"}
+                      </span>
+                    </div>
 
-                    <p>{report.description}</p>
+                    <div className="report-location-badge">
+                      <MapPin size={12} className="loc-pin" />
+                      <span>{report.location}</span>
+                    </div>
+
+                    <p
+                      className="report-desc-preview"
+                      onClick={() => setActiveReportModal(report)}
+                      style={{ cursor: "pointer" }}
+                      title="Click to view details"
+                    >
+                      {report.description}
+                    </p>
+
+                    {Array.isArray(report.images) && report.images.length > 0 && (
+                      <div
+                        className="dashboard-report-images"
+                        onClick={() => setActiveReportModal(report)}
+                        title="Click to view attached photos"
+                      >
+                        {report.images.slice(0, 2).map((imgUrl, idx) => (
+                          <div className="dashboard-report-img-thumb" key={idx}>
+                            <img
+                              src={imgUrl}
+                              alt={`Incident photo ${idx + 1}`}
+                              loading="lazy"
+                            />
+                          </div>
+                        ))}
+                        {report.images.length > 2 && (
+                          <div className="dashboard-report-img-more">
+                            +{report.images.length - 2}
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     <div className="report-actions">
-                      <Link
-                        to="/reports"
-                        style={{
-                          fontSize: "8px",
-                          fontWeight: "700",
-                          color: "var(--blue)",
-                          textDecoration: "none",
-                        }}
-                      >
-                        View in Feed
-                      </Link>
 
                       <button
                         type="button"
                         className={`flag-button ${report.userVoted === "up" ? "voted" : ""}`}
                         style={{
-                          cursor: votingId === report.id ? "wait" : "pointer",
+                          cursor:
+                            votingId === (report.id || report._id)
+                              ? "wait"
+                              : "pointer",
                           color: report.userVoted === "up" ? "var(--blue)" : "",
                         }}
-                        onClick={() => handleVote(report.id)}
-                        disabled={votingId === report.id}
+                        onClick={() => handleVote(report.id || report._id)}
+                        disabled={votingId === (report.id || report._id)}
                         title={
                           report.userVoted === "up"
                             ? "Remove confirmation"
@@ -364,6 +430,16 @@ function Dashboard() {
           </Link>
         </section>
       </main>
+
+      {/* REPORT DETAIL MODAL */}
+      {activeReportModal && (
+        <ReportDetailModal
+          report={activeReportModal}
+          onClose={() => setActiveReportModal(null)}
+          onToast={showToast}
+          onDeleteReport={handleDeleteReport}
+        />
+      )}
     </div>
   );
 }

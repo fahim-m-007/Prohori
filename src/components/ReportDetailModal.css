@@ -9,6 +9,7 @@
   justify-content: center;
   z-index: 9999;
   padding: 20px;
+  overscroll-behavior: contain;
 }
 
 @keyframes modalPop {
@@ -32,6 +33,7 @@
   animation: modalPop 0.25s ease-out;
   max-height: 90vh;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .modal-header {
