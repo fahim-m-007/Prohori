@@ -27,39 +27,70 @@ const DHAKA_BOUNDS = [
   [23.92, 90.55],
 ];
 
-const filters = ["All incidents", "High risk", "Caution", "Resolved"];
+const filters = [
+  "All incidents",
+  "High risk",
+  "Caution",
+  "Low risk",
+  "Resolved",
+];
 const markerStyles = {
   high: { color: "#ef4444", label: "High risk" },
   caution: { color: "#f59e0b", label: "Caution" },
+  low: { color: "#3b82f6", label: "Low risk" },
   resolved: { color: "#22c55e", label: "Resolved" },
 };
+
+function getMarkerInfo(severity, status) {
+  if (status === "resolved") return markerStyles.resolved;
+  return markerStyles[severity] || markerStyles.caution;
+}
 
 const savedLocationIcons = {
   residential: { label: "Home", icon: "⌂" },
   work: { label: "Office", icon: "▥" },
   campus: { label: "Campus", icon: "⌑" },
   family: { label: "Family", icon: "♥" },
+  other: { label: "Saved location", icon: "●" },
 };
 
+function isValidLatLng(pos) {
+  return (
+    Array.isArray(pos) &&
+    pos.length >= 2 &&
+    typeof pos[0] === "number" &&
+    typeof pos[1] === "number" &&
+    !isNaN(pos[0]) &&
+    !isNaN(pos[1])
+  );
+}
+
 function createSavedLocationIcon(category) {
-  const locationIcon = savedLocationIcons[category] || {
+  const safeCategory = category in savedLocationIcons ? category : "other";
+  const locationIcon = savedLocationIcons[safeCategory] || {
     label: "Saved location",
     icon: "●",
   };
   return divIcon({
     className: "saved-location-marker-wrapper",
-    html: `<span class="saved-location-marker ${category}" aria-label="${locationIcon.label}"><b>${locationIcon.icon}</b></span>`,
+    html: `<span class="saved-location-marker ${safeCategory}" aria-label="${locationIcon.label}"><b>${locationIcon.icon}</b></span>`,
     iconSize: [34, 34],
     iconAnchor: [17, 17],
     tooltipAnchor: [0, -21],
   });
 }
 
-function createReportPin(severity) {
-  const marker = markerStyles[severity];
+function createReportPin(severity, status) {
+  const marker = getMarkerInfo(severity, status);
+  const pinClass =
+    status === "resolved"
+      ? "resolved"
+      : severity in markerStyles
+        ? severity
+        : "caution";
   return divIcon({
     className: "report-pin-wrapper",
-    html: `<span class="report-pin ${severity}" style="--pin-color: ${marker.color}" aria-label="${marker.label}"></span>`,
+    html: `<span class="report-pin ${pinClass}" style="--pin-color: ${marker.color}" aria-label="${marker.label}"></span>`,
     iconSize: [28, 36],
     iconAnchor: [14, 34],
     tooltipAnchor: [0, -34],
@@ -88,11 +119,14 @@ function LiveMap() {
   };
 
   const visibleIncidents = useMemo(() => {
+    if (!Array.isArray(reports)) return [];
     if (activeFilter === "All incidents") return reports;
     if (activeFilter === "High risk")
       return reports.filter(({ severity }) => severity === "high");
     if (activeFilter === "Caution")
       return reports.filter(({ severity }) => severity === "caution");
+    if (activeFilter === "Low risk")
+      return reports.filter(({ severity }) => severity === "low");
     return reports.filter(({ status }) => status === "resolved");
   }, [activeFilter, reports]);
 
@@ -181,14 +215,15 @@ function LiveMap() {
             />
 
             {visibleIncidents.map((incident) => {
-              const markerKey =
-                incident.status === "resolved" ? "resolved" : incident.severity;
-              const marker = markerStyles[markerKey];
+              const marker = getMarkerInfo(incident.severity, incident.status);
+              const position = isValidLatLng(incident.position)
+                ? incident.position
+                : DHAKA_CENTER;
               return (
                 <Marker
                   key={incident.id || incident._id}
-                  position={incident.position}
-                  icon={createReportPin(markerKey)}
+                  position={position}
+                  icon={createReportPin(incident.severity, incident.status)}
                   zIndexOffset={1000}
                   eventHandlers={{
                     click: () => handleViewReport(incident),
@@ -231,27 +266,32 @@ function LiveMap() {
             })}
 
             {showSavedAreas &&
-              savedAreas.map((area) => (
-                <Marker
-                  key={area.id || area._id}
-                  position={area.position}
-                  icon={createSavedLocationIcon(area.category)}
-                  title={`${area.name} (${savedLocationIcons[area.category]?.label || "Saved location"})`}
-                  zIndexOffset={500}
-                >
-                  <Tooltip direction="top" offset={[0, -8]} opacity={1}>
-                    <div className="saved-location-popup">
-                      <span>SAVED LOCATION</span>
-                      <strong>{area.name}</strong>
-                      <p>{area.address}</p>
-                      <small>
-                        {area.thana}
-                        {area.note ? ` · ${area.note}` : ""}
-                      </small>
-                    </div>
-                  </Tooltip>
-                </Marker>
-              ))}
+              savedAreas.map((area) => {
+                const areaPos = isValidLatLng(area.position)
+                  ? area.position
+                  : DHAKA_CENTER;
+                return (
+                  <Marker
+                    key={area.id || area._id}
+                    position={areaPos}
+                    icon={createSavedLocationIcon(area.category)}
+                    title={`${area.name} (${savedLocationIcons[area.category]?.label || "Saved location"})`}
+                    zIndexOffset={500}
+                  >
+                    <Tooltip direction="top" offset={[0, -8]} opacity={1}>
+                      <div className="saved-location-popup">
+                        <span>SAVED LOCATION</span>
+                        <strong>{area.name}</strong>
+                        <p>{area.address}</p>
+                        <small>
+                          {area.thana}
+                          {area.note ? ` · ${area.note}` : ""}
+                        </small>
+                      </div>
+                    </Tooltip>
+                  </Marker>
+                );
+              })}
           </MapContainer>
 
           {showReports && (
@@ -281,12 +321,10 @@ function LiveMap() {
               </div>
               <div className="map-report-list">
                 {visibleIncidents.map((incident) => {
-                  const marker =
-                    markerStyles[
-                      incident.status === "resolved"
-                        ? "resolved"
-                        : incident.severity
-                    ];
+                  const marker = getMarkerInfo(
+                    incident.severity,
+                    incident.status,
+                  );
                   return (
                     <div
                       className="map-report-item"
@@ -322,6 +360,9 @@ function LiveMap() {
             </span>
             <span>
               <i className="caution"></i>Caution
+            </span>
+            <span>
+              <i className="low"></i>Low risk
             </span>
             <span>
               <i className="resolved"></i>Resolved

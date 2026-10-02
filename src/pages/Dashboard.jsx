@@ -14,7 +14,7 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useReports } from "../context/ReportsContext";
 import { useSavedAreas } from "../context/SavedAreasContext";
 import { useAuth } from "../context/AuthContext";
@@ -95,6 +95,21 @@ function Dashboard() {
   const displayReports = (
     relevantReports.length > 0 ? relevantReports : reports
   ).slice(0, 4);
+
+  // User's own incident reports for activity widget
+  const currentUserId = user?.id || user?._id;
+  const myReports = useMemo(() => {
+    if (!reports || !currentUserId) return [];
+    return reports
+      .filter((r) => {
+        if (!r.reportedBy) return false;
+        return (
+          String(r.reportedBy) === String(currentUserId) ||
+          (user?._id && String(r.reportedBy) === String(user._id))
+        );
+      })
+      .slice(0, 3);
+  }, [reports, currentUserId, user]);
 
   const getSeverityClass = (severity) => {
     switch (severity) {
@@ -359,7 +374,7 @@ function Dashboard() {
               </Link>
             </div>
 
-            {/* MY CONTRIBUTIONS (MOCK) */}
+            {/* MY CONTRIBUTIONS */}
             <div className="dashboard-card">
               <div className="card-header">
                 <div>
@@ -371,41 +386,41 @@ function Dashboard() {
                 </Link>
               </div>
 
-              <div className="my-report">
-                <div className="small-icon blue">
-                  <FileText size={14} />
-                </div>
-                <div>
-                  <strong>Verified a report</strong>
-                  <span>Satmasjid Road</span>
-                </div>
-                <small>Today</small>
-              </div>
-
-              <div className="my-report">
-                <div className="small-icon purple">
-                  <MapPin size={14} />
-                </div>
-                <div>
-                  <strong>Added a comment</strong>
-                  <span>Dhanmondi 27</span>
-                </div>
-                <small>Yesterday</small>
-              </div>
-
-              <div className="my-report">
-                <div
-                  className="small-icon green"
-                  style={{ background: "#ecfdf5", color: "#10b981" }}
+              {myReports.length === 0 ? (
+                <p
+                  style={{
+                    fontSize: "12px",
+                    color: "var(--text-secondary)",
+                    padding: "10px 0",
+                    lineHeight: "1.5",
+                  }}
                 >
-                  <ShieldCheck size={14} />
-                </div>
-                <div>
-                  <strong>Marked area safe</strong>
-                  <span>Gulshan</span>
-                </div>
-                <small>3 days ago</small>
-              </div>
+                  You haven&apos;t logged any reports yet. Report incidents to keep your neighborhood safe.
+                </p>
+              ) : (
+                myReports.map((r) => (
+                  <div
+                    className="my-report"
+                    key={r.id || r._id}
+                    onClick={() => setActiveReportModal(r)}
+                    style={{ cursor: "pointer" }}
+                    title="Click to view details"
+                  >
+                    <div
+                      className={`small-icon ${getSeverityClass(r.severity)}`}
+                    >
+                      <FileText size={14} />
+                    </div>
+                    <div>
+                      <strong>{r.title}</strong>
+                      <span>
+                        <MapPin size={11} /> {r.location} ({r.thana})
+                      </span>
+                    </div>
+                    <small>{r.time}</small>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </section>
