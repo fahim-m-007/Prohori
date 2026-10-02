@@ -92,7 +92,6 @@ function Reports() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedThana, setSelectedThana] = useState("All Thanas");
-  const [selectedStatus, setSelectedStatus] = useState("all");
   const [sortBy, setSortBy] = useState("recent");
   const [activeDetailModal, setActiveDetailModal] = useState(
     () => location.state?.report || null,
@@ -167,11 +166,9 @@ function Reports() {
         r.category === selectedCategory;
       const matchesThana =
         selectedThana === "All Thanas" || r.thana === selectedThana;
-      const matchesStatus =
-        selectedStatus === "all" || r.status === selectedStatus;
-      return matchesSearch && matchesCat && matchesThana && matchesStatus;
+      return matchesSearch && matchesCat && matchesThana;
     });
-  }, [reports, searchQuery, selectedCategory, selectedThana, selectedStatus]);
+  }, [reports, searchQuery, selectedCategory, selectedThana]);
 
   return (
     <div className="reports-page">
@@ -253,18 +250,6 @@ function Reports() {
           </div>
 
           <div className="select-wrap">
-            <label>Status</label>
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-            >
-              <option value="all">All Statuses</option>
-              <option value="verified">Verified</option>
-              <option value="resolved">Resolved</option>
-            </select>
-          </div>
-
-          <div className="select-wrap">
             <label>Sort By</label>
             <select
               value={sortBy}
@@ -308,7 +293,6 @@ function Reports() {
                 setSearchQuery("");
                 setSelectedCategory("All Categories");
                 setSelectedThana("All Thanas");
-                setSelectedStatus("all");
               }}
             >
               Reset Filters
