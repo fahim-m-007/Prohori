@@ -1,15 +1,24 @@
 import { useEffect, useState } from "react";
-import { CheckCircle2, MapPin, ThumbsUp, X } from "lucide-react";
+import { CheckCircle2, MapPin, ThumbsUp, Trash2, X } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 import { useReports } from "../context/ReportsContext";
 import "./ReportDetailModal.css";
 
-export default function ReportDetailModal({ report, onClose, onToast }) {
-  const { voteReport, addCommentToReport } = useReports();
+export default function ReportDetailModal({
+  report,
+  onClose,
+  onToast,
+  onDeleteReport,
+}) {
+  const { user } = useAuth();
+  const { voteReport, addCommentToReport, deleteReport } = useReports();
   const [currentReport, setCurrentReport] = useState(report);
   const [newCommentText, setNewCommentText] = useState("");
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
   const [lightboxImage, setLightboxImage] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const prevOverflow = document.body.style.overflow;
@@ -20,6 +29,14 @@ export default function ReportDetailModal({ report, onClose, onToast }) {
   }, []);
 
   if (!currentReport) return null;
+
+  const isOwner =
+    user &&
+    currentReport.reportedBy &&
+    (String(user.id) === String(currentReport.reportedBy) ||
+      String(user._id) === String(currentReport.reportedBy));
+  const isAdmin = user?.role === "admin";
+  const canDelete = isOwner || isAdmin;
 
   const handleVote = async () => {
     setIsVoting(true);
@@ -47,6 +64,33 @@ export default function ReportDetailModal({ report, onClose, onToast }) {
         );
     } finally {
       setIsVoting(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true);
+    const reportId = currentReport.id || currentReport._id;
+    try {
+      if (onDeleteReport) {
+        await onDeleteReport(reportId);
+      } else {
+        await deleteReport(reportId);
+        if (onToast) {
+          onToast("Incident report permanently deleted from database.");
+        }
+        onClose();
+      }
+    } catch (err) {
+      if (onToast) {
+        onToast(
+          err.response?.data?.message ||
+            err.message ||
+            "Failed to delete report.",
+        );
+      }
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -98,13 +142,27 @@ export default function ReportDetailModal({ report, onClose, onToast }) {
               </strong>
             </div>
           </div>
-          <button
-            className="modal-close-btn"
-            onClick={onClose}
-            aria-label="Close modal"
-          >
-            <X size={18} />
-          </button>
+          <div className="modal-header-actions">
+            {canDelete && (
+              <button
+                type="button"
+                className="modal-delete-btn"
+                onClick={() => setShowDeleteConfirm(true)}
+                title="Delete your report"
+                aria-label="Delete this report"
+              >
+                <Trash2 size={14} />
+                <span>Delete Report</span>
+              </button>
+            )}
+            <button
+              className="modal-close-btn"
+              onClick={onClose}
+              aria-label="Close modal"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         <div className="modal-location-strip">
@@ -246,6 +304,48 @@ export default function ReportDetailModal({ report, onClose, onToast }) {
               alt="Incident proof broad view"
               className="photo-lightbox-img"
             />
+          </div>
+        </div>
+      )}
+
+      {/* DELETE CONFIRMATION DIALOG */}
+      {showDeleteConfirm && (
+        <div
+          className="delete-modal-overlay"
+          onClick={() => !isDeleting && setShowDeleteConfirm(false)}
+        >
+          <div
+            className="delete-modal-dialog"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="delete-modal-icon">
+              <Trash2 size={24} />
+            </div>
+            <h3>Delete Incident Report?</h3>
+            <p>
+              Are you sure you want to delete{" "}
+              <strong>"{currentReport.title}"</strong>? This will permanently
+              remove this report and any attached photos from MongoDB and the
+              live safety feed.
+            </p>
+            <div className="delete-modal-actions">
+              <button
+                type="button"
+                className="btn-cancel-delete"
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-confirm-delete"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Yes, Delete Report"}
+              </button>
+            </div>
           </div>
         </div>
       )}

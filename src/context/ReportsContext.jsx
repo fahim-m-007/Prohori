@@ -93,6 +93,26 @@ export function ReportsProvider({ children }) {
     }
   };
 
+  const deleteReport = async (id) => {
+    try {
+      const { data } = await api.delete(`/reports/${id}`);
+      if (data?.success) {
+        setReports((prev) =>
+          prev.filter(
+            (r) =>
+              String(r.id || r._id) !== String(id) &&
+              String(r._id || r.id) !== String(id),
+          ),
+        );
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error("Failed to delete report:", err);
+      throw err;
+    }
+  };
+
   return (
     <ReportsContext.Provider
       value={{
@@ -101,6 +121,7 @@ export function ReportsProvider({ children }) {
         createReport,
         voteReport,
         addCommentToReport,
+        deleteReport,
         fetchReports,
         isLoadingReports,
       }}

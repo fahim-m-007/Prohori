@@ -379,10 +379,85 @@ async function addComment(req, res, next) {
   }
 }
 
+function extractCloudinaryPublicId(url) {
+  if (!url || typeof url !== "string") return null;
+  try {
+    const uploadIndex = url.indexOf("/upload/");
+    if (uploadIndex === -1) return null;
+    let pathAfterUpload = url.substring(uploadIndex + 8);
+    pathAfterUpload = pathAfterUpload.replace(/^v\d+\//, "");
+    const dotIndex = pathAfterUpload.lastIndexOf(".");
+    if (dotIndex !== -1) {
+      pathAfterUpload = pathAfterUpload.substring(0, dotIndex);
+    }
+    return pathAfterUpload;
+  } catch {
+    return null;
+  }
+}
+
+async function deleteReport(req, res, next) {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Report not found." });
+    }
+
+    const report = await Report.findById(id);
+    if (!report) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Report not found." });
+    }
+
+    // Authorization check: Only author or admin can delete
+    const currentUserId = req.user?._id?.toString() || req.user?.id?.toString();
+    const isOwner =
+      report.reportedBy &&
+      report.reportedBy.toString() === currentUserId;
+    const isAdmin = req.user?.role === "admin";
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to delete this incident report.",
+      });
+    }
+
+    // Cleanup images from Cloudinary CDN storage
+    if (Array.isArray(report.images) && report.images.length > 0) {
+      for (const imgUrl of report.images) {
+        const publicId = extractCloudinaryPublicId(imgUrl);
+        if (publicId) {
+          try {
+            await cloudinary.uploader.destroy(publicId);
+          } catch (cloudErr) {
+            console.warn("Cloudinary asset deletion notice:", cloudErr.message);
+          }
+        }
+      }
+    }
+
+    // Delete from MongoDB database
+    await Report.findByIdAndDelete(id);
+
+    return res.json({
+      success: true,
+      message: "Report deleted successfully from database and feed.",
+      data: { id: report._id.toString() },
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   createReport,
   getReports,
   getReportById,
   voteReport,
   addComment,
+  deleteReport,
 };

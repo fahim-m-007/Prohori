@@ -11,9 +11,11 @@ import {
   Search,
   Sparkles,
   ThumbsUp,
+  Trash2,
   X,
 } from "lucide-react";
 import "./Reports.css";
+import { useAuth } from "../context/AuthContext";
 import { useReports } from "../context/ReportsContext";
 import ReportDetailModal from "../components/ReportDetailModal";
 
@@ -88,7 +90,9 @@ const thanas = [
 function Reports() {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { reports, voteReport, isLoadingReports, fetchReports } = useReports();
+  const { user } = useAuth();
+  const { reports, voteReport, deleteReport, isLoadingReports, fetchReports } =
+    useReports();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedThana, setSelectedThana] = useState("All Thanas");
@@ -97,6 +101,8 @@ function Reports() {
     () => location.state?.report || null,
   );
   const [toastMessage, setToastMessage] = useState("");
+  const [reportToDelete, setReportToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const targetId = searchParams.get("reportId") || location.state?.reportId;
 
@@ -147,6 +153,30 @@ function Reports() {
       showToast(
         err.response?.data?.message || "Please log in to confirm incidents.",
       );
+    }
+  };
+
+  const handleDeleteReport = async (reportId) => {
+    setIsDeleting(true);
+    try {
+      await deleteReport(reportId);
+      showToast("Incident report permanently deleted from database.");
+      if (
+        activeDetailModal &&
+        (activeDetailModal.id === reportId ||
+          activeDetailModal._id === reportId)
+      ) {
+        setActiveDetailModal(null);
+      }
+      setReportToDelete(null);
+    } catch (err) {
+      showToast(
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to delete report.",
+      );
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -310,9 +340,29 @@ function Reports() {
                   <span className="cat-tag">{report.category}</span>
                 </div>
 
-                <div className="time-tag">
-                  <Clock size={12} />
-                  <span>{report.time}</span>
+                <div className="card-top-right">
+                  <div className="time-tag">
+                    <Clock size={12} />
+                    <span>{report.time}</span>
+                  </div>
+
+                  {user &&
+                    (String(user.id) === String(report.reportedBy) ||
+                      String(user._id) === String(report.reportedBy) ||
+                      user.role === "admin") && (
+                      <button
+                        type="button"
+                        className="btn-delete-report-card"
+                        title="Delete your report"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setReportToDelete(report);
+                        }}
+                        aria-label="Delete your report"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
                 </div>
               </div>
 
@@ -424,7 +474,51 @@ function Reports() {
             }
           }}
           onToast={showToast}
+          onDeleteReport={handleDeleteReport}
         />
+      )}
+
+      {/* DELETE CONFIRMATION MODAL */}
+      {reportToDelete && (
+        <div
+          className="delete-modal-overlay"
+          onClick={() => !isDeleting && setReportToDelete(null)}
+        >
+          <div
+            className="delete-modal-dialog"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="delete-modal-icon">
+              <Trash2 size={24} />
+            </div>
+            <h3>Delete Incident Report?</h3>
+            <p>
+              Are you sure you want to delete{" "}
+              <strong>"{reportToDelete.title}"</strong>? This will permanently
+              remove the incident from MongoDB and the live safety feed.
+            </p>
+            <div className="delete-modal-actions">
+              <button
+                type="button"
+                className="btn-cancel-delete"
+                onClick={() => setReportToDelete(null)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-confirm-delete"
+                onClick={() =>
+                  handleDeleteReport(reportToDelete.id || reportToDelete._id)
+                }
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Yes, Delete Report"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
