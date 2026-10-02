@@ -557,6 +557,81 @@
   color: var(--blue);
 }
 
+.status-pill.comment-pill {
+  background: #f5f3ff;
+  color: var(--purple);
+}
+
+/* SECTION HEADER ACTIONS & ACTIVITY TABS */
+.section-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.activity-tabs-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.activity-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.activity-tab-btn:hover {
+  color: var(--navy);
+}
+
+.activity-tab-btn.active {
+  background: #ffffff;
+  color: var(--blue);
+  box-shadow: 0 2px 6px rgba(11, 23, 54, 0.08);
+}
+
+/* MY COMMENT ROW SPECIFICS */
+.comment-icon-wrap {
+  background: #f5f3ff !important;
+  color: var(--purple) !important;
+}
+
+.my-comment-text {
+  font-weight: 600;
+  color: var(--navy);
+  font-size: 14px;
+  line-height: 1.4;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.comment-on-title em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--blue);
+}
+
+.empty-icon-box.comment-empty-icon {
+  background: #f5f3ff;
+  color: var(--purple);
+}
+
 /* RESPONSIVE */
 @media (max-width: 900px) {
   .profile-page {
@@ -575,6 +650,15 @@
 }
 
 @media (max-width: 600px) {
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .section-header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
   .my-report-row {
     flex-direction: column;
     align-items: flex-start;

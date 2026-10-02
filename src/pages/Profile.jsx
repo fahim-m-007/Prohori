@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   AlertTriangle,
   Award,
@@ -12,11 +12,13 @@ import {
   Edit3,
   Eye,
   EyeOff,
+  FileText,
   HeartHandshake,
   KeyRound,
   Lock,
   Mail,
   MapPin,
+  MessageSquare,
   Phone,
   Plus,
   Shield,
@@ -57,6 +59,34 @@ function Profile() {
         (authUser?._id && String(r.reportedBy) === String(authUser._id))
       );
     });
+  }, [reports, currentUserId, authUser]);
+
+  const myComments = useMemo(() => {
+    if (!reports || !currentUserId) return [];
+    const list = [];
+    reports.forEach((r) => {
+      (r.comments || []).forEach((c, idx) => {
+        const commentUid = c.user?._id || c.user?.id || c.user || c.userId;
+        if (
+          commentUid &&
+          (String(commentUid) === String(currentUserId) ||
+            (authUser?._id && String(commentUid) === String(authUser._id)))
+        ) {
+          list.push({
+            id: c._id || c.id || `${r.id || r._id}-comment-${idx}`,
+            text: c.text,
+            createdAt: c.createdAt,
+            report: r,
+          });
+        }
+      });
+    });
+    list.sort((a, b) => {
+      const timeA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const timeB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return timeB - timeA;
+    });
+    return list;
   }, [reports, currentUserId, authUser]);
 
   const totalConfirmations = useMemo(() => {
@@ -259,6 +289,11 @@ function Profile() {
     joinedDate,
     role,
   };
+
+  const location = useLocation();
+  const [activeActivityTab, setActiveActivityTab] = useState(
+    () => location.state?.tab || "reports",
+  );
 
   const [toastMessage, setToastMessage] = useState("");
   const [activeDetailReport, setActiveDetailReport] = useState(null);
@@ -519,112 +554,220 @@ function Profile() {
         </div>
       </div>
 
-      {/* MY SUBMITTED REPORTS TIMELINE */}
+      {/* MY SUBMITTED REPORTS & COMMENTS TABS */}
       <section className="profile-section-card full-width">
         <div className="section-header">
           <div>
-            <h2>My Incident Reporting History</h2>
+            <h2>My Contributions & Activity</h2>
             <p>
-              Community safety reports you submitted across Dhaka city.
+              Community safety reports and updates you contributed across Dhaka.
             </p>
           </div>
-          <Link to="/report-incident" className="btn-new-report-link">
-            <Plus size={14} />
-            <span>Submit New Report</span>
-          </Link>
-        </div>
-
-        {isLoadingReports ? (
-          <div className="profile-reports-loading">
-            <p>Loading your incident history...</p>
-          </div>
-        ) : myReports.length === 0 ? (
-          <div className="profile-reports-empty">
-            <div className="empty-icon-box">
-              <ShieldAlert size={30} />
+          <div className="section-header-actions">
+            <div className="activity-tabs-group" role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeActivityTab === "reports"}
+                className={`activity-tab-btn ${activeActivityTab === "reports" ? "active" : ""}`}
+                onClick={() => setActiveActivityTab("reports")}
+              >
+                <FileText size={14} />
+                <span>My Reports ({myReports.length})</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeActivityTab === "comments"}
+                className={`activity-tab-btn ${activeActivityTab === "comments" ? "active" : ""}`}
+                onClick={() => setActiveActivityTab("comments")}
+              >
+                <MessageSquare size={14} />
+                <span>My Comments ({myComments.length})</span>
+              </button>
             </div>
-            <h3>No Incident Reports Yet</h3>
-            <p>
-              You haven't submitted any road hazard or community safety alerts.
-              When you report incidents in Dhaka, they will appear here with live
-              verification updates.
-            </p>
-            <Link to="/report-incident" className="btn-empty-report">
-              <Plus size={15} />
-              <span>Report Your First Incident</span>
+            <Link to="/report-incident" className="btn-new-report-link">
+              <Plus size={14} />
+              <span>Submit Report</span>
             </Link>
           </div>
+        </div>
+
+        {activeActivityTab === "reports" ? (
+          isLoadingReports ? (
+            <div className="profile-reports-loading">
+              <p>Loading your incident history...</p>
+            </div>
+          ) : myReports.length === 0 ? (
+            <div className="profile-reports-empty">
+              <div className="empty-icon-box">
+                <ShieldAlert size={30} />
+              </div>
+              <h3>No Incident Reports Yet</h3>
+              <p>
+                You haven't submitted any road hazard or community safety alerts.
+                When you report incidents in Dhaka, they will appear here with live
+                verification updates.
+              </p>
+              <Link to="/report-incident" className="btn-empty-report">
+                <Plus size={15} />
+                <span>Report Your First Incident</span>
+              </Link>
+            </div>
+          ) : (
+            <div className="my-reports-list">
+              {myReports.map((report) => {
+                const reportId = report.id || report._id;
+                const formattedLocation = report.location
+                  ? `${report.location}${report.thana ? `, ${report.thana}` : ""}`
+                  : report.thana || "Dhaka";
+                const formattedDate =
+                  report.time ||
+                  (report.createdAt
+                    ? new Date(report.createdAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })
+                    : "Recently");
+
+                return (
+                  <div
+                    className="my-report-row"
+                    key={reportId}
+                    onClick={() => setActiveDetailReport(report)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setActiveDetailReport(report);
+                      }
+                    }}
+                    title="Click to view full details, photos, and discussion"
+                  >
+                    <div className="report-status-icon">
+                      {report.status === "resolved" ? (
+                        <CheckCircle size={20} className="status-resolved" />
+                      ) : (
+                        <ShieldAlert size={20} className="status-verified" />
+                      )}
+                    </div>
+
+                    <div className="report-main-info">
+                      <strong>{report.title || report.type}</strong>
+                      <div className="report-location-date">
+                        <span>
+                          <MapPin size={12} /> {formattedLocation}
+                        </span>
+                        <span>·</span>
+                        <span>
+                          <Clock size={12} /> {formattedDate}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="report-impact">
+                      <span className="report-upvotes">
+                        <ThumbsUp size={13} /> {report.upvotes || 0} Confirmations
+                      </span>
+                      <span className={`status-pill ${report.status || "verified"}`}>
+                        {report.status === "resolved"
+                          ? "Hazard Resolved"
+                          : "Community Verified"}
+                      </span>
+                    </div>
+
+                    <div className="report-row-arrow" aria-hidden="true">
+                      <ChevronRight size={16} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )
         ) : (
-          <div className="my-reports-list">
-            {myReports.map((report) => {
-              const reportId = report.id || report._id;
-              const formattedLocation = report.location
-                ? `${report.location}${report.thana ? `, ${report.thana}` : ""}`
-                : report.thana || "Dhaka";
-              const formattedDate =
-                report.time ||
-                (report.createdAt
-                  ? new Date(report.createdAt).toLocaleDateString("en-US", {
+          /* MY COMMENTS TAB */
+          isLoadingReports ? (
+            <div className="profile-reports-loading">
+              <p>Loading your comments...</p>
+            </div>
+          ) : myComments.length === 0 ? (
+            <div className="profile-reports-empty">
+              <div className="empty-icon-box comment-empty-icon">
+                <MessageSquare size={30} />
+              </div>
+              <h3>No Comments Yet</h3>
+              <p>
+                You haven't posted any comments or community updates on incident reports yet.
+                Help fellow citizens by sharing real-time observations in the live feed!
+              </p>
+              <Link to="/reports" className="btn-empty-report">
+                <ChevronRight size={15} />
+                <span>Explore Community Feed</span>
+              </Link>
+            </div>
+          ) : (
+            <div className="my-reports-list">
+              {myComments.map((item) => {
+                const formattedCommentDate = item.createdAt
+                  ? new Date(item.createdAt).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
                     })
-                  : "Recently");
+                  : "Recently";
 
-              return (
-                <div
-                  className="my-report-row"
-                  key={reportId}
-                  onClick={() => setActiveDetailReport(report)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setActiveDetailReport(report);
-                    }
-                  }}
-                  title="Click to view full details, photos, and discussion"
-                >
-                  <div className="report-status-icon">
-                    {report.status === "resolved" ? (
-                      <CheckCircle size={20} className="status-resolved" />
-                    ) : (
-                      <ShieldAlert size={20} className="status-verified" />
-                    )}
-                  </div>
+                return (
+                  <div
+                    className="my-report-row my-comment-row"
+                    key={item.id}
+                    onClick={() => setActiveDetailReport(item.report)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setActiveDetailReport(item.report);
+                      }
+                    }}
+                    title="Click to view the full report discussion"
+                  >
+                    <div className="report-status-icon comment-icon-wrap">
+                      <MessageSquare size={18} />
+                    </div>
 
-                  <div className="report-main-info">
-                    <strong>{report.title || report.type}</strong>
-                    <div className="report-location-date">
-                      <span>
-                        <MapPin size={12} /> {formattedLocation}
-                      </span>
-                      <span>·</span>
-                      <span>
-                        <Clock size={12} /> {formattedDate}
+                    <div className="report-main-info">
+                      <strong className="my-comment-text">"{item.text}"</strong>
+                      <div className="report-location-date">
+                        <span className="comment-on-title">
+                          On: <em>{item.report?.title || item.report?.type || "Incident Report"}</em>
+                        </span>
+                        <span>·</span>
+                        <span>
+                          <MapPin size={12} /> {item.report?.thana || item.report?.location || "Dhaka"}
+                        </span>
+                        <span>·</span>
+                        <span>
+                          <Clock size={12} /> {formattedCommentDate}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="report-impact">
+                      <span className="status-pill comment-pill">
+                        Discussion Update
                       </span>
                     </div>
-                  </div>
 
-                  <div className="report-impact">
-                    <span className="report-upvotes">
-                      <ThumbsUp size={13} /> {report.upvotes || 0} Confirmations
-                    </span>
-                    <span className={`status-pill ${report.status || "verified"}`}>
-                      {report.status === "resolved"
-                        ? "Hazard Resolved"
-                        : "Community Verified"}
-                    </span>
+                    <div className="report-row-arrow" aria-hidden="true">
+                      <ChevronRight size={16} />
+                    </div>
                   </div>
-
-                  <div className="report-row-arrow" aria-hidden="true">
-                    <ChevronRight size={16} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )
         )}
       </section>
 

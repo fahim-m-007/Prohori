@@ -8,6 +8,7 @@ import {
   GraduationCap,
   Home,
   MapPin,
+  MessageSquare,
   ShieldCheck,
   ShieldPlus,
   Sparkles,
@@ -96,19 +97,63 @@ function Dashboard() {
     relevantReports.length > 0 ? relevantReports : reports
   ).slice(0, 4);
 
-  // User's own incident reports for activity widget
+  // User's own contributions (reports + comments) for activity widget
   const currentUserId = user?.id || user?._id;
-  const myReports = useMemo(() => {
+  const myActivities = useMemo(() => {
     if (!reports || !currentUserId) return [];
-    return reports
-      .filter((r) => {
-        if (!r.reportedBy) return false;
-        return (
-          String(r.reportedBy) === String(currentUserId) ||
-          (user?._id && String(r.reportedBy) === String(user._id))
-        );
-      })
-      .slice(0, 3);
+
+    const list = [];
+
+    reports.forEach((r) => {
+      // 1. Reports filed by the user
+      if (
+        r.reportedBy &&
+        (String(r.reportedBy) === String(currentUserId) ||
+          (user?._id && String(r.reportedBy) === String(user._id)))
+      ) {
+        list.push({
+          id: `report-${r.id || r._id}`,
+          type: "report",
+          title: r.title,
+          subtitle: `${r.location} (${r.thana})`,
+          time: r.time || "Recently",
+          timestamp: r.createdAt ? new Date(r.createdAt).getTime() : 0,
+          severity: r.severity,
+          report: r,
+        });
+      }
+
+      // 2. Comments posted by the user on any incident report
+      (r.comments || []).forEach((c, idx) => {
+        if (
+          c.user &&
+          (String(c.user) === String(currentUserId) ||
+            (user?._id && String(c.user) === String(user._id)))
+        ) {
+          const commentTime = c.createdAt
+            ? new Date(c.createdAt).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })
+            : "Recently";
+
+          list.push({
+            id: `comment-${c._id || c.id || idx}`,
+            type: "comment",
+            title: `Comment: "${c.text.length > 28 ? c.text.slice(0, 28) + "..." : c.text}"`,
+            subtitle: r.title,
+            time: commentTime,
+            timestamp: c.createdAt ? new Date(c.createdAt).getTime() : 0,
+            report: r,
+          });
+        }
+      });
+    });
+
+    // Sort by newest activity first
+    list.sort((a, b) => b.timestamp - a.timestamp);
+
+    return list.slice(0, 3);
   }, [reports, currentUserId, user]);
 
   const getSeverityClass = (severity) => {
@@ -386,7 +431,7 @@ function Dashboard() {
                 </Link>
               </div>
 
-              {myReports.length === 0 ? (
+              {myActivities.length === 0 ? (
                 <p
                   style={{
                     fontSize: "12px",
@@ -395,29 +440,36 @@ function Dashboard() {
                     lineHeight: "1.5",
                   }}
                 >
-                  You haven&apos;t logged any reports yet. Report incidents to keep your neighborhood safe.
+                  No recent activity yet. Report incidents or comment on updates
+                  to keep your neighborhood safe.
                 </p>
               ) : (
-                myReports.map((r) => (
+                myActivities.map((act) => (
                   <div
                     className="my-report"
-                    key={r.id || r._id}
-                    onClick={() => setActiveReportModal(r)}
+                    key={act.id}
+                    onClick={() => setActiveReportModal(act.report)}
                     style={{ cursor: "pointer" }}
                     title="Click to view details"
                   >
                     <div
-                      className={`small-icon ${getSeverityClass(r.severity)}`}
+                      className={`small-icon ${
+                        act.type === "comment"
+                          ? "purple"
+                          : getSeverityClass(act.severity)
+                      }`}
                     >
-                      <FileText size={14} />
+                      {act.type === "comment" ? (
+                        <MessageSquare size={13} />
+                      ) : (
+                        <FileText size={13} />
+                      )}
                     </div>
                     <div>
-                      <strong>{r.title}</strong>
-                      <span>
-                        <MapPin size={11} /> {r.location} ({r.thana})
-                      </span>
+                      <strong>{act.title}</strong>
+                      <span>{act.subtitle}</span>
                     </div>
-                    <small>{r.time}</small>
+                    <small>{act.time}</small>
                   </div>
                 ))
               )}
