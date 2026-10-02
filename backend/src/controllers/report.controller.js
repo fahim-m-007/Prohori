@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Report = require("../models/Report");
+const cloudinary = require("../config/cloudinary");
 
 // Approximate Dhaka Thana coordinate centroids for fallbacks
 const thanaCoordinates = {
@@ -152,11 +153,35 @@ async function createReport(req, res, next) {
       resolvedPosition = thanaCoordinates[cleanThana];
     }
 
-    const cleanImages = Array.isArray(images)
-      ? images
-          .filter((img) => typeof img === "string" && img.trim().length > 0)
-          .slice(0, 3)
-      : [];
+    // Upload incident photos to Cloudinary CDN
+    const uploadedImages = [];
+    if (Array.isArray(images) && images.length > 0) {
+      const validImages = images
+        .filter((img) => typeof img === "string" && img.trim().length > 0)
+        .slice(0, 3);
+
+      for (const img of validImages) {
+        if (img.startsWith("data:image/")) {
+          try {
+            const uploadRes = await cloudinary.uploader.upload(img, {
+              folder: "prohori_incidents",
+              resource_type: "image",
+              transformation: [
+                { width: 1400, crop: "limit", quality: "auto" },
+              ],
+            });
+            if (uploadRes?.secure_url) {
+              uploadedImages.push(uploadRes.secure_url);
+            }
+          } catch (cloudErr) {
+            console.warn("Cloudinary upload fallback triggered:", cloudErr.message);
+            uploadedImages.push(img);
+          }
+        } else if (img.startsWith("http://") || img.startsWith("https://")) {
+          uploadedImages.push(img);
+        }
+      }
+    }
 
     const newReport = await Report.create({
       title: cleanTitle,
@@ -166,7 +191,7 @@ async function createReport(req, res, next) {
       location: cleanLocation,
       description: cleanDescription,
       position: resolvedPosition,
-      images: cleanImages,
+      images: uploadedImages,
       reportedBy: req.user ? req.user._id : undefined,
       reporterName: req.user?.name || "Citizen Reporter",
       upvotes: 0,
