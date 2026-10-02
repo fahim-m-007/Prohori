@@ -596,6 +596,7 @@
   justify-content: center;
   z-index: 1000;
   padding: 20px;
+  overscroll-behavior: contain;
 }
 
 .profile-page .modal-dialog {
@@ -606,6 +607,9 @@
   padding: 28px;
   box-shadow: var(--shadow-lg);
   animation: modalPop 0.25s ease-out;
+  max-height: 88vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 @keyframes modalPop {

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   AlertTriangle,
@@ -375,6 +375,22 @@ function Profile() {
     }
   };
 
+  // Prevent background scrolling when edit profile modal is open
+  useEffect(() => {
+    if (isEditProfileOpen) {
+      const prevBodyOverflow = document.body.style.overflow;
+      const prevHtmlOverflow = document.documentElement.style.overflow;
+
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+
+      return () => {
+        document.body.style.overflow = prevBodyOverflow;
+        document.documentElement.style.overflow = prevHtmlOverflow;
+      };
+    }
+  }, [isEditProfileOpen]);
+
   return (
     <div className="profile-page">
       {/* TOAST */}
@@ -684,8 +700,14 @@ function Profile() {
 
       {/* EDIT PROFILE MODAL */}
       {isEditProfileOpen && (
-        <div className="modal-overlay">
-          <div className="modal-dialog">
+        <div
+          className="modal-overlay"
+          onClick={() => setIsEditProfileOpen(false)}
+        >
+          <div
+            className="modal-dialog"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-header">
               <div className="modal-tab-group">
                 <button
