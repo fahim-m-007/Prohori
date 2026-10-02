@@ -4,7 +4,7 @@
   margin: 0 auto;
 }
 
-/* TOAST */
+
 .saved-toast {
   position: fixed;
   bottom: 28px;
@@ -28,7 +28,6 @@
   color: var(--blue-light);
 }
 
-/* HEADER */
 .saved-header {
   display: flex;
   align-items: flex-start;
@@ -92,7 +91,7 @@
   box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
 }
 
-/* SUMMARY BANNER */
+
 .saved-summary-card {
   background: white;
   border: 1px solid var(--border);
@@ -592,6 +591,7 @@
   justify-content: center;
   z-index: 1000;
   padding: 20px;
+  overscroll-behavior: contain;
 }
 
 .modal-dialog {
@@ -608,6 +608,7 @@
   max-width: 580px;
   max-height: 88vh;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .modal-error-box {
