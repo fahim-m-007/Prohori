@@ -89,8 +89,11 @@ function serializeReport(report, currentUser) {
     createdAt: report.createdAt,
     comments: (report.comments || []).map((c) => ({
       id: c._id ? c._id.toString() : undefined,
+      _id: c._id ? c._id.toString() : undefined,
       author: c.author,
       text: c.text,
+      user: c.user ? c.user.toString() : null,
+      userId: c.user ? c.user.toString() : null,
       time: formatTimeAgo(c.createdAt),
       createdAt: c.createdAt,
     })),
@@ -453,6 +456,60 @@ async function deleteReport(req, res, next) {
   }
 }
 
+async function deleteComment(req, res, next) {
+  try {
+    const { id, commentId } = req.params;
+    if (
+      !mongoose.Types.ObjectId.isValid(id) ||
+      !mongoose.Types.ObjectId.isValid(commentId)
+    ) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Report or update not found." });
+    }
+
+    const report = await Report.findById(id);
+    if (!report) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Report not found." });
+    }
+
+    const comment = report.comments.id(commentId);
+    if (!comment) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Update not found." });
+    }
+
+    // Ownership check: only comment author or admin can delete
+    const currentUserId = req.user?._id?.toString() || req.user?.id?.toString();
+    const isOwner = comment.user && comment.user.toString() === currentUserId;
+    const isAdmin = req.user?.role === "admin";
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to delete this update.",
+      });
+    }
+
+    // Remove comment from MongoDB subdocument array
+    report.comments.pull({ _id: commentId });
+    await report.save();
+
+    return res.json({
+      success: true,
+      message: "Update deleted successfully from database.",
+      data: {
+        report: serializeReport(report, req.user),
+      },
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 module.exports = {
   createReport,
   getReports,
@@ -460,4 +517,5 @@ module.exports = {
   voteReport,
   addComment,
   deleteReport,
+  deleteComment,
 };

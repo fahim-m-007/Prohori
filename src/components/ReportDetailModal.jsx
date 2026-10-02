@@ -11,7 +11,12 @@ export default function ReportDetailModal({
   onDeleteReport,
 }) {
   const { user } = useAuth();
-  const { voteReport, addCommentToReport, deleteReport } = useReports();
+  const {
+    voteReport,
+    addCommentToReport,
+    deleteReport,
+    deleteCommentFromReport,
+  } = useReports();
   const [currentReport, setCurrentReport] = useState(report);
   const [newCommentText, setNewCommentText] = useState("");
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
@@ -19,6 +24,8 @@ export default function ReportDetailModal({
   const [lightboxImage, setLightboxImage] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState(null);
+  const [isDeletingComment, setIsDeletingComment] = useState(false);
 
   useEffect(() => {
     const prevOverflow = document.body.style.overflow;
@@ -91,6 +98,37 @@ export default function ReportDetailModal({
     } finally {
       setIsDeleting(false);
       setShowDeleteConfirm(false);
+    }
+  };
+
+  const handleConfirmDeleteComment = async () => {
+    if (!commentToDelete) return;
+    setIsDeletingComment(true);
+    const commentId = commentToDelete.id || commentToDelete._id;
+    try {
+      const updated = await deleteCommentFromReport(
+        currentReport.id || currentReport._id,
+        commentId,
+      );
+      if (updated) {
+        setCurrentReport((prev) => ({
+          ...prev,
+          ...updated,
+          comments: updated.comments || prev.comments,
+        }));
+      }
+      if (onToast) onToast("Update deleted successfully from database.");
+      setCommentToDelete(null);
+    } catch (err) {
+      if (onToast) {
+        onToast(
+          err.response?.data?.message ||
+            err.message ||
+            "Failed to delete update.",
+        );
+      }
+    } finally {
+      setIsDeletingComment(false);
     }
   };
 
@@ -224,13 +262,14 @@ export default function ReportDetailModal({
               confirmed this incident live on ground.
             </span>
           </div>
+
           <button
             type="button"
             className={`btn-modal-vote ${currentReport.userVoted === "up" ? "active" : ""}`}
             onClick={handleVote}
             disabled={isVoting}
           >
-            <ThumbsUp size={13} />
+            <ThumbsUp size={14} />
             <span>
               {currentReport.userVoted === "up" ? "Confirmed" : "Confirm"}
             </span>
@@ -248,15 +287,39 @@ export default function ReportDetailModal({
                 update below.
               </p>
             ) : (
-              comments.map((c, idx) => (
-                <div className="single-comment-item" key={c.id || idx}>
-                  <div className="comment-author-line">
-                    <strong>{c.author || "Citizen"}</strong>
-                    <small>{c.time || "Just now"}</small>
+              comments.map((c, idx) => {
+                const commentId = c.id || c._id;
+                const isCommentAuthor =
+                  user &&
+                  (c.user || c.userId) &&
+                  (String(user.id) === String(c.user || c.userId) ||
+                    String(user._id) === String(c.user || c.userId) ||
+                    user.role === "admin");
+
+                return (
+                  <div className="single-comment-item" key={commentId || idx}>
+                    <div className="comment-author-line">
+                      <div className="comment-author-left">
+                        <strong>{c.author || "Citizen"}</strong>
+                        <small>{c.time || "Just now"}</small>
+                      </div>
+
+                      {isCommentAuthor && (
+                        <button
+                          type="button"
+                          className="btn-delete-comment"
+                          onClick={() => setCommentToDelete(c)}
+                          title="Delete your update"
+                          aria-label="Delete your update"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      )}
+                    </div>
+                    <p>{c.text}</p>
                   </div>
-                  <p>{c.text}</p>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
 
@@ -308,7 +371,7 @@ export default function ReportDetailModal({
         </div>
       )}
 
-      {/* DELETE CONFIRMATION DIALOG */}
+      {/* REPORT DELETE CONFIRMATION DIALOG */}
       {showDeleteConfirm && (
         <div
           className="delete-modal-overlay"
@@ -344,6 +407,53 @@ export default function ReportDetailModal({
                 disabled={isDeleting}
               >
                 {isDeleting ? "Deleting..." : "Yes, Delete Report"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* COMMENT DELETE CONFIRMATION DIALOG */}
+      {commentToDelete && (
+        <div
+          className="delete-modal-overlay"
+          onClick={() => !isDeletingComment && setCommentToDelete(null)}
+        >
+          <div
+            className="delete-modal-dialog"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="delete-modal-icon">
+              <Trash2 size={24} />
+            </div>
+            <h3>Delete Live Update?</h3>
+            <p>
+              Are you sure you want to delete your update:{" "}
+              <strong>
+                "
+                {commentToDelete.text && commentToDelete.text.length > 60
+                  ? `${commentToDelete.text.substring(0, 60)}...`
+                  : commentToDelete.text}
+                "
+              </strong>
+              ? This will permanently remove your comment from MongoDB.
+            </p>
+            <div className="delete-modal-actions">
+              <button
+                type="button"
+                className="btn-cancel-delete"
+                onClick={() => setCommentToDelete(null)}
+                disabled={isDeletingComment}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-confirm-delete"
+                onClick={handleConfirmDeleteComment}
+                disabled={isDeletingComment}
+              >
+                {isDeletingComment ? "Deleting..." : "Yes, Delete Update"}
               </button>
             </div>
           </div>
