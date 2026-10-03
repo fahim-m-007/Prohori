@@ -108,6 +108,96 @@
   text-transform: uppercase;
 }
 
+/* HERO BADGES SHOWCASE */
+.hero-badges-showcase {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-badges-list {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+
+.hero-badge-token {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  position: relative;
+  user-select: none;
+}
+
+.hero-badge-token:hover {
+  transform: scale(1.22) translateY(-2px);
+  box-shadow: 0 4px 10px rgba(11, 23, 54, 0.15);
+  z-index: 10;
+}
+
+.hero-badge-token:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.hero-badge-emoji {
+  font-size: 15px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-badges-count-pill {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 4px 2px 2px;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: color 0.15s ease;
+  white-space: nowrap;
+}
+
+.hero-badges-count-pill:hover {
+  color: var(--blue);
+}
+
+.hero-badges-empty-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hero-badges-empty-pill:hover {
+  background: #f1f5f9;
+  color: var(--navy);
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+
 .profile-bio {
   font-size: 14px;
   color: var(--text-secondary);
@@ -334,18 +424,57 @@
 }
 
 .badge-icon-box {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: transform 0.2s ease;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
+}
+
+.badge-item.unlocked .badge-icon-box {
+  box-shadow: 0 4px 12px rgba(11, 23, 54, 0.06);
 }
 
 .badge-item.unlocked:hover .badge-icon-box {
-  transform: scale(1.05);
+  transform: scale(1.08);
+}
+
+.badge-emoji-pic {
+  font-size: 24px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.badge-item.unlocked:hover .badge-emoji-pic {
+  transform: scale(1.12);
+}
+
+.badge-icon-box.locked .badge-emoji-pic {
+  filter: grayscale(80%) opacity(0.5);
+}
+
+.badge-lock-badge {
+  position: absolute;
+  bottom: -3px;
+  right: -3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #64748b;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  border: 2px solid #ffffff;
 }
 
 .badge-details {

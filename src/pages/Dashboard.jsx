@@ -196,7 +196,7 @@ function Dashboard() {
       <header className="dashboard-header">
         <div>
           <span className="dashboard-label">COMMUNITY SAFETY</span>
-          <h1>Good morning, {displayName} 👋</h1>
+          <h1>Welcome back, {displayName} 👋</h1>
           <p>See what&apos;s happening in your selected areas.</p>
         </div>
 

@@ -38,7 +38,7 @@ const initialUser = {
   phone: "",
   primaryThana: "Dhaka",
   joinedDate: "2026",
-  role: "Verified Citizen Sentinel",
+  role: "Citizen Sentinel",
   reputationLevel: "Level 1 Sentinel",
   bio: "Committed to making Dhaka streets safer and well-monitored for everyone.",
 };
@@ -153,6 +153,7 @@ function Profile() {
       {
         id: "badge-frontline-scout",
         name: "Frontline Scout",
+        emoji: "🧭",
         icon: <ShieldCheck size={20} />,
         color: "#2563eb",
         bgColor: "#eff6ff",
@@ -170,6 +171,7 @@ function Profile() {
       {
         id: "badge-monsoon-navigator",
         name: "Monsoon Navigator",
+        emoji: "🌧️",
         icon: <CloudRain size={20} />,
         color: "#0284c7",
         bgColor: "#f0f9ff",
@@ -190,6 +192,7 @@ function Profile() {
       {
         id: "badge-gridlock-breaker",
         name: "Gridlock Breaker",
+        emoji: "🚦",
         icon: <AlertTriangle size={20} />,
         color: "#f59e0b",
         bgColor: "#fffbeb",
@@ -210,6 +213,7 @@ function Profile() {
       {
         id: "badge-trusted-vanguard",
         name: "Trusted Vanguard",
+        emoji: "🤝",
         icon: <HeartHandshake size={20} />,
         color: "#6d4aff",
         bgColor: "#f5f3ff",
@@ -230,6 +234,7 @@ function Profile() {
       {
         id: "badge-dhaka-guardian",
         name: "Dhaka Guardian",
+        emoji: "🏆",
         icon: <Award size={20} />,
         color: "#10b981",
         bgColor: "#ecfdf5",
@@ -250,9 +255,18 @@ function Profile() {
     ];
   }, [myReports, totalConfirmations]);
 
-  const unlockedBadgesCount = useMemo(() => {
-    return badges.filter((b) => b.isUnlocked).length;
+  const unlockedBadges = useMemo(() => {
+    return badges.filter((b) => b.isUnlocked);
   }, [badges]);
+
+  const unlockedBadgesCount = unlockedBadges.length;
+
+  const scrollToBadges = () => {
+    const el = document.getElementById("sentinel-badges-section");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   const primaryThana =
     customProfile?.primaryThana ?? authUser?.thana ?? initialUser.primaryThana;
@@ -453,6 +467,47 @@ function Profile() {
                 <Shield size={12} />
                 {user.role}
               </span>
+
+              {/* HERO BADGES SHOWCASE */}
+              <div className="hero-badges-showcase">
+                {unlockedBadges.length > 0 ? (
+                  <div className="hero-badges-list">
+                    {unlockedBadges.map((b) => (
+                      <button
+                        key={b.id}
+                        type="button"
+                        className="hero-badge-token"
+                        onClick={scrollToBadges}
+                        title={`${b.name}: ${b.description} — Click to view details`}
+                        style={{
+                          backgroundColor: b.bgColor,
+                          borderColor: b.color,
+                        }}
+                      >
+                        <span className="hero-badge-emoji">{b.emoji}</span>
+                      </button>
+                    ))}
+                    <button
+                      type="button"
+                      className="hero-badges-count-pill"
+                      onClick={scrollToBadges}
+                      title="View all sentinel badges"
+                    >
+                      {unlockedBadges.length}/{badges.length} Badges
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    className="hero-badges-empty-pill"
+                    onClick={scrollToBadges}
+                    title="Click to view milestone requirements"
+                  >
+                    <Award size={12} />
+                    <span>0/{badges.length} Badges · View Milestones</span>
+                  </button>
+                )}
+              </div>
             </div>
 
             <p className="profile-bio">{user.bio}</p>
@@ -767,7 +822,7 @@ function Profile() {
       </section>
 
       {/* BADGES SECTION */}
-      <section className="profile-section-card full-width">
+      <section id="sentinel-badges-section" className="profile-section-card full-width">
         <div className="section-header">
           <div>
             <h2>Prohori Sentinel Badges</h2>
@@ -787,13 +842,19 @@ function Profile() {
               key={badge.id}
             >
               <div
-                className="badge-icon-box"
+                className={`badge-icon-box ${badge.isUnlocked ? "unlocked" : "locked"}`}
                 style={{
                   background: badge.isUnlocked ? badge.bgColor : "#f1f5f9",
-                  color: badge.isUnlocked ? badge.color : "#94a3b8",
                 }}
               >
-                {badge.isUnlocked ? badge.icon : <Lock size={18} />}
+                <span className="badge-emoji-pic" role="img" aria-label={badge.name}>
+                  {badge.emoji}
+                </span>
+                {!badge.isUnlocked && (
+                  <span className="badge-lock-badge" title="Locked milestone">
+                    <Lock size={11} />
+                  </span>
+                )}
               </div>
               <div className="badge-details">
                 <div className="badge-title-line">
