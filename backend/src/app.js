@@ -7,6 +7,7 @@ const authRoutes = require("./routes/auth.routes");
 const reportRoutes = require("./routes/report.routes");
 const savedAreaRoutes = require("./routes/savedArea.routes");
 const { errorHandler, notFound } = require("./middleware/error.middleware");
+const trackCarbonFootprint = require("./middleware/carbon.middleware");
 
 const app = express();
 app.use(helmet());
@@ -18,6 +19,7 @@ app.use(
 );
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
+app.use(trackCarbonFootprint);
 app.get("/", (_req, res) =>
   res.json({ success: true, data: { message: "Prohori API is running." } }),
 );

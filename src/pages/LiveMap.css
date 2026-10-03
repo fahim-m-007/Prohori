@@ -370,7 +370,9 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   background: white;
-  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.18), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
+  box-shadow:
+    0 10px 25px -5px rgba(15, 23, 42, 0.18),
+    0 8px 10px -6px rgba(15, 23, 42, 0.1);
   pointer-events: auto !important;
   white-space: normal !important;
   box-sizing: border-box;
@@ -647,4 +649,3 @@
   color: #22c55e;
   flex-shrink: 0;
 }
-

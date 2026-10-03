@@ -16,6 +16,7 @@ import { ReportsProvider } from "./context/ReportsContext";
 import { SavedAreasProvider } from "./context/SavedAreasContext";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import CarbonFootprintDisplay from "./components/CarbonFootprintDisplay";
 
 import "./App.css";
 
@@ -62,6 +63,7 @@ function App() {
                 </Route>
               </Route>
             </Routes>
+            <CarbonFootprintDisplay />
           </SavedAreasProvider>
         </ReportsProvider>
       </AuthProvider>

@@ -248,7 +248,9 @@ function LiveMap() {
                         <span style={{ color: marker.color }}>
                           {marker.label}
                         </span>
-                        <span className="incident-popup-badge">Click for details</span>
+                        <span className="incident-popup-badge">
+                          Click for details
+                        </span>
                       </div>
                       <strong>{incident.title}</strong>
                       <p>{incident.location}</p>

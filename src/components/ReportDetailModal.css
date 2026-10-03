@@ -177,7 +177,9 @@
   border: 1px solid var(--border);
   background: #f1f5f9;
   display: block;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .modal-img-wrap:hover {

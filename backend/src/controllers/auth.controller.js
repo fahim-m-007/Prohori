@@ -42,21 +42,17 @@ async function register(req, res, next) {
   try {
     const { name, email, password, thana } = req.body;
     if (!name?.trim() || !isEmail(email) || !password || password.length < 8)
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message:
-            "Provide a name, valid email, and password of at least 8 characters.",
-        });
+      return res.status(400).json({
+        success: false,
+        message:
+          "Provide a name, valid email, and password of at least 8 characters.",
+      });
     const normalizedEmail = email.trim().toLowerCase();
     if (await User.exists({ email: normalizedEmail }))
-      return res
-        .status(409)
-        .json({
-          success: false,
-          message: "An account with this email already exists.",
-        });
+      return res.status(409).json({
+        success: false,
+        message: "An account with this email already exists.",
+      });
     const thanaName = thana?.trim();
     const defaultBio = thanaName
       ? `Active commuter in ${thanaName}. Committed to making Dhaka streets safer and well-monitored for everyone.`

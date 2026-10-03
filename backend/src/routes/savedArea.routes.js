@@ -7,7 +7,6 @@ const {
 } = require("../controllers/savedArea.controller");
 const { protect } = require("../middleware/auth.middleware");
 
-
 router.use(protect);
 
 router.route("/").get(getSavedAreas).post(createSavedArea);

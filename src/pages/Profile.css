@@ -931,11 +931,12 @@
   font-weight: 600;
   text-decoration: none;
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .btn-empty-report:hover {
   opacity: 0.93;
   transform: translateY(-1px);
 }
-

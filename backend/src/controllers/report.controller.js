@@ -169,15 +169,16 @@ async function createReport(req, res, next) {
             const uploadRes = await cloudinary.uploader.upload(img, {
               folder: "prohori_incidents",
               resource_type: "image",
-              transformation: [
-                { width: 1400, crop: "limit", quality: "auto" },
-              ],
+              transformation: [{ width: 1400, crop: "limit", quality: "auto" }],
             });
             if (uploadRes?.secure_url) {
               uploadedImages.push(uploadRes.secure_url);
             }
           } catch (cloudErr) {
-            console.warn("Cloudinary upload fallback triggered:", cloudErr.message);
+            console.warn(
+              "Cloudinary upload fallback triggered:",
+              cloudErr.message,
+            );
             uploadedImages.push(img);
           }
         } else if (img.startsWith("http://") || img.startsWith("https://")) {
@@ -418,8 +419,7 @@ async function deleteReport(req, res, next) {
     // Authorization check: Only author or admin can delete
     const currentUserId = req.user?._id?.toString() || req.user?.id?.toString();
     const isOwner =
-      report.reportedBy &&
-      report.reportedBy.toString() === currentUserId;
+      report.reportedBy && report.reportedBy.toString() === currentUserId;
     const isAdmin = req.user?.role === "admin";
 
     if (!isOwner && !isAdmin) {
