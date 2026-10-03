@@ -448,7 +448,7 @@ async function deleteReport(req, res, next) {
 
     return res.json({
       success: true,
-      message: "Report deleted successfully from database and feed.",
+      message: "Report deleted successfully.",
       data: { id: report._id.toString() },
     });
   } catch (error) {
@@ -500,7 +500,7 @@ async function deleteComment(req, res, next) {
 
     return res.json({
       success: true,
-      message: "Update deleted successfully from database.",
+      message: "Update deleted successfully.",
       data: {
         report: serializeReport(report, req.user),
       },

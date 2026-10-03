@@ -160,7 +160,7 @@ function Reports() {
     setIsDeleting(true);
     try {
       await deleteReport(reportId);
-      showToast("Incident report permanently deleted from database.");
+      showToast("Report deleted successfully.");
       if (
         activeDetailModal &&
         (activeDetailModal.id === reportId ||
@@ -295,7 +295,7 @@ function Reports() {
       {/* FEED METRICS */}
       <div className="reports-feed-count">
         {isLoadingReports ? (
-          <span>Loading live reports from MongoDB...</span>
+          <span>Loading live reports...</span>
         ) : (
           <span>Showing {filteredReports.length} results</span>
         )}
@@ -494,8 +494,7 @@ function Reports() {
             <h3>Delete Incident Report?</h3>
             <p>
               Are you sure you want to delete{" "}
-              <strong>"{reportToDelete.title}"</strong>? This will permanently
-              remove the incident from MongoDB and the live safety feed.
+              <strong>"{reportToDelete.title}"</strong>? This action cannot be undone.
             </p>
             <div className="delete-modal-actions">
               <button

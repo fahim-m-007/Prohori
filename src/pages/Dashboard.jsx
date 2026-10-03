@@ -15,7 +15,7 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useReports } from "../context/ReportsContext";
 import { useSavedAreas } from "../context/SavedAreasContext";
 import { useAuth } from "../context/AuthContext";
@@ -32,25 +32,21 @@ function Dashboard() {
 
   const [votingId, setVotingId] = useState(null);
   const [toastMessage, setToastMessage] = useState("");
-  const [activeReportModal, setActiveReportModal] = useState(null);
+  const [activeReportId, setActiveReportId] = useState(null);
 
-  // Keep active report fresh if reports list updates
-  useEffect(() => {
-    if (!activeReportModal) return;
-    const latest = reports.find(
-      (r) =>
-        String(r.id || r._id) ===
-        String(activeReportModal.id || activeReportModal._id),
+  const activeReportModal = useMemo(() => {
+    if (!activeReportId) return null;
+    return (
+      reports.find(
+        (r) => String(r.id || r._id) === String(activeReportId),
+      ) || null
     );
-    if (latest) {
-      setActiveReportModal(latest);
-    }
-  }, [reports, activeReportModal]);
+  }, [reports, activeReportId]);
 
   const handleDeleteReport = async (reportId) => {
     if (deleteReport) {
       await deleteReport(reportId);
-      setActiveReportModal(null);
+      setActiveReportId(null);
       showToast("Report deleted successfully.");
     }
   };
@@ -269,7 +265,7 @@ function Dashboard() {
                 <div className="report-item" key={report.id || report._id}>
                   <div
                     className={`report-icon ${getSeverityClass(report.severity)}`}
-                    onClick={() => setActiveReportModal(report)}
+                    onClick={() => setActiveReportId(report.id || report._id)}
                     style={{ cursor: "pointer" }}
                     title="Click to view details"
                   >
@@ -291,7 +287,7 @@ function Dashboard() {
 
                     <h3
                       className="report-heading"
-                      onClick={() => setActiveReportModal(report)}
+                      onClick={() => setActiveReportId(report.id || report._id)}
                       style={{ cursor: "pointer" }}
                       title="Click to view details"
                     >
@@ -312,7 +308,7 @@ function Dashboard() {
 
                     <p
                       className="report-desc-preview"
-                      onClick={() => setActiveReportModal(report)}
+                      onClick={() => setActiveReportId(report.id || report._id)}
                       style={{ cursor: "pointer" }}
                       title="Click to view details"
                     >
@@ -322,7 +318,7 @@ function Dashboard() {
                     {Array.isArray(report.images) && report.images.length > 0 && (
                       <div
                         className="dashboard-report-images"
-                        onClick={() => setActiveReportModal(report)}
+                        onClick={() => setActiveReportId(report.id || report._id)}
                         title="Click to view attached photos"
                       >
                         {report.images.slice(0, 2).map((imgUrl, idx) => (
@@ -448,7 +444,7 @@ function Dashboard() {
                   <div
                     className="my-report"
                     key={act.id}
-                    onClick={() => setActiveReportModal(act.report)}
+                    onClick={() => setActiveReportId(act.report.id || act.report._id)}
                     style={{ cursor: "pointer" }}
                     title="Click to view details"
                   >
@@ -502,7 +498,7 @@ function Dashboard() {
       {activeReportModal && (
         <ReportDetailModal
           report={activeReportModal}
-          onClose={() => setActiveReportModal(null)}
+          onClose={() => setActiveReportId(null)}
           onToast={showToast}
           onDeleteReport={handleDeleteReport}
         />

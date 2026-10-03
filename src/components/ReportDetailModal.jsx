@@ -88,7 +88,7 @@ export default function ReportDetailModal({
       } else {
         await deleteReport(reportId);
         if (onToast) {
-          onToast("Incident report permanently deleted from database.");
+          onToast("Report deleted successfully.");
         }
         onClose();
       }
@@ -122,7 +122,7 @@ export default function ReportDetailModal({
           comments: updated.comments || prev.comments,
         }));
       }
-      if (onToast) onToast("Update deleted successfully from database.");
+      if (onToast) onToast("Update deleted successfully.");
       setCommentToDelete(null);
     } catch (err) {
       if (onToast) {
@@ -392,9 +392,7 @@ export default function ReportDetailModal({
             <h3>Delete Incident Report?</h3>
             <p>
               Are you sure you want to delete{" "}
-              <strong>"{currentReport.title}"</strong>? This will permanently
-              remove this report and any attached photos from MongoDB and the
-              live safety feed.
+              <strong>"{currentReport.title}"</strong>? This action cannot be undone.
             </p>
             <div className="delete-modal-actions">
               <button
@@ -441,7 +439,7 @@ export default function ReportDetailModal({
                   : commentToDelete.text}
                 "
               </strong>
-              ? This will permanently remove your comment from MongoDB.
+              ? This action cannot be undone.
             </p>
             <div className="delete-modal-actions">
               <button
