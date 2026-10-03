@@ -671,11 +671,6 @@ function Profile() {
                       <span className="report-upvotes">
                         <ThumbsUp size={13} /> {report.upvotes || 0} Confirmations
                       </span>
-                      <span className={`status-pill ${report.status || "verified"}`}>
-                        {report.status === "resolved"
-                          ? "Hazard Resolved"
-                          : "Community Verified"}
-                      </span>
                     </div>
 
                     <div className="report-row-arrow" aria-hidden="true">
