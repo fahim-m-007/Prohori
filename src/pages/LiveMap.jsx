@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { MapContainer, Marker, TileLayer, Tooltip } from "react-leaflet";
+import { MapContainer, Marker, TileLayer, Popup, useMap } from "react-leaflet";
 import { divIcon } from "leaflet";
 import {
   AlertTriangle,
@@ -76,6 +76,7 @@ function createSavedLocationIcon(category) {
     html: `<span class="saved-location-marker ${safeCategory}" aria-label="${locationIcon.label}"><b>${locationIcon.icon}</b></span>`,
     iconSize: [34, 34],
     iconAnchor: [17, 17],
+    popupAnchor: [0, -18],
     tooltipAnchor: [0, -21],
   });
 }
@@ -93,8 +94,129 @@ function createReportPin(severity, status) {
     html: `<span class="report-pin ${pinClass}" style="--pin-color: ${marker.color}" aria-label="${marker.label}"></span>`,
     iconSize: [28, 36],
     iconAnchor: [14, 34],
+    popupAnchor: [0, -32],
     tooltipAnchor: [0, -34],
   });
+}
+
+function IncidentPopupContent({ incident, marker, onViewReport, mapInstance }) {
+  const map = useMap();
+
+  const handleClose = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (map && typeof map.closePopup === "function") {
+      map.closePopup();
+    } else if (mapInstance && typeof mapInstance.closePopup === "function") {
+      mapInstance.closePopup();
+    }
+  };
+
+  const handleOpenDetails = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onViewReport(incident);
+  };
+
+  return (
+    <div className="incident-popup">
+      <div className="incident-popup-top-row">
+        <span
+          className="incident-popup-severity"
+          style={{
+            color: marker.color,
+            backgroundColor: `${marker.color}15`,
+            borderColor: `${marker.color}35`,
+          }}
+        >
+          {marker.label}
+        </span>
+        <button
+          type="button"
+          className="incident-popup-close-btn"
+          onClick={handleClose}
+          aria-label="Close popup"
+          title="Close window"
+        >
+          <X size={15} />
+        </button>
+      </div>
+
+      <strong
+        className="incident-popup-title"
+        onClick={handleOpenDetails}
+        role="button"
+        tabIndex={0}
+        title="Click to view report details"
+      >
+        {incident.title}
+      </strong>
+
+      <div
+        className="incident-popup-address"
+        onClick={handleOpenDetails}
+        role="button"
+        tabIndex={0}
+        title="Click to view report details"
+      >
+        <MapPin size={12} className="address-pin-icon" />
+        <span>{incident.location}</span>
+      </div>
+
+      <small className="incident-popup-meta">
+        {incident.category} · {incident.time}
+      </small>
+
+      <button
+        type="button"
+        className="incident-popup-action-btn"
+        onClick={handleOpenDetails}
+      >
+        <span>View report details</span>
+        <ArrowRight size={13} />
+      </button>
+    </div>
+  );
+}
+
+function SavedAreaPopupContent({ area, mapInstance }) {
+  const map = useMap();
+
+  const handleClose = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (map && typeof map.closePopup === "function") {
+      map.closePopup();
+    } else if (mapInstance && typeof mapInstance.closePopup === "function") {
+      mapInstance.closePopup();
+    }
+  };
+
+  return (
+    <div className="saved-location-popup">
+      <div className="saved-location-popup-header">
+        <span>SAVED LOCATION</span>
+        <button
+          type="button"
+          className="incident-popup-close-btn"
+          onClick={handleClose}
+          aria-label="Close popup"
+          title="Close window"
+        >
+          <X size={14} />
+        </button>
+      </div>
+      <strong>{area.name}</strong>
+      <p className="saved-location-address">
+        <MapPin size={12} className="address-pin-icon" />
+        <span>{area.address}</span>
+      </p>
+      <small>
+        {area.thana}
+        {area.note ? ` · ${area.note}` : ""}
+      </small>
+    </div>
+  );
 }
 
 function LiveMap() {
@@ -108,6 +230,7 @@ function LiveMap() {
   const [showSavedAreas, setShowSavedAreas] = useState(false);
   const [activeDetailModal, setActiveDetailModal] = useState(null);
   const [toastMessage, setToastMessage] = useState("");
+  const [mapInstance, setMapInstance] = useState(null);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -198,6 +321,7 @@ function LiveMap() {
 
         <div className="live-map-shell">
           <MapContainer
+            ref={setMapInstance}
             className="leaflet-map"
             center={DHAKA_CENTER}
             zoom={12}
@@ -225,44 +349,20 @@ function LiveMap() {
                   position={position}
                   icon={createReportPin(incident.severity, incident.status)}
                   zIndexOffset={1000}
-                  eventHandlers={{
-                    click: () => handleViewReport(incident),
-                  }}
                 >
-                  <Tooltip
-                    interactive
-                    direction="top"
-                    offset={[0, -6]}
-                    opacity={1}
+                  <Popup
+                    offset={[0, -4]}
+                    closeButton={false}
+                    autoPan={true}
+                    autoPanPadding={[24, 24]}
                   >
-                    <div
-                      className="incident-popup"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleViewReport(incident);
-                      }}
-                      role="button"
-                      tabIndex={0}
-                    >
-                      <div className="incident-popup-top-row">
-                        <span style={{ color: marker.color }}>
-                          {marker.label}
-                        </span>
-                        <span className="incident-popup-badge">
-                          Click for details
-                        </span>
-                      </div>
-                      <strong>{incident.title}</strong>
-                      <p>{incident.location}</p>
-                      <small>
-                        {incident.category} · {incident.time}
-                      </small>
-                      <div className="incident-popup-action-btn">
-                        <span>View report details</span>
-                        <ArrowRight size={13} />
-                      </div>
-                    </div>
-                  </Tooltip>
+                    <IncidentPopupContent
+                      incident={incident}
+                      marker={marker}
+                      onViewReport={handleViewReport}
+                      mapInstance={mapInstance}
+                    />
+                  </Popup>
                 </Marker>
               );
             })}
@@ -280,17 +380,17 @@ function LiveMap() {
                     title={`${area.name} (${savedLocationIcons[area.category]?.label || "Saved location"})`}
                     zIndexOffset={500}
                   >
-                    <Tooltip direction="top" offset={[0, -8]} opacity={1}>
-                      <div className="saved-location-popup">
-                        <span>SAVED LOCATION</span>
-                        <strong>{area.name}</strong>
-                        <p>{area.address}</p>
-                        <small>
-                          {area.thana}
-                          {area.note ? ` · ${area.note}` : ""}
-                        </small>
-                      </div>
-                    </Tooltip>
+                    <Popup
+                      offset={[0, -4]}
+                      closeButton={false}
+                      autoPan={true}
+                      autoPanPadding={[24, 24]}
+                    >
+                      <SavedAreaPopupContent
+                        area={area}
+                        mapInstance={mapInstance}
+                      />
+                    </Popup>
                   </Marker>
                 );
               })}

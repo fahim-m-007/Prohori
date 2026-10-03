@@ -365,24 +365,60 @@
   font-weight: 700;
 }
 
-.leaflet-tooltip {
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: white;
+/* LEAFLET POPUP STYLES */
+.leaflet-popup-content-wrapper {
+  padding: 12px 14px !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 14px !important;
+  background: white !important;
   box-shadow:
     0 10px 25px -5px rgba(15, 23, 42, 0.18),
-    0 8px 10px -6px rgba(15, 23, 42, 0.1);
+    0 8px 10px -6px rgba(15, 23, 42, 0.1) !important;
   pointer-events: auto !important;
-  white-space: normal !important;
-  box-sizing: border-box;
+  box-sizing: border-box !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  line-height: normal !important;
+  width: auto !important;
+}
+
+.leaflet-popup-tip-container {
+  overflow: visible !important;
+}
+
+.leaflet-popup-tip {
+  background: white !important;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.15) !important;
+}
+
+.leaflet-popup-close-button {
+  top: 10px !important;
+  right: 10px !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 6px !important;
+  background: #f1f5f9 !important;
+  color: #64748b !important;
+  font: 16px/1 Arial, sans-serif !important;
+  text-decoration: none !important;
+  transition: all 0.15s ease !important;
+  z-index: 10 !important;
+}
+
+.leaflet-popup-close-button:hover {
+  background: #fee2e2 !important;
+  color: #ef4444 !important;
 }
 
 .incident-popup {
   width: 290px;
   max-width: min(320px, calc(100vw - 48px));
   font-family: var(--font-body);
-  cursor: pointer;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -392,69 +428,107 @@
   overflow-wrap: break-word;
 }
 
-.incident-popup::after {
-  content: "";
-  position: absolute;
-  left: -14px;
-  right: -14px;
-  bottom: -16px;
-  height: 16px;
-  background: transparent;
-}
-
 .incident-popup-top-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
-.incident-popup-top-row > span:first-child {
+.incident-popup-severity {
   font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
 }
 
-.incident-popup-badge {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--blue);
-  background: #eff6ff;
-  padding: 2px 7px;
-  border-radius: 4px;
-  border: 1px solid #bfdbfe;
-  white-space: nowrap;
+.incident-popup-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: #f8fafc;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
   flex-shrink: 0;
 }
 
-.incident-popup strong {
+.incident-popup-close-btn:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #ef4444;
+}
+
+.incident-popup-title {
   display: block;
   color: var(--navy);
   font-size: 14px;
   font-weight: 700;
   line-height: 1.35;
+  margin: 0 0 4px 0;
   white-space: normal;
   word-break: break-word;
   overflow-wrap: break-word;
+  cursor: pointer;
+  transition: color 0.15s ease;
 }
 
-.incident-popup p {
-  margin: 4px 0 4px;
+.incident-popup-title:hover {
+  color: var(--blue);
+}
+
+.incident-popup-address {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0 6px -4px;
+  padding: 4px 6px;
+  border-radius: 6px;
   color: var(--text-secondary);
   font-size: 12px;
   line-height: 1.4;
-  white-space: normal;
-  word-break: break-word;
-  overflow-wrap: break-word;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: fit-content;
+  max-width: 100%;
 }
 
-.incident-popup small {
+.incident-popup-address:hover {
+  background: #eff6ff;
+  color: var(--blue);
+}
+
+.incident-popup-address:hover span {
+  text-decoration: underline;
+}
+
+.incident-popup-address .address-pin-icon {
+  flex-shrink: 0;
+  color: var(--blue);
+}
+
+.incident-popup-address span {
+  white-space: normal;
+  word-break: break-word;
+}
+
+.incident-popup-meta {
   display: block;
   color: var(--text-light);
   font-size: 11px;
-  margin-bottom: 10px;
+  margin: 0 0 10px 0;
   white-space: normal;
   word-break: break-word;
   overflow-wrap: break-word;
@@ -468,21 +542,30 @@
   width: 100%;
   box-sizing: border-box;
   padding: 8px 12px;
+  border: 0;
   border-radius: 8px;
   background: linear-gradient(135deg, var(--blue), var(--purple));
   color: white;
   font-size: 12px;
   font-weight: 700;
+  font-family: inherit;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
   transition: all 0.2s ease;
+  cursor: pointer;
   user-select: none;
 }
 
-.incident-popup:hover .incident-popup-action-btn {
+.incident-popup-action-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 14px rgba(37, 99, 235, 0.38);
   opacity: 0.95;
 }
+
+.incident-popup-action-btn:active {
+  transform: translateY(0);
+}
+
+/* SAVED LOCATION POPUP */
 .saved-location-popup {
   width: 250px;
   max-width: min(280px, calc(100vw - 48px));
@@ -492,14 +575,22 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
-.saved-location-popup > span {
-  display: block;
-  margin-bottom: 5px;
+
+.saved-location-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.saved-location-popup-header span {
   color: var(--blue);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.6px;
 }
+
 .saved-location-popup strong {
   display: block;
   color: var(--navy);
@@ -507,14 +598,25 @@
   font-weight: 700;
   white-space: normal;
   word-break: break-word;
+  margin-bottom: 4px;
 }
-.saved-location-popup p {
-  margin: 4px 0;
+
+.saved-location-address {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 4px 0 6px;
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 12px;
   white-space: normal;
   word-break: break-word;
 }
+
+.saved-location-address .address-pin-icon {
+  flex-shrink: 0;
+  color: var(--blue);
+}
+
 .saved-location-popup small {
   color: var(--text-light);
   font-size: 11px;
