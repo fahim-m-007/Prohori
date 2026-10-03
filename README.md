@@ -1,10 +1,10 @@
-# 🛡️ Prohori (প্রহরী) — Crowdsourced Citizen Safety Platform for Dhaka
+# Prohori (প্রহরী) - Crowdsourced Citizen Safety Platform for Dhaka
 
 <div align="center">
 
 ![Prohori Platform](public/prohori_white.png)
 
-**Real-Time Crowdsourced Citizen Safety & Incident Intelligence Across Dhaka City**
+**Real-Time Crowdsourced Citizen Safety and Incident Intelligence Across Dhaka City**
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
@@ -19,83 +19,87 @@
 
 ---
 
-## 📖 Overview
+## Overview
 
 **Prohori (প্রহরী)** is a modern, crowdsourced community safety platform designed specifically for the citizens and daily commuters of **Dhaka, Bangladesh**.
 
-Dhaka's rapid urban pace frequently faces hyper-local disruptions — ranging from waterlogging and road accidents to muggings, traffic bottlenecks, protests, and fire hazards. **Prohori** bridges the critical information gap by empowering citizens to report incidents in real time, upload geo-tagged photo evidence, confirm hazards live on the ground, and view verified danger zones across all **50+ Thanas** on an interactive safety map.
+Dhaka's dense urban environment frequently experiences hyper-local disruptions, including waterlogging, road accidents, muggings, traffic bottlenecks, protest blockades, and fire hazards. **Prohori** bridges the real-time communication gap by enabling citizens to report incidents with geo-tagged photo evidence, confirm hazards live on the ground, monitor saved commute zones, and inspect danger zones across all **50+ Thanas** on an interactive safety map.
 
 ---
 
-## ⚡ Key Features
+## Key Features
 
-### 🗺️ 1. Interactive Live Safety Map (GIS)
-
-- **Dhaka-Wide Spatial Coverage**: Leaflet & OpenStreetMap powered GIS map centered on Dhaka with polygon and centroid coordinates for all 50+ Thana regions.
-- **Severity-Color Coded Markers**: Dynamic pins for **High Risk** (Theft, Mugging, Violence, Fire), **Caution** (Waterlogging, Traffic disruption, Accidents), and **Resolved** hazards.
+### 1. Interactive Live Safety Map (GIS)
+- **Dhaka-Wide Spatial Coverage**: Leaflet and OpenStreetMap GIS map centered on Dhaka with centroid coordinates and geographic boundaries for all 50+ Thana areas.
+- **Severity-Color Coded Markers**: Color-coded pins for High Risk (Theft, Mugging, Violence, Fire), Caution (Waterlogging, Traffic disruption, Accidents), and Resolved hazards.
 - **Quick Landmark Navigation**: Instant 1-click jump to major transit hubs (Shahbag, Dhanmondi, Gulshan, Uttara, Mirpur, Motijheel, Banani, etc.).
-- **Geo-Location Centering & Radius Filters**: Center directly on your current GPS location and filter incidents within a 1km to 10km radius.
+- **GPS Location Centering**: Center directly on current device coordinates and view nearby incidents.
 
-### 📢 2. Real-Time Incident Reporting & Feed
+### 2. Real-Time Incident Reporting and Filtered Feed
+- **Multi-Criteria Filtering**: Filter alerts by Category, Thana Area, and Sort Order (Most Recent vs Most Confirmed).
+- **Database-Level Indexed Sorting**: Powered by MongoDB Atlas compound indexes (`{ createdAt: -1 }` and `{ upvotes: -1, createdAt: -1 }`) for low-latency queries.
+- **Integrated Photo Uploads and Lightbox**: Incident evidence photos render as compact thumbnail strips on cards and open in an expansive broad-view modal lightbox.
+- **Responsive Layout**: Balanced card grid with fallback states for reports with short or omitted written descriptions.
 
-- **Multi-Criteria Filter Bar**: Instantly filter community alerts by **Category**, **Thana Area**, and **Sort By** (_Most Recent_ vs _Most Confirmed_).
-- **Database-Level Sorting & Indexing**: Powered by MongoDB Atlas compound indexes (`{ createdAt: -1 }` and `{ upvotes: -1, createdAt: -1 }`) for ultra-low latency queries.
-- **Integrated Photo Galleries & Lightbox**: Attached evidence photos render as compact thumbnail strips on cards and open in an expansive broad-view modal lightbox.
-- **Symmetrical Responsive Layout**: Balanced card grid with elegant fallback states for reports with short or omitted written descriptions.
+### 3. Community Verification and Discussion Updates
+- **Anti-Spam Verification**: 1-click incident confirmation (upvote/unvote toggle) tracked via unique user ID arrays in MongoDB to prevent duplicate voting.
+- **Live Community Notes**: Citizens on the ground can post real-time situation updates (e.g., "Water receding", "Road cleared").
+- **Author Lifecycle and Deletion Controls**: Authors and administrators can permanently delete incident reports or individual comments directly from the UI with safe confirmation dialogs.
+- **Automated Cloudinary CDN Cleanup**: Deleting an incident report automatically triggers backend deletion of attached image assets from Cloudinary storage (`prohori_incidents`).
 
-### 🛡️ 3. Citizen Verification & On-Ground Updates
+### 4. Monitored Saved Areas
+- **Custom Commute Monitoring**: Save and manage frequented Thana areas (Home, Workplace, University).
+- **Localized Dashboard Feed**: Dashboard automatically prioritizes incidents occurring within the user's primary or saved monitoring zones.
 
-- **Crowdsourced Verification System**: 1-click incident confirmation (`Confirm` / upvote) to validate live hazards and prevent rumors or false alarms.
-- **Live Community Notes & Comments**: Citizens on the ground can post real-time situation updates (e.g., _"Water receding"_, _"Road cleared"_).
-- **Author Lifecycle & Deletion Controls**: Authors can permanently delete their reports or specific comments/updates directly from the UI with safe confirmation modal dialogs.
-- **Automated Cloudinary Storage Cleanup**: Deleting an incident report automatically triggers backend garbage collection to destroy orphaned image files on Cloudinary (`prohori_incidents`).
+### 5. Sentinel Profile and Gamification
+- **5-Tier Sentinel Badges**: Milestone-based achievement badges awarded for contributions (Frontline Scout, Monsoon Navigator, Gridlock Breaker, Trusted Vanguard, Dhaka Guardian).
+- **Contribution Archive**: Personal record of all submitted reports and discussion updates with live confirmation counters.
+- **Account Management**: Update name, bio, phone number, primary Thana, and change password securely.
 
-### 🏆 4. Sentinel Profile & Gamified Reputation System
-
-- **5-Tier Sentinel Badges**: Milestone-based achievement badges awarded for community contributions (_First Alert_, _Monsoon Watcher_, _Road Watcher_, _Area Guardian_, etc.).
-- **Incident History Timeline**: Personal archive of all reports submitted by the logged-in citizen with live confirmation counters.
-- **Customizable Sentinel Bio & Home Thana**: Set default primary commuting zones and update personal details securely.
-
----
-
-## 🛠️ Technology Stack
-
-| Layer              | Technologies                                                                           |
-| :----------------- | :------------------------------------------------------------------------------------- |
-| **Frontend**       | React 19, Vite, React Router DOM v7, React-Leaflet, Leaflet, Lucide React icons, Axios |
-| **Styling & UI**   | Pure Modern CSS3 Design System (Glassmorphism, CSS Variables, Responsive Grid/Flexbox) |
-| **Backend**        | Node.js, Express.js 5, Helmet, CORS, Express Rate Limit, Cookie Parser                 |
-| **Database**       | MongoDB Atlas with Mongoose ODM (Compound Indexing & Schemas)                          |
-| **Media & CDN**    | Cloudinary REST API & SDK (Folder: `prohori_incidents`)                                |
-| **Authentication** | JWT (JSON Web Tokens) with Bcrypt password encryption                                  |
+### 6. Digital Carbon Footprint Measurement
+- **Backend Sustainable Web Design (SWD) Middleware**: Intercepts HTTP request and response byte streams and computes estimated carbon emissions (grams of CO2 equivalent) using the `@tgwf/co2` Sustainable Web Design model.
+- **Frontend Real-Time Carbon Widget**: Uses the `react-carbon-footprint` hook to display live network byte transfer and session CO2 estimates in a floating indicator.
 
 ---
 
-## 📂 Project Architecture
+## Technology Stack
+
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend** | React 19, Vite, React Router DOM v7, React-Leaflet, Leaflet, Lucide React icons, Axios, react-carbon-footprint |
+| **Styling and UI** | Pure Modern CSS3 Design System (Glassmorphism, CSS Custom Properties, Responsive Grid and Flexbox) |
+| **Backend** | Node.js, Express.js 5, Helmet, CORS, Express Rate Limit, Cookie Parser, @tgwf/co2 |
+| **Database** | MongoDB Atlas with Mongoose ODM (Compound B-Tree Indexing and Schemas) |
+| **Media and CDN** | Cloudinary REST API and SDK (Folder: `prohori_incidents`) |
+| **Authentication** | Stateless JWT (JSON Web Tokens) with Bcrypt password hashing (12 salt rounds) |
+
+---
+
+## Project Architecture
 
 ```plaintext
 Prohori/
 ├── backend/
 │   ├── src/
 │   │   ├── config/
-│   │   │   ├── cloudinary.js         # Cloudinary SDK credentials & config
+│   │   │   ├── cloudinary.js         # Cloudinary SDK credentials and config
 │   │   │   └── db.js                 # MongoDB Atlas Mongoose connection
 │   │   ├── controllers/
 │   │   │   ├── auth.controller.js    # Register, Login, Me, Profile update
 │   │   │   └── report.controller.js  # Incident CRUD, voting, comments, Cloudinary cleanup
 │   │   ├── middleware/
-│   │   │   ├── auth.middleware.js    # JWT protect & optionalAuth
+│   │   │   ├── auth.middleware.js    # JWT protect and optionalAuth
+│   │   │   ├── carbon.middleware.js  # SWD model CO2 calculation middleware
 │   │   │   └── error.middleware.js   # Global REST error handler
 │   │   ├── models/
 │   │   │   ├── Report.js             # Incident model with compound indexes
-│   │   │   └── User.js               # Citizen Sentinel user model
+│   │   │   └── User.js               # Citizen user model with bcrypt pre-save hook
 │   │   ├── routes/
 │   │   │   ├── auth.routes.js        # Auth API endpoints
-│   │   │   └── report.routes.js      # Reports, Voting & Comments endpoints
-│   │   └── utils/
-│   │       └── generateTokens.js     # JWT token generation
+│   │   │   └── report.routes.js      # Reports, Voting and Comments endpoints
+│   │   ├── app.js                    # Express application and middleware pipeline
+│   │   └── server.js                 # Server listener entry point
 │   ├── .env                          # Backend environment variables
-│   ├── index.js                      # Express application entry point
 │   └── package.json
 │
 ├── public/
@@ -106,24 +110,29 @@ Prohori/
 ├── src/
 │   ├── api/
 │   │   └── client.js                 # Axios client with JWT interceptor
+│   ├── assets/                       # Image and brand assets
 │   ├── components/
+│   │   ├── CarbonFootprintDisplay.jsx # Live carbon footprint badge
+│   │   ├── InteractiveMap.jsx        # Leaflet interactive GIS safety map
 │   │   ├── Navbar.jsx / .css         # Top navigation bar
-│   │   ├── Sidebar.jsx / .css        # Collapsible navigation drawer
-│   │   └── ReportDetailModal.jsx     # Detail view, comments & photo lightbox
+│   │   ├── ReportDetailModal.jsx     # Detail view, comments and photo lightbox
+│   │   └── Sidebar.jsx / .css        # Collapsible navigation drawer
 │   ├── context/
 │   │   ├── AuthContext.jsx           # Global user authentication state
-│   │   └── ReportsContext.jsx        # Global reports, comments & voting state
+│   │   ├── ReportsContext.jsx        # Global reports, comments and voting state
+│   │   └── SavedAreasContext.jsx     # Monitored locations state
 │   ├── pages/
-│   │   ├── Dashboard.jsx / .css      # City metrics & quick hazard summary
-│   │   ├── Landing.jsx / .css        # Public homepage & mission overview
+│   │   ├── Dashboard.jsx / .css      # City metrics and quick hazard summary
+│   │   ├── Landing.jsx / .css        # Public homepage and mission overview
 │   │   ├── Login.jsx / .css          # Citizen authentication
 │   │   ├── MapPage.jsx / .css        # Interactive Leaflet live map
-│   │   ├── Profile.jsx / .css        # Sentinel badges & report history
+│   │   ├── Profile.jsx / .css        # Sentinel badges and report history
 │   │   ├── ReportIncident.jsx / .css # Report submission form with image uploads
-│   │   ├── Reports.jsx / .css        # Community reports feed & filters
+│   │   ├── Reports.jsx / .css        # Community reports feed and filters
+│   │   ├── SavedAreas.jsx / .css     # Monitored areas management
 │   │   └── Signup.jsx / .css         # Account registration
-│   ├── App.jsx                       # Routing & layout configuration
-│   ├── index.css                     # Design tokens & global CSS variables
+│   ├── App.jsx                       # Routing and layout configuration
+│   ├── index.css                     # Design tokens and global CSS variables
 │   └── main.jsx                      # React 19 application root
 │
 ├── package.json
@@ -133,12 +142,12 @@ Prohori/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
 - **Node.js** (v18.0.0 or higher recommended)
-- **MongoDB Atlas** cluster URI or local MongoDB instance
+- **MongoDB Atlas** connection string or local MongoDB instance
 - **Cloudinary** account (Cloud Name, API Key, API Secret)
 
 ---
@@ -194,7 +203,7 @@ CLIENT_URL=http://localhost:5173
 
 Open two terminal windows:
 
-#### Terminal 1 — Start Backend Server:
+#### Terminal 1 - Start Backend Server:
 
 ```bash
 cd backend
@@ -202,56 +211,57 @@ npm run dev
 # Server running on http://localhost:5000
 ```
 
-#### Terminal 2 — Start Frontend Application:
+#### Terminal 2 - Start Frontend Application:
 
 ```bash
 npm run dev
 # Frontend running on http://localhost:5173
 ```
 
-Navigate to `http://localhost:5173` in your browser to start using Prohori!
+Navigate to `http://localhost:5173` in your browser.
 
 ---
 
-## 📡 REST API Reference
+## REST API Reference
 
-### 🔐 Authentication (`/api/auth`)
+### Authentication (`/api/auth`)
 
-| Method | Endpoint             | Access    | Description                                |
-| :----- | :------------------- | :-------- | :----------------------------------------- |
-| `POST` | `/api/auth/register` | Public    | Register a new Citizen Sentinel account    |
-| `POST` | `/api/auth/login`    | Public    | Authenticate user & return JWT token       |
-| `GET`  | `/api/auth/me`       | Protected | Fetch currently authenticated user profile |
-| `PUT`  | `/api/auth/profile`  | Protected | Update profile bio, phone, and home Thana  |
-| `PUT`  | `/api/auth/password` | Protected | Change account password                    |
-| `POST` | `/api/auth/logout`   | Public    | Clear session credentials                  |
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/register` | Public | Register a new Citizen Sentinel account |
+| `POST` | `/api/auth/login` | Public | Authenticate user and return JWT token |
+| `GET` | `/api/auth/me` | Protected | Fetch currently authenticated user profile |
+| `PUT` | `/api/auth/profile` | Protected | Update profile bio, phone, and primary Thana |
+| `PUT` | `/api/auth/password` | Protected | Change account password |
+| `POST` | `/api/auth/logout` | Public | Clear session credentials |
 
-### 🚨 Incident Reports (`/api/reports`)
+### Incident Reports (`/api/reports`)
 
-| Method   | Endpoint                               | Access                   | Description                                                                                            |
-| :------- | :------------------------------------- | :----------------------- | :----------------------------------------------------------------------------------------------------- |
-| `GET`    | `/api/reports`                         | Optional Auth            | Fetch feed with filtering (`category`, `thana`, `search`) & indexed sorting (`sortBy=recent\|upvotes`) |
-| `POST`   | `/api/reports`                         | Protected                | Submit a new incident report (with Cloudinary image streaming)                                         |
-| `GET`    | `/api/reports/:id`                     | Optional Auth            | Fetch single incident detail by ID                                                                     |
-| `POST`   | `/api/reports/:id/vote`                | Protected                | Toggle live incident confirmation (upvote / unvote)                                                    |
-| `POST`   | `/api/reports/:id/comments`            | Protected                | Post a live on-ground update/comment to an incident                                                    |
-| `DELETE` | `/api/reports/:id/comments/:commentId` | Protected (Author/Admin) | Delete a specific update from MongoDB Atlas                                                            |
-| `DELETE` | `/api/reports/:id`                     | Protected (Author/Admin) | Delete incident report from MongoDB + cleanup Cloudinary CDN assets                                    |
-
----
-
-## 🛡️ Security & Quality Standards
-
-- **Role-Based & Ownership Verification**: Strict server-side verification ensures users can only delete their own reports and comments.
-- **Input Sanitization & Data Validation**: String trimming, coordinate boundary checks, and Mongoose schema constraints.
-- **Secure Image Storage**: Direct Base64 to Cloudinary transformation with auto quality optimization and safe deletion handling.
-- **0 Lint Errors**: Strictly adhering to modern React & ESLint standards.
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/reports` | Optional Auth | Fetch feed with filtering (`category`, `thana`, `search`) and indexed sorting (`sortBy=recent\|upvotes\|oldest`) |
+| `POST` | `/api/reports` | Protected | Submit a new incident report with Cloudinary image uploads |
+| `GET` | `/api/reports/:id` | Optional Auth | Fetch single incident detail by ID |
+| `POST` | `/api/reports/:id/vote` | Protected | Toggle live incident confirmation (upvote/unvote) |
+| `POST` | `/api/reports/:id/comments` | Protected | Post a live on-ground situation update to an incident |
+| `DELETE` | `/api/reports/:id/comments/:commentId` | Protected (Author/Admin) | Delete a specific update |
+| `DELETE` | `/api/reports/:id` | Protected (Author/Admin) | Delete incident report and remove attached Cloudinary CDN assets |
 
 ---
 
-## 🤝 Contributing
+## Security and Quality Standards
 
-Contributions to improve Dhaka's community safety infrastructure are warmly welcomed!
+- **Role-Based and Ownership Authorization**: Server-side verification ensures users can only delete or modify their own reports and comments.
+- **Input Sanitization and Validation**: String trimming, coordinate boundary checks, and Mongoose schema constraints.
+- **Secure Image Pipeline**: Base64 data streaming to Cloudinary with automatic WebP conversion, dimension limits, and orphan file destruction on deletion.
+- **Zero Lint Errors**: Adherence to modern React and ESLint standards.
+- **Digital Sustainability**: Continuous monitoring of data transfer volume and carbon footprint estimation.
+
+---
+
+## Contributing
+
+Contributions to improve Dhaka's community safety infrastructure are welcome.
 
 1. Fork the Project repository
 2. Create your Feature Branch (`git checkout -b feature/SafetyAlerts`)
@@ -261,13 +271,13 @@ Contributions to improve Dhaka's community safety infrastructure are warmly welc
 
 ---
 
-## 📄 License
+## License
 
 Distributed under the **ISC License**. See `LICENSE` for more information.
 
 <div align="center">
 
-**Built with dedication for the citizens of Dhaka 🇧🇩**  
-_Stay Alert. Stay Safe. Prohori._
+**Built for the citizens of Dhaka**  
+*Stay Alert. Stay Safe. Prohori.*
 
 </div>
