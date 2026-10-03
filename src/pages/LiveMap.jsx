@@ -32,7 +32,6 @@ const filters = [
   "High risk",
   "Caution",
   "Low risk",
-  "Resolved",
 ];
 const markerStyles = {
   high: { color: "#ef4444", label: "High risk" },
@@ -250,7 +249,7 @@ function LiveMap() {
       return reports.filter(({ severity }) => severity === "caution");
     if (activeFilter === "Low risk")
       return reports.filter(({ severity }) => severity === "low");
-    return reports.filter(({ status }) => status === "resolved");
+    return reports;
   }, [activeFilter, reports]);
 
   return (
@@ -465,9 +464,6 @@ function LiveMap() {
             </span>
             <span>
               <i className="low"></i>Low risk
-            </span>
-            <span>
-              <i className="resolved"></i>Resolved
             </span>
             {showSavedAreas && (
               <>
